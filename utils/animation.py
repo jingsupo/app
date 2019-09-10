@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 fig, ax = plt.subplots()
 
-df = np.array(pd.read_csv('D:/d.csv'))[:200,1]
+df = np.array(pd.read_csv('D:/data/d.csv'))[:200,1]
 y=[]
 a = 0
 b = 100
