@@ -6,7 +6,7 @@ import pandas as pd
 
 fig, ax=plt.subplots()
 y=[]
-df = pd.read_csv('D:/d.csv')
+df = pd.read_csv('../../../data/d.csv')
 df = df.iloc[:125,1]
 
 for i in range(125):

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
 import wx
@@ -11,7 +10,6 @@ if _USE_AGG :
     from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 else:
     from matplotlib.backends.backend_wx import FigureCanvasWx as FigureCanvas
-
 
 
 class MatplotlibCanvas(FigureCanvas):
