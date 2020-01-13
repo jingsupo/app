@@ -1,2 +1,0 @@
-python opcclient.py
-pause

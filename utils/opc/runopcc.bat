@@ -1,2 +1,0 @@
-python opcc.py
-pause
