@@ -12,7 +12,7 @@ def draw_people(image, people):
     cv2.rectangle(image, (x, y), (x+w, y+h), (255, 0, 0), 2)
 
 
-img = cv2.imread('2.jpg')
+img = cv2.imread('../../../testing/2.jpg')
 cv2.imshow('haha', img)
 cv2.waitKey()
 

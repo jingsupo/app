@@ -80,19 +80,15 @@ def predict(test_img):
     return img, label_text
 
 # 加载测试图像
-# test_img1 = cv2.imread('../../../testing/0.jpeg')
-# test_img2 = cv2.imread('../../../testing/1.jfif')
-test_img3 = cv2.imread('../../../testing/2.jpg')
-test_img4 = cv2.imread('../../../testing/3.jpg')
+test_img1 = cv2.imread('../../../testing/2.jpg')
+test_img2 = cv2.imread('../../../testing/3.jpg')
 # 执行预测
-# pred_img1, pred_label_text1 = predict(test_img1)
-# pred_img2, pred_label_text2 = predict(test_img2)
-pred_img3, pred_label_text3 = predict(test_img3)
-pred_img4, pred_label_text4 = predict(test_img4)
+pred_img1, pred_label_text3 = predict(test_img1)
+pred_img2, pred_label_text4 = predict(test_img2)
 # 显示图像
 # cv2.imshow(pred_label_text1, pred_img1)
 # cv2.imshow(subjects[1], pred_img2)
-cv2.imshow(subjects[2], pred_img3)
-cv2.imshow(subjects[3], pred_img4)
+cv2.imshow(subjects[2], pred_img1)
+cv2.imshow(subjects[3], pred_img2)
 cv2.waitKey()
 cv2.destroyAllWindows()
