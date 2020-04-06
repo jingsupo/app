@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from flask import Flask, render_template, jsonify
-from pyecharts import options as opts
-from pyecharts.charts import Line
-import pymongo
-import pandas as pd
 import datetime
+import pandas as pd
+import pymongo
 
 
 # 建立mongodb数据库连接
@@ -19,19 +17,19 @@ app = Flask(__name__, template_folder='.')
 def getdata():
     data = pd.DataFrame(db.c11.find({},{'_id':0,'传感器1':1}).limit(2000))
 
-    dt = []    
-    for i in zip(range(len(data)), data.values.flatten()):
-        dct = {}
-        dct['name'] = 'haha'
-        dct['value'] = i
-        dt.append(dct)
+    json = []
+    for v in zip(range(len(data)), data.values.flatten()):
+        d = {}
+        d['name'] = 'haha'
+        d['value'] = v
+        json.append(d)
 
-    return jsonify(dt)
+    return jsonify(json)
 
 @app.route("/")
 def index():
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    return render_template("Awesome-pyecharts.html", time=now)
+    return render_template("echarts.html", time=now)
 
 
 if __name__ == "__main__":
