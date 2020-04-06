@@ -8,7 +8,7 @@
 </head>
 <body>
     <div id="header">{{time}}</div>
-    <div id="bar" style="width:1000px; height:600px;"></div>
+    <div id="main" style="width:1000px; height:600px;"></div>
     <script>
         $(
             function () {
@@ -19,7 +19,7 @@
                     success: function (result) {
                         dt = result;
 
-                        var myChart = echarts.init(document.getElementById('bar'), 'white', {renderer: 'canvas'});
+                        var myChart = echarts.init(document.getElementById('main'), 'white', {renderer: 'canvas'});
 
                         function randomData() {
                             now = new Date(+now + oneDay);
@@ -86,7 +86,6 @@
                             for (var i = 0; i < 5; i++) {
                                 data.shift();
                                 data.push(randomData());
-                                <!-- data.shift(); -->
                                 <!-- data.push(dt.shift()); -->
                             }
                             myChart.setOption(option);
