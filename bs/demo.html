@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>demo</title>
+    <link rel="stylesheet" type="text/css" href="static/css/main.css">
+    <link rel="stylesheet" type="text/css" href="static/css/demo.css">
+    <link rel="stylesheet" type="text/css" href="static/css/zTreeStyle/zTreeStyle.css">
+    <script src="static/js/jquery-1.4.4.min.js"></script>
+    <script src="static/js/jquery.ztree.core.min.js"></script>
+    <script src="static/js/echarts.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // 初始化隐藏ztree插件
+            document.getElementById('treeDemo').style.display='none';
+            // 初始化隐藏loading容器
+            document.getElementById('loading-image').style.display='none';
+            // python列表必须转化为json才能被js使用
+            var dbnames = {{dbnames|tojson}}
+            var farm = document.getElementById('farm');
+            for (var i=0; i < dbnames.length; i++) {
+                farm.options.add(new Option(dbnames[i], i+1));
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            // 必须使用#id进行选择才有效果
+            $('#farm').change(function () {
+                var farm_name = $('#farm').find('option:selected').text();
+                $.ajax({
+                	url: "/farm",
+                	type: "POST",
+                	data: {'farm_name': farm_name},
+                	dataType: "json",
+                	success: function (data) {
+                	    var wind_turbine = document.getElementById('wind_turbine');
+                	    // 默认使序号为0的项目选中
+                	    wind_turbine.options[0].selected=true;
+                	    var len = wind_turbine.options.length;
+                	    // 默认清空已经存在的项目
+                	    for (var n=1; n < len; n++) {
+                	        wind_turbine.remove(1);
+                        }
+                        for (var i=0; i < data.length; i++) {
+                            wind_turbine.options.add(new Option(data[i], i+1));
+                        }
+                	}
+                });
+            })
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("input[name=q]").click(function () {
+                var farm_name = $('#farm').find('option:selected').text();
+                var wind_turbine_name = $('#wind_turbine').find('option:selected').text();
+                var sampling_time = $('#sampling_time').find('option:selected').text();
+                if (farm_name == '选择风场' || wind_turbine_name == '选择风机' || sampling_time == '选择时间') {
+                    alert('请先选择相应项目！');
+                }
+                else {
+                    var dataset = {'farm_name': farm_name,
+                        'wind_turbine_name': wind_turbine_name,
+                        'sampling_time': sampling_time};
+                    $.ajax({
+                        url: "/q",
+                        type: "POST",
+                        data: dataset,
+                        dataType: "json",
+                        success: function (data) {
+                            var zTreeObj;
+                            var setting = {
+                                callback: {
+                                    onClick: zTreeOnClick
+                                },
+                                view: {
+                                    showLine: false
+                                }
+                            };
+                            var zNodes = [];
+                            var child = [];
+                            for (var key in data['point_description']) {
+                                child.push({name:data['point_description'][key]});
+                            }
+                            for (var i=0; i < data['sampling_time'].length; i++) {
+                                zNodes.push({name:data['sampling_time'][i], open:false, children:child})
+                            }
+                            function zTreeOnClick(event, treeId, treeNode) {
+                                // console.log(treeNode.tId + ", " + treeNode.name);
+                                var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+                                // 当前选中节点
+                                var sn = treeObj.getSelectedNodes();
+                                var html;
+                                if (sn[0].hasOwnProperty('children') && sn[0].children.length > 0) {
+                                    html = data['rotate_speed'][sn[0].name];
+                                }
+                                else {
+                                    // 选中节点的父节点
+                                    var pn = sn[0].getParentNode();
+                                    html = data['rotate_speed'][pn.name];
+                                }
+                                document.getElementById('time_info').innerHTML = '转速：' + html;
+                                // 显示time_info容器
+                                document.getElementById('time_info').style.display='';
+                            }
+                            $(document).ready(function(){
+                                zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+                            });
+                        }
+                    });
+                    // 显示ztree插件
+                    document.getElementById('treeDemo').style.display='';
+                }
+            })
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("input[name=tf]").click(function () {
+                var farm_name = $('#farm').find('option:selected').text();
+                var wind_turbine_name = $('#wind_turbine').find('option:selected').text();
+                var sampling_time = $('#sampling_time').find('option:selected').text();
+                var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+                if (farm_name == '选择风场' || wind_turbine_name == '选择风机' || sampling_time == '选择时间' || treeObj == null) {
+                    alert('请先选择左侧项目！');
+                }
+                else {
+                    // 当前选中节点
+                    var sn = treeObj.getSelectedNodes();
+                    if (sn.length == 0) {
+                        alert('请选择测点！');
+                    }
+                    else if (sn[0].hasOwnProperty('children') && sn[0].children.length > 0) {
+                        alert('请选择子节点！');
+                    }
+                    else {
+                        // 选中节点的父节点
+                        var pn = sn[0].getParentNode();
+                        var dataset = {'farm_name': farm_name,
+                            'wind_turbine_name': wind_turbine_name,
+                            'sampling_time': pn['name'],
+                            'point': sn[0]['name']};
+                        var ts = echarts.init(document.getElementById('fig1'), 'white', {renderer: 'canvas'});
+                        var freq = echarts.init(document.getElementById('fig2'), 'white', {renderer: 'canvas'});
+                        $.ajax({
+                            url: "/toolbar1",
+                            type: "POST",
+                            data: dataset,
+                            dataType: "json",
+                            beforeSend: function () {
+                                document.getElementById('loading-image').style.display='';
+                            },
+                            complete: function () {
+                                // $('#loading-image').remove();
+                                document.getElementById('loading-image').style.display='none';
+                            },
+                            success: function (data) {
+                                var option_ts = {
+                                    title: {
+                                        text: '时域图'
+                                    },
+                                    tooltip: {
+                                        trigger: 'axis',
+                                        triggerOn: 'mousemove|click',
+                                    },
+                                    xAxis: {
+                                        type: 'value',
+                                        splitLine: {
+                                            show: true
+                                        }
+                                    },
+                                    yAxis: {
+                                        type: 'value',
+                                        boundaryGap: [0, '100%'],
+                                        splitLine: {
+                                            show: true
+                                        }
+                                    },
+                                    series: [{
+                                        name: '振动信号',
+                                        type: 'line',
+                                        showSymbol: false,
+                                        hoverAnimation: false,
+                                        data: data['time_series']
+                                    }],
+                                    dataZoom: [{
+                                        //
+                                    }],
+                                    toolbox: { // 工具栏
+                                        feature: {
+                                            dataZoom: { // 框选缩放功能
+                                                show: true, // show为true时，才能触发takeGlobalCursor事件
+                                                yAxisIndex: 'none',
+                                            },
+                                            restore: {
+                                                show: true
+                                            },
+                                            saveAsImage: {
+                                                show: true,
+                                                type: 'png',
+                                            },
+                                        }
+                                    }
+                                };
+                                ts.setOption(option_ts);
+                                var option_freq = {
+                                    title: {
+                                        text: '频域图'
+                                    },
+                                    tooltip: {
+                                        trigger: 'axis',
+                                        triggerOn: 'mousemove|click',
+                                    },
+                                    xAxis: {
+                                        type: 'value',
+                                        splitLine: {
+                                            show: true
+                                        }
+                                    },
+                                    yAxis: {
+                                        type: 'value',
+                                        boundaryGap: [0, '100%'],
+                                        splitLine: {
+                                            show: true
+                                        }
+                                    },
+                                    series: [{
+                                        name: '振幅',
+                                        type: 'line',
+                                        showSymbol: false,
+                                        hoverAnimation: false,
+                                        data: data['freq']
+                                    }],
+                                    dataZoom: [{
+                                        //
+                                    }],
+                                    toolbox: { // 工具栏
+                                        feature: {
+                                            dataZoom: { // 框选缩放功能
+                                                show: true, // show为true时，才能触发takeGlobalCursor事件
+                                                yAxisIndex: 'none',
+                                            },
+                                            restore: {
+                                                show: true
+                                            },
+                                            saveAsImage: {
+                                                show: true,
+                                                type: 'png',
+                                            },
+                                        }
+                                    }
+                                };
+                                freq.setOption(option_freq);
+                                freq.on('click', function (params) {
+                                    // 控制台打印数据
+                                    console.log(params);
+                                });
+                            }
+                        });
+                        // document.getElementById('fig2').innerHTML = '<img src="http://img0.imgtn.bdimg.com/it/u=2023732951,3743955945&fm=26&gp=0.jpg">';
+                    }
+                }
+            });
+        });
+	</script>
+</head>
+<body>
+    <div class="left">
+        <div class="logo"><img src="http://www.bj-nego.com/res/tpl/default/images/icon/logo.jpg"></div>
+        <div class="query">
+            <label for="farm"> 风 场 </label>
+            <select id="farm" name="farm">
+                <option value="0">选择风场</option>
+            </select>
+            <br/>
+            <label for="wind_turbine" > 风 机 </label>
+            <select id="wind_turbine" name="wind_turbine">
+                <option value="0">选择风机</option>
+            </select>
+            <br/>
+            <label for="sampling_time"> 时 间 </label>
+            <select id="sampling_time" name="sampling_time">
+                <option value="0">选择时间</option>
+                <option value="1">20200420</option>
+            </select>
+            <br/>
+            <label for="rotate_speed"> 转 速 </label>
+            <select id="rotate_speed" name="rotate_speed">
+                <option value="0">选择转速</option>
+                <option value="1">1</option>
+                <option value="1">2</option>
+                <option value="1">3</option>
+                <option value="1">4</option>
+                <option value="1">5</option>
+                <option value="1">6</option>
+                <option value="1">7</option>
+                <option value="1">8</option>
+                <option value="1">9</option>
+                <option value="1">10</option>
+                <option value="1">11</option>
+                <option value="1">12</option>
+                <option value="1">13</option>
+                <option value="1">14</option>
+                <option value="1">15</option>
+                <option value="1">16</option>
+                <option value="1">17</option>
+                <option value="1">18</option>
+                <option value="1">19</option>
+                <option value="1">20</option>
+            </select>
+            <br/>
+            <input type="submit" value="查询" id="q" name="q">
+        </div>
+        <div id="time_info" class="time_info"></div>
+        <div id="treeDemo" class="ztree">ztree</div>
+    </div>
+    <div class="middle">
+        <div class="toolbar">
+            <input type="submit" value="时域图和频域图" id="toolbar1" name="tf">
+        </div>
+        <div class="figure">
+            <div id="loading-image" class="loading">加载中...</div>
+            <div id="fig1"></div>
+            <div id="fig2"></div>
+        </div>
+    </div>
+    <div class="right">
+        <div id="farm_info" class="info">风场信息</div>
+        <div id="wind_turbine_info" class="info">风机信息</div>
+        <div id="fault_history" class="info">故障历史</div>
+    </div>
+</body>
+</html>
