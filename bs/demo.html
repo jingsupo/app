@@ -15,12 +15,17 @@
             document.getElementById('treeDemo').style.display='none';
             // 初始化隐藏loading容器
             document.getElementById('loading-image').style.display='none';
-            // python列表必须转化为json才能被js使用
-            var dbnames = {{dbnames|tojson}}
-            var farm = document.getElementById('farm');
-            for (var i=0; i < dbnames.length; i++) {
-                farm.options.add(new Option(dbnames[i], i+1));
-            }
+            $.ajax({
+                url: "/get_db_names",
+                type: "POST",
+                dataType: "json",
+                success: function (data) {
+                    var farm = document.getElementById('farm');
+                    for (var i=0; i < data.length; i++) {
+                        farm.options.add(new Option(data[i], i+1));
+                    }
+                }
+            });
         });
     </script>
     <script>
@@ -117,6 +122,8 @@
     </script>
     <script>
         $(document).ready(function () {
+            fig1 = echarts.init(document.getElementById('fig1'), 'white', {renderer: 'canvas'});
+            fig2 = echarts.init(document.getElementById('fig2'), 'white', {renderer: 'canvas'});
             $("input[name=tf]").click(function () {
                 var farm_name = $('#farm').find('option:selected').text();
                 var wind_turbine_name = $('#wind_turbine').find('option:selected').text();
@@ -141,8 +148,6 @@
                             'wind_turbine_name': wind_turbine_name,
                             'sampling_time': pn['name'],
                             'point': sn[0]['name']};
-                        var ts = echarts.init(document.getElementById('fig1'), 'white', {renderer: 'canvas'});
-                        var freq = echarts.init(document.getElementById('fig2'), 'white', {renderer: 'canvas'});
                         $.ajax({
                             url: "/toolbar1",
                             type: "POST",
@@ -150,6 +155,8 @@
                             dataType: "json",
                             beforeSend: function () {
                                 document.getElementById('loading-image').style.display='';
+                                fig1.clear();
+                                fig2.clear();
                             },
                             complete: function () {
                                 // $('#loading-image').remove();
@@ -203,7 +210,7 @@
                                         }
                                     }
                                 };
-                                ts.setOption(option_ts);
+                                fig1.setOption(option_ts);
                                 var option_freq = {
                                     title: {
                                         text: '频域图'
@@ -229,7 +236,7 @@
                                         name: '振幅',
                                         type: 'line',
                                         showSymbol: false,
-                                        hoverAnimation: false,
+                                        hoverAnimation: true,
                                         data: data['freq']
                                     }],
                                     dataZoom: [{
@@ -251,19 +258,48 @@
                                         }
                                     }
                                 };
-                                freq.setOption(option_freq);
-                                freq.on('click', function (params) {
+                                fig2.setOption(option_freq);
+                                fig2.on('click', function (params) {
                                     // 控制台打印数据
                                     console.log(params);
+                                    document.getElementById('time_info').innerHTML = params.value;
                                 });
                             }
                         });
-                        // document.getElementById('fig2').innerHTML = '<img src="http://img0.imgtn.bdimg.com/it/u=2023732951,3743955945&fm=26&gp=0.jpg">';
+                        var chartsArr=[];
+
+                        chartsArr.push(fig1);
+                        chartsArr.push(fig2);
+
+                        window.onresize = function () {
+                            for (var i=0; i < chartsArr.length; i++) {
+                                // ECharts随窗口大小改变而自适应
+                                chartsArr[i].resize();
+                            }
+                        }
                     }
                 }
             });
         });
 	</script>
+    <script>
+        $(function () {
+            var Btn = $("input[name=spectrum_envelope]"),
+            Pop = $('#pop'),
+            PopCon = $('.pop_con');
+
+            Btn.click(function () {
+                Pop.fadeIn();
+                return false;
+            });
+            $(window).click(function () {
+                Pop.fadeOut();
+            });
+            PopCon.click(function () {
+                return false;
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="left">
@@ -282,6 +318,7 @@
             <label for="sampling_time"> 时 间 </label>
             <select id="sampling_time" name="sampling_time">
                 <option value="0">选择时间</option>
+                <option value="1">20190520</option>
                 <option value="1">20200420</option>
             </select>
             <br/>
@@ -312,12 +349,19 @@
             <br/>
             <input type="submit" value="查询" id="q" name="q">
         </div>
-        <div id="time_info" class="time_info"></div>
-        <div id="treeDemo" class="ztree">ztree</div>
+        <div id="time_info"></div>
+        <div id="treeDemo" class="ztree">加载中...</div>
     </div>
     <div class="middle">
         <div class="toolbar">
             <input type="submit" value="时域图和频域图" id="toolbar1" name="tf">
+            <input type="submit" value="频谱包络图" id="toolbar2" name="spectrum_envelope">
+            <div id="pop" class="pop_main">
+                <div class="pop_con">
+                    <p><iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=592818&auto=1&height=66"></iframe></p>
+                </div>
+                <div class="mask"></div>
+            </div>
         </div>
         <div class="figure">
             <div id="loading-image" class="loading">加载中...</div>
