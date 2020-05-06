@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import json
 import struct
 from flask import Flask, render_template, request, jsonify
 import loguru as log
@@ -77,11 +78,10 @@ def q():
     dbname = request.form.get('farm_name')
     db = client[dbname]
     collection = request.form.get('wind_turbine_name')
-    time = request.form.get('sampling_time')
-
-    # 所选时间范围内的采样时间
-    sampling_time_dict = db[collection].find({'sampling_time': {'$regex': time}}, {'_id': 0, 'sampling_time': 1})
-    sampling_time_str = [val for dic in sampling_time_dict for key, val in dic.items()]
+    from_to_time = request.form.get('from_to_time')
+    from_to_time = json.loads(from_to_time)
+    from_to_rotate_speed = request.form.get('from_to_rotate_speed')
+    from_to_rotate_speed = json.loads(from_to_rotate_speed)
 
     # 测点信息
     point_description = db['information'].find_one({'desc': '机组信息'})['point_description']
@@ -89,7 +89,23 @@ def q():
     # 转速
     rotate_speed = db['information'].find_one({'desc': '机组信息'})['rotate_speed'][collection]
 
-    return jsonify({'sampling_time': sampling_time_str,
+    from_time = from_to_time[0]
+    to_time = from_to_time[1]
+
+    from_rotate_speed = from_to_rotate_speed[0]
+    to_rotate_speed = from_to_rotate_speed[1]
+
+    rs = pd.DataFrame(rotate_speed.items())
+
+    if from_time != '' and to_time != '' and from_rotate_speed != '选择转速' and to_rotate_speed != '选择转速':
+        from_rotate_speed = float(from_to_rotate_speed[0])
+        to_rotate_speed = float(from_to_rotate_speed[1])
+        rs = rs[(rs.iloc[:, 0] > from_time) & (rs.iloc[:, 0] < to_time)]
+        rs = rs[(rs.iloc[:, 1] > from_rotate_speed) & (rs.iloc[:, 1] < to_rotate_speed)]
+
+    sampling_time = rs.iloc[:, 0].tolist()
+
+    return jsonify({'sampling_time': sampling_time,
                     'point_description': point_description,
                     'rotate_speed': rotate_speed})
 

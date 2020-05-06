@@ -3,6 +3,7 @@
     width: 20%;
     background: pink;
     float: left;
+    overflow: auto;
 }
 
 .middle {
@@ -26,7 +27,7 @@
 }
 
 .query {
-    height: 320px;
+    height: 500px;
     width: 100%;
     background: #81ffa7;
 }
@@ -114,6 +115,10 @@ input[name=q] {
     margin-top: 20px;
     position:relative;
     left: 60px;
+}
+
+.layui-form-label, .layui-input {
+    margin: 18px 0 0 10px;
 }
 
 .pop_main {

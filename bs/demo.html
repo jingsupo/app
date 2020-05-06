@@ -6,9 +6,28 @@
     <link rel="stylesheet" type="text/css" href="static/css/main.css">
     <link rel="stylesheet" type="text/css" href="static/css/demo.css">
     <link rel="stylesheet" type="text/css" href="static/css/zTreeStyle/zTreeStyle.css">
+    <link rel="stylesheet" href="static/layui/css/layui.css"  media="all">
     <script src="static/js/jquery-1.4.4.min.js"></script>
     <script src="static/js/jquery.ztree.core.min.js"></script>
     <script src="static/js/echarts.min.js"></script>
+    <script src="static/layui/layui.js"></script>
+    <script>
+        layui.use('laydate', function() {
+            var laydate = layui.laydate;
+
+            laydate.render({
+                elem: '#from_time',
+                type: 'datetime',
+                format: 'yyyyMMddHHmmss'
+            });
+
+            laydate.render({
+                elem: '#to_time',
+                type: 'datetime',
+                format: 'yyyyMMddHHmmss'
+            });
+        });
+    </script>
     <script>
         $(document).ready(function () {
             // 初始化隐藏ztree插件
@@ -60,14 +79,19 @@
             $("input[name=q]").click(function () {
                 var farm_name = $('#farm').find('option:selected').text();
                 var wind_turbine_name = $('#wind_turbine').find('option:selected').text();
-                var sampling_time = $('#sampling_time').find('option:selected').text();
-                if (farm_name == '选择风场' || wind_turbine_name == '选择风机' || sampling_time == '选择时间') {
+                var from_time = $('#from_time').val();
+                var to_time = $('#to_time').val();
+                var from_rotate_speed = $('#from_rotate_speed').find('option:selected').text();
+                var to_rotate_speed = $('#to_rotate_speed').find('option:selected').text();
+                if (farm_name == '选择风场' || wind_turbine_name == '选择风机') {
                     alert('请先选择相应项目！');
                 }
                 else {
                     var dataset = {'farm_name': farm_name,
                         'wind_turbine_name': wind_turbine_name,
-                        'sampling_time': sampling_time};
+                        'from_to_time': JSON.stringify([from_time, to_time]),
+                        'from_to_rotate_speed': JSON.stringify([from_rotate_speed, to_rotate_speed]),
+                    };
                     $.ajax({
                         url: "/q",
                         type: "POST",
@@ -127,9 +151,8 @@
             $("input[name=tf]").click(function () {
                 var farm_name = $('#farm').find('option:selected').text();
                 var wind_turbine_name = $('#wind_turbine').find('option:selected').text();
-                var sampling_time = $('#sampling_time').find('option:selected').text();
                 var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
-                if (farm_name == '选择风场' || wind_turbine_name == '选择风机' || sampling_time == '选择时间' || treeObj == null) {
+                if (farm_name == '选择风场' || wind_turbine_name == '选择风机' || treeObj == null) {
                     alert('请先选择左侧项目！');
                 }
                 else {
@@ -147,7 +170,8 @@
                         var dataset = {'farm_name': farm_name,
                             'wind_turbine_name': wind_turbine_name,
                             'sampling_time': pn['name'],
-                            'point': sn[0]['name']};
+                            'point': sn[0]['name'],
+                        };
                         $.ajax({
                             url: "/toolbar1",
                             type: "POST",
@@ -174,14 +198,14 @@
                                     xAxis: {
                                         type: 'value',
                                         splitLine: {
-                                            show: true
+                                            show: false
                                         }
                                     },
                                     yAxis: {
                                         type: 'value',
                                         boundaryGap: [0, '100%'],
                                         splitLine: {
-                                            show: true
+                                            show: false
                                         }
                                     },
                                     series: [{
@@ -217,19 +241,57 @@
                                     },
                                     tooltip: {
                                         trigger: 'axis',
-                                        triggerOn: 'mousemove|click',
+                                        triggerOn: 'none',
+                                        // formatter : function (params) {
+                                        //     console.log(params[0].value);
+                                        // },
+                                        // backgroundColor: "gray",
+                                        position: function (point, params, dom, rect, size) {
+                                            // 鼠标坐标和提示框位置的参考坐标系是：以外层div的左上角那一点为原点，x轴向右，y轴向下
+                                            // 提示框位置
+                                            var x = 0; // x坐标位置
+                                            var y = 0; // y坐标位置
+
+                                            // 当前鼠标位置
+                                            var pointX = point[0];
+                                            var pointY = point[1];
+
+                                            // 外层div大小
+                                            // var viewWidth = size.viewSize[0];
+                                            // var viewHeight = size.viewSize[1];
+
+                                            // 提示框大小
+                                            var boxWidth = size.contentSize[0];
+                                            var boxHeight = size.contentSize[1];
+
+                                            // boxWidth > pointX 说明鼠标左边放不下提示框
+                                            if (boxWidth > pointX) {
+                                            x = 5;
+                                            } else { // 左边放的下
+                                            x = pointX;
+                                            }
+
+                                            // boxHeight > pointY 说明鼠标上边放不下提示框
+                                            if (boxHeight > pointY) {
+                                            y = 5;
+                                            } else { // 上边放得下
+                                            y = pointY;
+                                            }
+
+                                            return [x, y];
+                                        },
                                     },
                                     xAxis: {
                                         type: 'value',
                                         splitLine: {
-                                            show: true
+                                            show: false
                                         }
                                     },
                                     yAxis: {
                                         type: 'value',
                                         boundaryGap: [0, '100%'],
                                         splitLine: {
-                                            show: true
+                                            show: false
                                         }
                                     },
                                     series: [{
@@ -259,10 +321,22 @@
                                     }
                                 };
                                 fig2.setOption(option_freq);
-                                fig2.on('click', function (params) {
-                                    // 控制台打印数据
-                                    console.log(params);
-                                    document.getElementById('time_info').innerHTML = params.value;
+                                fig2.getZr().on('click', function (params) {
+                                    // console.log(params);
+                                    let point = [params.offsetX, params.offsetY];
+                                    if (fig2.containPixel({seriesIndex: 0}, point)) {
+                                        let xIndex = Math.round(fig2.convertFromPixel({seriesIndex: 0}, point)[0]);
+                                        let op = fig2.getOption();
+                                        // console.log(op);
+                                        let name = op.series[0].data[xIndex].value[0];
+                                        let value = op.series[0].data[xIndex].value[1];
+                                        fig2.dispatchAction({
+                                            type: 'showTip',
+                                            seriesIndex: 0,//这行不能省
+                                            dataIndex: xIndex
+                                        });
+                                        document.getElementById('time_info').innerHTML = name + ': ' + value;
+                                    }
                                 });
                             }
                         });
@@ -315,15 +389,46 @@
                 <option value="0">选择风机</option>
             </select>
             <br/>
-            <label for="sampling_time"> 时 间 </label>
-            <select id="sampling_time" name="sampling_time">
-                <option value="0">选择时间</option>
-                <option value="1">20190520</option>
-                <option value="1">20200420</option>
+            <div class="layui-inline">
+                <label class="layui-form-label">起始时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" id="from_time" placeholder="yyyyMMddHHmmss">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">结束时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" id="to_time" placeholder="yyyyMMddHHmmss">
+                </div>
+            </div>
+            <br/>
+            <label for="from_rotate_speed">转速 From</label>
+            <select id="from_rotate_speed" name="from_rotate_speed">
+                <option value="0">选择转速</option>
+                <option value="1">1</option>
+                <option value="1">2</option>
+                <option value="1">3</option>
+                <option value="1">4</option>
+                <option value="1">5</option>
+                <option value="1">6</option>
+                <option value="1">7</option>
+                <option value="1">8</option>
+                <option value="1">9</option>
+                <option value="1">10</option>
+                <option value="1">11</option>
+                <option value="1">12</option>
+                <option value="1">13</option>
+                <option value="1">14</option>
+                <option value="1">15</option>
+                <option value="1">16</option>
+                <option value="1">17</option>
+                <option value="1">18</option>
+                <option value="1">19</option>
+                <option value="1">20</option>
             </select>
             <br/>
-            <label for="rotate_speed"> 转 速 </label>
-            <select id="rotate_speed" name="rotate_speed">
+            <label for="to_rotate_speed">转速 To</label>
+            <select id="to_rotate_speed" name="to_rotate_speed">
                 <option value="0">选择转速</option>
                 <option value="1">1</option>
                 <option value="1">2</option>
