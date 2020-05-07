@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import json
 import struct
 from flask import Flask, render_template, request, jsonify
 import loguru as log
@@ -78,10 +77,10 @@ def q():
     dbname = request.form.get('farm_name')
     db = client[dbname]
     collection = request.form.get('wind_turbine_name')
-    from_to_time = request.form.get('from_to_time')
-    from_to_time = json.loads(from_to_time)
-    from_to_rotate_speed = request.form.get('from_to_rotate_speed')
-    from_to_rotate_speed = json.loads(from_to_rotate_speed)
+    from_time = request.form.get('from_time')
+    to_time = request.form.get('to_time')
+    from_rotate_speed = request.form.get('from_rotate_speed')
+    to_rotate_speed = request.form.get('to_rotate_speed')
 
     # 测点信息
     point_description = db['information'].find_one({'desc': '机组信息'})['point_description']
@@ -89,17 +88,11 @@ def q():
     # 转速
     rotate_speed = db['information'].find_one({'desc': '机组信息'})['rotate_speed'][collection]
 
-    from_time = from_to_time[0]
-    to_time = from_to_time[1]
-
-    from_rotate_speed = from_to_rotate_speed[0]
-    to_rotate_speed = from_to_rotate_speed[1]
-
     rs = pd.DataFrame(rotate_speed.items())
 
     if from_time != '' and to_time != '' and from_rotate_speed != '选择转速' and to_rotate_speed != '选择转速':
-        from_rotate_speed = float(from_to_rotate_speed[0])
-        to_rotate_speed = float(from_to_rotate_speed[1])
+        from_rotate_speed = float(from_rotate_speed)
+        to_rotate_speed = float(to_rotate_speed)
         rs = rs[(rs.iloc[:, 0] > from_time) & (rs.iloc[:, 0] < to_time)]
         rs = rs[(rs.iloc[:, 1] > from_rotate_speed) & (rs.iloc[:, 1] < to_rotate_speed)]
 
@@ -110,8 +103,8 @@ def q():
                     'rotate_speed': rotate_speed})
 
 
-@app.route('/toolbar1', methods=['POST'])
-def toolbar1():
+@app.route('/tf', methods=['POST'])
+def tf():
     dbname = request.form.get('farm_name')
     db = client[dbname]
     collection = request.form.get('wind_turbine_name')
@@ -136,10 +129,10 @@ def toolbar1():
     try:
         if 'drivechain_' in point:
             data_length = str(data['data_length_drivechain'])
-            # sampling_fre = data['sampling_fre_drivechain']
+            sampling_fre = data['sampling_fre_drivechain']
         elif 'tower_' in point:
             data_length = str(data['data_length_tower'])
-            # sampling_fre = data['sampling_fre_tower']
+            sampling_fre = data['sampling_fre_tower']
 
         data = struct.unpack(data_length + 'f', data[point])
 
@@ -149,12 +142,9 @@ def toolbar1():
             dic['value'] = v
             time_series.append(dic)
 
-        # FFT
-        n = len(data)
-        ft = abs(fft(data)) * 2 / n
-        freq_amp = ft[range(int(n / 2))]
+        fre, am = fourier_transform(data, sampling_fre)
 
-        for v in zip(range(len(freq_amp)), freq_amp):
+        for v in zip(fre, am):
             dic = dict()
             dic['name'] = 'freq'
             dic['value'] = v
@@ -169,9 +159,52 @@ def toolbar1():
     return jsonify(dataset)
 
 
-@app.route('/toolbar2', methods=['POST'])
-def toolbar2():
-    dataset = {'info': 'good'}
+@app.route('/envelope', methods=['POST'])
+def envelope():
+    dbname = request.form.get('farm_name')
+    db = client[dbname]
+    collection = request.form.get('wind_turbine_name')
+    sampling_time = request.form.get('sampling_time')
+    # 当前选中测点的中文描述
+    point_zh = request.form.get('point')
+    low_cutoff = float(request.form.get('low_cutoff'))
+    high_cutoff = float(request.form.get('high_cutoff'))
+
+    # 测点信息
+    point_description = db['information'].find_one({'desc': '机组信息'})['point_description']
+    # 当前选中测点的中文描述对应的数据库中的键
+    point = [key for key in point_description if point_description[key] == point_zh][0]
+
+    data = db[collection].find_one({'sampling_time': sampling_time})
+
+    dataset = dict()
+
+    # 频谱包络数据
+    spectrum_envelope = []
+
+    try:
+        if 'drivechain_' in point:
+            data_length = str(data['data_length_drivechain'])
+            sampling_fre = data['sampling_fre_drivechain']
+        elif 'tower_' in point:
+            data_length = str(data['data_length_tower'])
+            sampling_fre = data['sampling_fre_tower']
+
+        data = struct.unpack(data_length + 'f', data[point])
+
+        # spectrum envelope
+        fre, am, _ = envelop(data, sampling_fre, low_cutoff, high_cutoff)
+
+        for v in zip(fre, am):
+            dic = dict()
+            dic['name'] = 'envelope'
+            dic['value'] = v
+            spectrum_envelope.append(dic)
+
+    except KeyError:
+        log.logger.debug('无此测点数据')
+
+    dataset['envelope'] = spectrum_envelope
 
     return jsonify(dataset)
 

@@ -3,7 +3,6 @@
     width: 20%;
     background: pink;
     float: left;
-    overflow: auto;
 }
 
 .middle {
@@ -21,7 +20,7 @@
 }
 
 .logo {
-    height: 100px;
+    height: 45px;
     width: 100%;
     background: orange;
 }
@@ -38,6 +37,11 @@
     background: #f885ff;
 }
 
+.ztree {
+    height: 500px;
+    overflow: auto;
+}
+
 .toolbar {
     height: 50px;
     width: 100%;
@@ -45,7 +49,7 @@
 }
 
 .figure {
-    height: 700px;
+    height: 1050px;
     width: 100%;
     background: white;
 }
@@ -56,6 +60,11 @@
 }
 
 #fig2 {
+    height: 320px;
+    width: 100%;
+}
+
+#fig3 {
     height: 320px;
     width: 100%;
 }
@@ -127,12 +136,12 @@ input[name=q] {
 
 .pop_con {
     width: 500px;
-    height: 300px;
+    height: 50px;
     background: #81ffa7;
     border-radius: 3px;
     position: fixed;
     left: 50%;
-    top: 50%;
+    top: 25%;
     margin-left: -250px;
     margin-top: -150px;
     z-index: 9999;

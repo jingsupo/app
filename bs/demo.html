@@ -11,6 +11,18 @@
     <script src="static/js/jquery.ztree.core.min.js"></script>
     <script src="static/js/echarts.min.js"></script>
     <script src="static/layui/layui.js"></script>
+    <script src="static/js/require.js"></script>
+    <script>
+        // 配置加载模块
+        require.config({
+            paths: {
+                "underscore": "static/js/underscore-min",
+            }
+        });
+        require(['underscore'], function () {
+            //
+        });
+    </script>
     <script>
         layui.use('laydate', function() {
             var laydate = layui.laydate;
@@ -51,6 +63,10 @@
         $(document).ready(function () {
             // 必须使用#id进行选择才有效果
             $('#farm').change(function () {
+                var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+                if (treeObj) {
+                    treeObj.destroy()
+                }
                 var farm_name = $('#farm').find('option:selected').text();
                 $.ajax({
                 	url: "/farm",
@@ -89,8 +105,10 @@
                 else {
                     var dataset = {'farm_name': farm_name,
                         'wind_turbine_name': wind_turbine_name,
-                        'from_to_time': JSON.stringify([from_time, to_time]),
-                        'from_to_rotate_speed': JSON.stringify([from_rotate_speed, to_rotate_speed]),
+                        'from_time': from_time,
+                        'to_time': to_time,
+                        'from_rotate_speed': from_rotate_speed,
+                        'to_rotate_speed': to_rotate_speed,
                     };
                     $.ajax({
                         url: "/q",
@@ -173,7 +191,7 @@
                             'point': sn[0]['name'],
                         };
                         $.ajax({
-                            url: "/toolbar1",
+                            url: "/tf",
                             type: "POST",
                             data: dataset,
                             dataType: "json",
@@ -325,32 +343,25 @@
                                     // console.log(params);
                                     let point = [params.offsetX, params.offsetY];
                                     if (fig2.containPixel({seriesIndex: 0}, point)) {
-                                        let xIndex = Math.round(fig2.convertFromPixel({seriesIndex: 0}, point)[0]);
+                                        let xIndex = fig2.convertFromPixel({seriesIndex: 0}, point)[0];
                                         let op = fig2.getOption();
                                         // console.log(op);
-                                        let name = op.series[0].data[xIndex].value[0];
-                                        let value = op.series[0].data[xIndex].value[1];
+                                        let allxIndex = op.series[0].data.map((x) => x.value[0]);
+                                        let diff = allxIndex.map((x) => Math.abs(x-xIndex));
+                                        let closest = Math.min.apply(null, diff);
+                                        let idx = diff.indexOf(closest);
+                                        let name = op.series[0].data[idx].value[0];
+                                        let value = op.series[0].data[idx].value[1];
                                         fig2.dispatchAction({
                                             type: 'showTip',
                                             seriesIndex: 0,//这行不能省
-                                            dataIndex: xIndex
+                                            dataIndex: idx
                                         });
                                         document.getElementById('time_info').innerHTML = name + ': ' + value;
                                     }
                                 });
                             }
                         });
-                        var chartsArr=[];
-
-                        chartsArr.push(fig1);
-                        chartsArr.push(fig2);
-
-                        window.onresize = function () {
-                            for (var i=0; i < chartsArr.length; i++) {
-                                // ECharts随窗口大小改变而自适应
-                                chartsArr[i].resize();
-                            }
-                        }
                     }
                 }
             });
@@ -358,9 +369,9 @@
 	</script>
     <script>
         $(function () {
-            var Btn = $("input[name=spectrum_envelope]"),
-            Pop = $('#pop'),
-            PopCon = $('.pop_con');
+            let Btn = $("input[name=spectrum_envelope]");
+            let Pop = $('#pop');
+            let PopCon = $('.pop_con');
 
             Btn.click(function () {
                 Pop.fadeIn();
@@ -372,6 +383,183 @@
             PopCon.click(function () {
                 return false;
             });
+            $('#envelope').click(function () {
+                Pop.fadeOut();
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            fig3 = echarts.init(document.getElementById('fig3'), 'white', {renderer: 'canvas'});
+            $("input[name=envelope]").click(function () {
+                var farm_name = $('#farm').find('option:selected').text();
+                var wind_turbine_name = $('#wind_turbine').find('option:selected').text();
+                var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+                var low_cutoff = $('#low_cutoff').val();
+                var high_cutoff = $('#high_cutoff').val();
+                if (farm_name == '选择风场' || wind_turbine_name == '选择风机' || treeObj == null) {
+                    alert('请先选择左侧项目！');
+                }
+                else {
+                    // 当前选中节点
+                    var sn = treeObj.getSelectedNodes();
+                    if (sn.length == 0) {
+                        alert('请选择测点！');
+                    }
+                    else if (sn[0].hasOwnProperty('children') && sn[0].children.length > 0) {
+                        alert('请选择子节点！');
+                    }
+                    else {
+                        // 选中节点的父节点
+                        var pn = sn[0].getParentNode();
+                        var dataset = {'farm_name': farm_name,
+                            'wind_turbine_name': wind_turbine_name,
+                            'sampling_time': pn['name'],
+                            'point': sn[0]['name'],
+                            'low_cutoff': low_cutoff,
+                            'high_cutoff': high_cutoff,
+                        };
+                        $.ajax({
+                            url: "/envelope",
+                            type: "POST",
+                            data: dataset,
+                            dataType: "json",
+                            beforeSend: function () {
+                                document.getElementById('loading-image').style.display='';
+                                fig3.clear();
+                            },
+                            complete: function () {
+                                document.getElementById('loading-image').style.display='none';
+                            },
+                            success: function (data) {
+                                var option_envelope = {
+                                    title: {
+                                        text: '包络图'
+                                    },
+                                    tooltip: {
+                                        trigger: 'axis',
+                                        triggerOn: 'none',
+                                        // formatter : function (params) {
+                                        //     console.log(params[0].value);
+                                        // },
+                                        // backgroundColor: "gray",
+                                        position: function (point, params, dom, rect, size) {
+                                            // 鼠标坐标和提示框位置的参考坐标系是：以外层div的左上角那一点为原点，x轴向右，y轴向下
+                                            // 提示框位置
+                                            var x = 0; // x坐标位置
+                                            var y = 0; // y坐标位置
+
+                                            // 当前鼠标位置
+                                            var pointX = point[0];
+                                            var pointY = point[1];
+
+                                            // 外层div大小
+                                            // var viewWidth = size.viewSize[0];
+                                            // var viewHeight = size.viewSize[1];
+
+                                            // 提示框大小
+                                            var boxWidth = size.contentSize[0];
+                                            var boxHeight = size.contentSize[1];
+
+                                            // boxWidth > pointX 说明鼠标左边放不下提示框
+                                            if (boxWidth > pointX) {
+                                            x = 5;
+                                            } else { // 左边放的下
+                                            x = pointX;
+                                            }
+
+                                            // boxHeight > pointY 说明鼠标上边放不下提示框
+                                            if (boxHeight > pointY) {
+                                            y = 5;
+                                            } else { // 上边放得下
+                                            y = pointY;
+                                            }
+
+                                            return [x, y];
+                                        },
+                                    },
+                                    xAxis: {
+                                        type: 'value',
+                                        splitLine: {
+                                            show: false
+                                        }
+                                    },
+                                    yAxis: {
+                                        type: 'value',
+                                        boundaryGap: [0, '100%'],
+                                        splitLine: {
+                                            show: false
+                                        }
+                                    },
+                                    series: [{
+                                        name: '振幅',
+                                        type: 'line',
+                                        showSymbol: false,
+                                        hoverAnimation: true,
+                                        data: data['envelope']
+                                    }],
+                                    dataZoom: [{
+                                        //
+                                    }],
+                                    toolbox: { // 工具栏
+                                        feature: {
+                                            dataZoom: { // 框选缩放功能
+                                                show: true, // show为true时，才能触发takeGlobalCursor事件
+                                                yAxisIndex: 'none',
+                                            },
+                                            restore: {
+                                                show: true
+                                            },
+                                            saveAsImage: {
+                                                show: true,
+                                                type: 'png',
+                                            },
+                                        }
+                                    }
+                                };
+                                fig3.setOption(option_envelope);
+                                fig3.getZr().on('click', function (params) {
+                                    // console.log(params);
+                                    let point = [params.offsetX, params.offsetY];
+                                    if (fig3.containPixel({seriesIndex: 0}, point)) {
+                                        let xIndex = fig3.convertFromPixel({seriesIndex: 0}, point)[0];
+                                        let op = fig3.getOption();
+                                        // console.log(op);
+                                        let allxIndex = op.series[0].data.map((x) => x.value[0]);
+                                        let diff = allxIndex.map((x) => Math.abs(x-xIndex));
+                                        let closest = Math.min.apply(null, diff);
+                                        let idx = diff.indexOf(closest);
+                                        let name = op.series[0].data[idx].value[0];
+                                        let value = op.series[0].data[idx].value[1];
+                                        fig3.dispatchAction({
+                                            type: 'showTip',
+                                            seriesIndex: 0,//这行不能省
+                                            dataIndex: idx
+                                        });
+                                        document.getElementById('time_info').innerHTML = name + ': ' + value;
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+        });
+	</script>
+    <script>
+        $(document).ready(function () {
+            var chartsArr = [];
+
+            chartsArr.push(fig1);
+            chartsArr.push(fig2);
+            chartsArr.push(fig3);
+
+            window.onresize = function () {
+                for (var i = 0; i < chartsArr.length; i++) {
+                    // ECharts随窗口大小改变而自适应
+                    chartsArr[i].resize();
+                }
+            }
         });
     </script>
 </head>
@@ -463,7 +651,9 @@
             <input type="submit" value="频谱包络图" id="toolbar2" name="spectrum_envelope">
             <div id="pop" class="pop_main">
                 <div class="pop_con">
-                    <p><iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=592818&auto=1&height=66"></iframe></p>
+                    <input type="text" id="low_cutoff" name="low_cutoff" placeholder="请输入低截止频率">
+                    <input type="text" id="high_cutoff" name="high_cutoff" placeholder="请输入高截止频率">
+                    <input type="submit" value="绘图" id="envelope" name="envelope">
                 </div>
                 <div class="mask"></div>
             </div>
@@ -472,6 +662,7 @@
             <div id="loading-image" class="loading">加载中...</div>
             <div id="fig1"></div>
             <div id="fig2"></div>
+            <div id="fig3"></div>
         </div>
     </div>
     <div class="right">
