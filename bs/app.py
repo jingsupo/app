@@ -128,11 +128,28 @@ def tf():
 
     try:
         if 'drivechain_' in point:
-            data_length = str(data['data_length_drivechain'])
-            sampling_fre = data['sampling_fre_drivechain']
+            if 'data_length_drivechain' in data.keys():
+                data_length = str(data['data_length_drivechain'])
+                sampling_fre = data['sampling_fre_drivechain']
+            elif int(point[-1]) < 6:
+                data_length = str(data['data_length_drivechain_15'])
+                sampling_fre = data['sampling_fre_drivechain_15']
+            else:
+                data_length = str(data['data_length_drivechain_68'])
+                sampling_fre = data['sampling_fre_drivechain_68']
         elif 'tower_' in point:
             data_length = str(data['data_length_tower'])
             sampling_fre = data['sampling_fre_tower']
+        elif 'nacelle_' in point:
+            data_length = str(data['data_length_nacelle'])
+            sampling_fre = data['sampling_fre_nacelle']
+        else:
+            if int(point[-1]) < 6:
+                data_length = str(data['data_nums_15'][0])
+                sampling_fre = data['sampling_fre_15']
+            else:
+                data_length = str(data['data_nums_68'][0])
+                sampling_fre = data['sampling_fre_68']
 
         data = struct.unpack(data_length + 'f', data[point])
 
@@ -150,8 +167,8 @@ def tf():
             dic['value'] = v
             freq.append(dic)
 
-    except KeyError:
-        log.logger.debug('无此测点数据')
+    except Exception as e:
+        log.logger.debug(e)
 
     dataset['time_series'] = time_series
     dataset['freq'] = freq
@@ -184,11 +201,28 @@ def envelope():
 
     try:
         if 'drivechain_' in point:
-            data_length = str(data['data_length_drivechain'])
-            sampling_fre = data['sampling_fre_drivechain']
+            if 'data_length_drivechain' in data.keys():
+                data_length = str(data['data_length_drivechain'])
+                sampling_fre = data['sampling_fre_drivechain']
+            elif int(point[-1]) < 6:
+                data_length = str(data['data_length_drivechain_15'])
+                sampling_fre = data['sampling_fre_drivechain_15']
+            else:
+                data_length = str(data['data_length_drivechain_68'])
+                sampling_fre = data['sampling_fre_drivechain_68']
         elif 'tower_' in point:
             data_length = str(data['data_length_tower'])
             sampling_fre = data['sampling_fre_tower']
+        elif 'nacelle_' in point:
+            data_length = str(data['data_length_nacelle'])
+            sampling_fre = data['sampling_fre_nacelle']
+        else:
+            if int(point[-1]) < 6:
+                data_length = str(data['data_nums_15'][0])
+                sampling_fre = data['sampling_fre_15']
+            else:
+                data_length = str(data['data_nums_68'][0])
+                sampling_fre = data['sampling_fre_68']
 
         data = struct.unpack(data_length + 'f', data[point])
 
@@ -201,8 +235,8 @@ def envelope():
             dic['value'] = v
             spectrum_envelope.append(dic)
 
-    except KeyError:
-        log.logger.debug('无此测点数据')
+    except Exception as e:
+        log.logger.debug(e)
 
     dataset['envelope'] = spectrum_envelope
 

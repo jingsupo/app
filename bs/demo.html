@@ -197,8 +197,14 @@
                             dataType: "json",
                             beforeSend: function () {
                                 document.getElementById('loading-image').style.display='';
-                                fig1.clear();
-                                fig2.clear();
+                                if (fig1) {
+                                    fig1.dispose();
+                                    fig1 = echarts.init(document.getElementById('fig1'), 'white', {renderer: 'canvas'});
+                                }
+                                if (fig2) {
+                                    fig2.dispose();
+                                    fig2 = echarts.init(document.getElementById('fig2'), 'white', {renderer: 'canvas'});
+                                }
                             },
                             complete: function () {
                                 // $('#loading-image').remove();
@@ -229,6 +235,9 @@
                                     series: [{
                                         name: '振动信号',
                                         type: 'line',
+                                        lineStyle: {
+                                            width: 1
+                                        },
                                         showSymbol: false,
                                         hoverAnimation: false,
                                         data: data['time_series']
@@ -315,6 +324,9 @@
                                     series: [{
                                         name: '振幅',
                                         type: 'line',
+                                        lineStyle: {
+                                            width: 1
+                                        },
                                         showSymbol: false,
                                         hoverAnimation: true,
                                         data: data['freq']
@@ -426,7 +438,24 @@
                             dataType: "json",
                             beforeSend: function () {
                                 document.getElementById('loading-image').style.display='';
-                                fig3.clear();
+                                if (fig3) {
+                                    fig3.dispose();
+                                    fig3 = echarts.init(document.getElementById('fig3'), 'white', {renderer: 'canvas'});
+                                }
+                                $(document).ready(function () {
+                                    var chartsArr = [];
+
+                                    chartsArr.push(fig1);
+                                    chartsArr.push(fig2);
+                                    chartsArr.push(fig3);
+
+                                    window.onresize = function () {
+                                        for (var i = 0; i < chartsArr.length; i++) {
+                                            // ECharts随窗口大小改变而自适应
+                                            chartsArr[i].resize();
+                                        }
+                                    }
+                                });
                             },
                             complete: function () {
                                 document.getElementById('loading-image').style.display='none';
@@ -494,6 +523,9 @@
                                     series: [{
                                         name: '振幅',
                                         type: 'line',
+                                        lineStyle: {
+                                            width: 1
+                                        },
                                         showSymbol: false,
                                         hoverAnimation: true,
                                         data: data['envelope']
@@ -546,22 +578,6 @@
             });
         });
 	</script>
-    <script>
-        $(document).ready(function () {
-            var chartsArr = [];
-
-            chartsArr.push(fig1);
-            chartsArr.push(fig2);
-            chartsArr.push(fig3);
-
-            window.onresize = function () {
-                for (var i = 0; i < chartsArr.length; i++) {
-                    // ECharts随窗口大小改变而自适应
-                    chartsArr[i].resize();
-                }
-            }
-        });
-    </script>
 </head>
 <body>
     <div class="left">
