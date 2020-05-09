@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import json
 import struct
 from flask import Flask, render_template, request, jsonify
 import loguru as log
@@ -67,7 +68,8 @@ def get_db_names():
 def farm():
     dbname = request.form.get('farm_name')
     db = client[dbname]
-    collection = db.list_collection_names()
+    collection = [c for c in db.list_collection_names() if c not in ['information', 'eigen_value']]
+    collection.sort()
 
     return jsonify(collection)
 
@@ -93,8 +95,8 @@ def q():
     if from_time != '' and to_time != '' and from_rotate_speed != '选择转速' and to_rotate_speed != '选择转速':
         from_rotate_speed = float(from_rotate_speed)
         to_rotate_speed = float(to_rotate_speed)
-        rs = rs[(rs.iloc[:, 0] > from_time) & (rs.iloc[:, 0] < to_time)]
-        rs = rs[(rs.iloc[:, 1] > from_rotate_speed) & (rs.iloc[:, 1] < to_rotate_speed)]
+        rs = rs[(rs.iloc[:, 0] >= from_time) & (rs.iloc[:, 0] <= to_time)]
+        rs = rs[(rs.iloc[:, 1] >= from_rotate_speed) & (rs.iloc[:, 1] <= to_rotate_speed)]
 
     sampling_time = rs.iloc[:, 0].tolist()
 
@@ -118,8 +120,6 @@ def tf():
     point = [key for key in point_description if point_description[key] == point_zh][0]
 
     data = db[collection].find_one({'sampling_time': sampling_time})
-
-    dataset = dict()
 
     # 时域数据
     time_series = []
@@ -170,6 +170,7 @@ def tf():
     except Exception as e:
         log.logger.debug(e)
 
+    dataset = dict()
     dataset['time_series'] = time_series
     dataset['freq'] = freq
 
@@ -193,8 +194,6 @@ def envelope():
     point = [key for key in point_description if point_description[key] == point_zh][0]
 
     data = db[collection].find_one({'sampling_time': sampling_time})
-
-    dataset = dict()
 
     # 频谱包络数据
     spectrum_envelope = []
@@ -238,7 +237,90 @@ def envelope():
     except Exception as e:
         log.logger.debug(e)
 
-    dataset['envelope'] = spectrum_envelope
+    dataset = dict()
+    dataset['envelope'] = spectrum_envelope[:500]
+
+    return jsonify(dataset)
+
+
+@app.route('/trend', methods=['POST'])
+def trend():
+    dbname = request.form.get('farm_name')
+    db = client[dbname]
+    from_time = request.form.get('from_time')
+    to_time = request.form.get('to_time')
+    from_rotate_speed = request.form.get('from_rotate_speed')
+    to_rotate_speed = request.form.get('to_rotate_speed')
+    from_rotate_speed = float(from_rotate_speed)
+    to_rotate_speed = float(to_rotate_speed)
+    # 当前选中测点的中文描述
+    point_zh = request.form.get('point')
+    criterion = request.form.get('criterion')
+    collection = request.form.get('wind_turbine_selected')
+    collection = json.loads(collection)
+
+    # 测点信息
+    point_description = db['information'].find_one({'desc': '机组信息'})['point_description']
+    # 当前选中测点的中文描述对应的数据库中的键
+    point = [key for key in point_description if point_description[key] == point_zh][0]
+
+    # VDI数据
+    vdi = {}
+    # 无量纲数据
+    dimensionless = {}
+
+    data = {}
+    for c in collection:
+        if criterion == '1':
+            data[c] = db['eigen_value'].find_one({'criterion': 'VDI3834', 'windturbine': c})
+        else:
+            data[c] = db['eigen_value'].find_one({'criterion': 'dimensionless', 'windturbine': c})
+
+    if criterion == '1':
+        for c in collection:
+            print(c)
+            df = pd.DataFrame([data[c]['date_time'], data[c]['rotate_speed']]).T
+            if df.iloc[:, 1].dtype is not float:
+                df.iloc[:, 1] = df.iloc[:, 1].astype('float')
+            df = df[(df.iloc[:, 0] >= from_time) & (df.iloc[:, 0] <= to_time)]
+            df = df[(df.iloc[:, 1] >= from_rotate_speed) & (df.iloc[:, 1] <= to_rotate_speed)]
+
+            if point[-1] == '1':
+                ev = data[c]['EV_VDI_1']
+                iv = data[c]['IV_VDI_1']
+            elif point[-1] == '2':
+                ev = data[c]['EV_VDI_2']
+                iv = data[c]['IV_VDI_2']
+            else:
+                ev = []
+                iv = []
+
+            ev = np.array(ev)[df.index]
+            iv = np.array(iv)[df.index]
+            ret = pd.concat([df.reset_index(drop=True), pd.Series(ev)], axis=1)
+            ret = pd.concat([ret, pd.Series(iv)], axis=1)
+            ret.columns = ['time', 'rotate_speed', 'ev', 'iv']
+            ret['ev'] = ret['ev'].round(decimals=6)
+            ret['iv'] = ret['iv'].round(decimals=6)
+
+            vdi[c] = {}
+            vdi[c]['ev'] = []
+            vdi[c]['iv'] = []
+            vdi[c]['time'] = ret['time'].tolist()
+            for v in zip(range(len(ret['ev'].tolist())), ret['ev'].tolist()):
+                dic = dict()
+                dic['name'] = 'ev'
+                dic['value'] = v
+                vdi[c]['ev'].append(dic)
+            for v in zip(range(len(ret['iv'].tolist())), ret['iv'].tolist()):
+                dic = dict()
+                dic['name'] = 'iv'
+                dic['value'] = v
+                vdi[c]['iv'].append(dic)
+
+    dataset = dict()
+    dataset['vdi'] = vdi
+    dataset['dimensionless'] = dimensionless
 
     return jsonify(dataset)
 
