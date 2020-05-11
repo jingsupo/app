@@ -286,12 +286,15 @@ def trend():
 
     if criterion == '1':
         for c in collection:
-            print(c)
             df = pd.DataFrame([data[c]['date_time'], data[c]['rotate_speed']]).T
             if df.iloc[:, 1].dtype is not float:
                 df.iloc[:, 1] = df.iloc[:, 1].astype('float')
             df = df[(df.iloc[:, 0] >= from_time) & (df.iloc[:, 0] <= to_time)]
             df = df[(df.iloc[:, 1] >= from_rotate_speed) & (df.iloc[:, 1] <= to_rotate_speed)]
+
+            ev = []
+            iv = []
+            ev2 = []
 
             if point[-1] == '1':
                 ev = data[c]['EV_VDI_1']
@@ -299,32 +302,63 @@ def trend():
             elif point[-1] == '2':
                 ev = data[c]['EV_VDI_2']
                 iv = data[c]['IV_VDI_2']
-            else:
-                ev = []
-                iv = []
+            elif point[-1] == '3':
+                ev = data[c]['EV_VDI_3']
+                ev2 = data[c]['EV2_VDI_3']
+                iv = data[c]['IV_VDI_3']
+            elif point[-1] == '4':
+                ev = data[c]['EV_VDI_4']
+                ev2 = data[c]['EV2_VDI_4']
+                iv = data[c]['IV_VDI_4']
+            elif point[-1] == '5':
+                ev = data[c]['EV_VDI_5']
+                ev2 = data[c]['EV2_VDI_5']
+                iv = data[c]['IV_VDI_5']
+            elif point[-1] == '6':
+                ev = data[c]['EV_VDI_6']
+                ev2 = data[c]['EV2_VDI_6']
+                iv = data[c]['IV_VDI_6']
+            elif point[-1] == '7':
+                ev = data[c]['EV_VDI_7']
+                iv = data[c]['IV_VDI_7']
+            elif point[-1] == '8':
+                ev = data[c]['EV_VDI_8']
+                iv = data[c]['IV_VDI_8']
 
             ev = np.array(ev)[df.index]
             iv = np.array(iv)[df.index]
-            ret = pd.concat([df.reset_index(drop=True), pd.Series(ev)], axis=1)
-            ret = pd.concat([ret, pd.Series(iv)], axis=1)
-            ret.columns = ['time', 'rotate_speed', 'ev', 'iv']
+            new_df = df.reset_index(drop=True).rename(columns={0: 'time', 1: 'rotate_speed'})
+            ret = pd.concat([new_df, pd.Series(ev).rename('ev')], axis=1)
+            ret = pd.concat([ret, pd.Series(iv).rename('iv')], axis=1)
             ret['ev'] = ret['ev'].round(decimals=6)
             ret['iv'] = ret['iv'].round(decimals=6)
+            if ev2:
+                ev2 = np.array(ev2)[df.index]
+                ret = pd.concat([ret, pd.Series(ev2).rename('ev2')], axis=1)
+                ret['ev2'] = ret['ev2'].round(decimals=6)
+            ret['date'] = pd.to_datetime(ret['time']).map(lambda x: x.strftime('%Y/%m/%d'))
 
             vdi[c] = {}
             vdi[c]['ev'] = []
+            vdi[c]['ev2'] = []
             vdi[c]['iv'] = []
             vdi[c]['time'] = ret['time'].tolist()
-            for v in zip(range(len(ret['ev'].tolist())), ret['ev'].tolist()):
+            for v in zip(ret['date'], ret['ev']):
                 dic = dict()
                 dic['name'] = 'ev'
                 dic['value'] = v
                 vdi[c]['ev'].append(dic)
-            for v in zip(range(len(ret['iv'].tolist())), ret['iv'].tolist()):
+            for v in zip(ret['date'], ret['iv']):
                 dic = dict()
                 dic['name'] = 'iv'
                 dic['value'] = v
                 vdi[c]['iv'].append(dic)
+            if 'ev2' in ret.columns:
+                for v in zip(ret['date'], ret['ev2']):
+                    dic = dict()
+                    dic['name'] = 'ev2'
+                    dic['value'] = v
+                    vdi[c]['ev2'].append(dic)
 
     dataset = dict()
     dataset['vdi'] = vdi
