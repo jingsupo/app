@@ -152,6 +152,8 @@ def tf():
                 sampling_fre = data['sampling_fre_68']
 
         data = struct.unpack(data_length + 'f', data[point])
+        data = pd.Series(data)
+        data = data.round(decimals=6)
 
         for v in zip(range(len(data)), data):
             dic = dict()
@@ -160,6 +162,8 @@ def tf():
             time_series.append(dic)
 
         fre, am = fourier_transform(data, sampling_fre)
+        am = pd.Series(am)
+        am = am.round(decimals=6)
 
         for v in zip(fre, am):
             dic = dict()
@@ -224,9 +228,13 @@ def envelope():
                 sampling_fre = data['sampling_fre_68']
 
         data = struct.unpack(data_length + 'f', data[point])
+        data = pd.Series(data)
+        data = data.round(decimals=6)
 
         # spectrum envelope
         fre, am, _ = envelop(data, sampling_fre, low_cutoff, high_cutoff)
+        am = pd.Series(am)
+        am = am.round(decimals=6)
 
         for v in zip(fre, am):
             dic = dict()
