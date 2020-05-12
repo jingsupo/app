@@ -97,17 +97,17 @@ $(document).ready(function () {
 
 $(document).ready(function () {
     $("input[name=q]").click(function () {
-        var farm_name = $('#farm').find('option:selected').text();
-        var wind_turbine_name = $('#wind_turbine').find('option:selected').text();
-        var from_time = $('#from_time').val();
-        var to_time = $('#to_time').val();
-        var from_rotate_speed = $('#from_rotate_speed').find('option:selected').text();
-        var to_rotate_speed = $('#to_rotate_speed').find('option:selected').text();
+        let farm_name = $('#farm').find('option:selected').text();
+        let wind_turbine_name = $('#wind_turbine').find('option:selected').text();
+        let from_time = $('#from_time').val();
+        let to_time = $('#to_time').val();
+        let from_rotate_speed = $('#from_rotate_speed').find('option:selected').text();
+        let to_rotate_speed = $('#to_rotate_speed').find('option:selected').text();
         if (farm_name === '选择风场' || wind_turbine_name === '选择风机') {
             alert('请先选择相应项目！');
         }
         else {
-            var dataset = {'farm_name': farm_name,
+            let dataset = {'farm_name': farm_name,
                 'wind_turbine_name': wind_turbine_name,
                 'from_time': from_time,
                 'to_time': to_time,
@@ -120,8 +120,8 @@ $(document).ready(function () {
                 data: dataset,
                 dataType: "json",
                 success: function (data) {
-                    var zTreeObj;
-                    var setting = {
+                    let zTreeObj;
+                    let setting = {
                         callback: {
                             onClick: zTreeOnClick
                         },
@@ -129,26 +129,26 @@ $(document).ready(function () {
                             showLine: false
                         }
                     };
-                    var zNodes = [];
-                    var child = [];
-                    for (var key in data['point_description']) {
+                    let zNodes = [];
+                    let child = [];
+                    for (let key in data['point_description']) {
                         child.push({name:data['point_description'][key]});
                     }
-                    for (var i=0; i < data['sampling_time'].length; i++) {
+                    for (let i=0; i < data['sampling_time'].length; i++) {
                         zNodes.push({name:data['sampling_time'][i], open:false, children:child})
                     }
                     function zTreeOnClick(event, treeId, treeNode) {
                         // console.log(treeNode.tId + ", " + treeNode.name);
-                        var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+                        let treeObj = $.fn.zTree.getZTreeObj("treeDemo");
                         // 当前选中节点
-                        var sn = treeObj.getSelectedNodes();
-                        var html;
+                        let sn = treeObj.getSelectedNodes();
+                        let html;
                         if (sn[0].hasOwnProperty('children') && sn[0].children.length > 0) {
                             html = data['rotate_speed'][sn[0].name];
                         }
                         else {
                             // 选中节点的父节点
-                            var pn = sn[0].getParentNode();
+                            let pn = sn[0].getParentNode();
                             html = data['rotate_speed'][pn.name];
                         }
                         document.getElementById('time_info').innerHTML = '转速：' + html;
@@ -230,15 +230,24 @@ $(document).ready(function () {
             fig2.dispose();
         }
         fig2 = echarts.init(document.getElementById('fig2'), 'white', {renderer: 'canvas'});
-        var farm_name = $('#farm').find('option:selected').text();
-        var wind_turbine_name = $('#wind_turbine').find('option:selected').text();
-        var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+        if (fig3.dispose) {
+            if (isInArray(['envelope'], fig3.getOption().series[0].data[0].name)) {
+                // 如果当前画布上不是包络图，则销毁实例
+                fig3.dispose();
+            }
+        }
+        if (fig4.dispose) {
+            fig4.dispose();
+        }
+        let farm_name = $('#farm').find('option:selected').text();
+        let wind_turbine_name = $('#wind_turbine').find('option:selected').text();
+        let treeObj = $.fn.zTree.getZTreeObj("treeDemo");
         if (farm_name === '选择风场' || wind_turbine_name === '选择风机' || treeObj == null) {
             alert('请先选择左侧项目！');
         }
         else {
             // 当前选中节点
-            var sn = treeObj.getSelectedNodes();
+            let sn = treeObj.getSelectedNodes();
             if (sn.length === 0) {
                 alert('请选择测点！');
             }
@@ -247,8 +256,8 @@ $(document).ready(function () {
             }
             else {
                 // 选中节点的父节点
-                var pn = sn[0].getParentNode();
-                var dataset = {'farm_name': farm_name,
+                let pn = sn[0].getParentNode();
+                let dataset = {'farm_name': farm_name,
                     'wind_turbine_name': wind_turbine_name,
                     'sampling_time': pn['name'],
                     'point': sn[0]['name'],
@@ -267,7 +276,7 @@ $(document).ready(function () {
                     },
                     success: function (data) {
                         // JSON对象复制-深拷贝
-                        var option_ts = JSON.parse(JSON.stringify(option_tfe));
+                        let option_ts = JSON.parse(JSON.stringify(option_tfe));
                         option_ts.title.text = '时域图';
                         option_ts.series[0].name = '振动信号';
                         option_ts.series[0].data = data['time_series'];
@@ -278,7 +287,7 @@ $(document).ready(function () {
                             document.getElementById('time_info').innerHTML = 'fig1';
                         });
                         fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
-                        var option_freq = JSON.parse(JSON.stringify(option_tfe));
+                        let option_freq = JSON.parse(JSON.stringify(option_tfe));
                         option_freq.title.text = '频域图';
                         option_freq.series[0].name = '振幅';
                         option_freq.series[0].data = data['freq'];
@@ -302,17 +311,32 @@ $(document).ready(function () {
             fig3.dispose();
         }
         fig3 = echarts.init(document.getElementById('fig3'), 'white', {renderer: 'canvas'});
-        var farm_name = $('#farm').find('option:selected').text();
-        var wind_turbine_name = $('#wind_turbine').find('option:selected').text();
-        var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
-        var low_cutoff = $('#low_cutoff').val();
-        var high_cutoff = $('#high_cutoff').val();
+        if (fig1.dispose) {
+            if (isInArray(['ts', 'freq'], fig1.getOption().series[0].data[0].name)) {
+                // 如果当前画布上不是时域图和频域图，则销毁实例
+                fig1.dispose();
+            }
+        }
+        if (fig2.dispose) {
+            if (isInArray(['ts', 'freq'], fig2.getOption().series[0].data[0].name)) {
+                // 如果当前画布上不是时域图和频域图，则销毁实例
+                fig2.dispose();
+            }
+        }
+        if (fig4.dispose) {
+            fig4.dispose();
+        }
+        let farm_name = $('#farm').find('option:selected').text();
+        let wind_turbine_name = $('#wind_turbine').find('option:selected').text();
+        let treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+        let low_cutoff = $('#low_cutoff').val();
+        let high_cutoff = $('#high_cutoff').val();
         if (farm_name === '选择风场' || wind_turbine_name === '选择风机' || treeObj == null) {
             alert('请先选择左侧项目！');
         }
         else {
             // 当前选中节点
-            var sn = treeObj.getSelectedNodes();
+            let sn = treeObj.getSelectedNodes();
             if (sn.length === 0) {
                 alert('请选择测点！');
             }
@@ -321,8 +345,8 @@ $(document).ready(function () {
             }
             else {
                 // 选中节点的父节点
-                var pn = sn[0].getParentNode();
-                var dataset = {'farm_name': farm_name,
+                let pn = sn[0].getParentNode();
+                let dataset = {'farm_name': farm_name,
                     'wind_turbine_name': wind_turbine_name,
                     'sampling_time': pn['name'],
                     'point': sn[0]['name'],
@@ -341,7 +365,7 @@ $(document).ready(function () {
                         document.getElementById('loading-image').style.display='none';
                     },
                     success: function (data) {
-                        var option_envelope = JSON.parse(JSON.stringify(option_tfe));
+                        let option_envelope = JSON.parse(JSON.stringify(option_tfe));
                         option_envelope.title.text = '包络图';
                         option_envelope.series[0].name = '振幅';
                         option_envelope.series[0].data = data['envelope'];
@@ -406,6 +430,29 @@ let option_trend = {
     }
 };
 
+function setOption_trend (fig, option, title_text, criterion, value, data, wind_turbine_selected) {
+    // JSON对象复制-深拷贝
+    option = JSON.parse(JSON.stringify(option_trend));
+    option.title.text = title_text;
+    for (let c in wind_turbine_selected) {
+        option.legend.data.push(wind_turbine_selected[c]);
+        let ser = {
+            name: wind_turbine_selected[c],
+            type: 'scatter',
+            showSymbol: 6,
+            hoverAnimation: true,
+            data: data[criterion][wind_turbine_selected[c]][value],
+            markPoint: {
+                data: [],
+            }
+        };
+        option.series.push(ser);
+    }
+    if (option.series[0].data.length !== 0) {
+        fig.setOption(option);
+    }
+}
+
 $(document).ready(function () {
     $("input[name=trend]").click(function () {
         if (fig1.dispose) {
@@ -420,27 +467,31 @@ $(document).ready(function () {
             fig3.dispose();
         }
         fig3 = echarts.init(document.getElementById('fig3'), 'white', {renderer: 'canvas'});
-        var criterion = $('#criterion').find('option:selected').val();
-        var more_wind_turbine = document.getElementById('more_wind_turbine');
-        var wind_turbine_selected = [];
+        if (fig4.dispose) {
+            fig4.dispose();
+        }
+        fig4 = echarts.init(document.getElementById('fig4'), 'white', {renderer: 'canvas'});
+        let criterion = $('#criterion').find('option:selected').val();
+        let more_wind_turbine = document.getElementById('more_wind_turbine');
+        let wind_turbine_selected = [];
         for (let i = 0; i < more_wind_turbine.length; i++) {
             if (more_wind_turbine.options[i].selected) {
                 wind_turbine_selected.push(more_wind_turbine[i].text)
             }
         }
-        var farm_name = $('#farm').find('option:selected').text();
-        var wind_turbine_name = $('#wind_turbine').find('option:selected').text();
-        var from_time = $('#from_time').val();
-        var to_time = $('#to_time').val();
-        var from_rotate_speed = $('#from_rotate_speed').find('option:selected').text();
-        var to_rotate_speed = $('#to_rotate_speed').find('option:selected').text();
-        var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+        let farm_name = $('#farm').find('option:selected').text();
+        let wind_turbine_name = $('#wind_turbine').find('option:selected').text();
+        let from_time = $('#from_time').val();
+        let to_time = $('#to_time').val();
+        let from_rotate_speed = $('#from_rotate_speed').find('option:selected').text();
+        let to_rotate_speed = $('#to_rotate_speed').find('option:selected').text();
+        let treeObj = $.fn.zTree.getZTreeObj("treeDemo");
         if (farm_name === '选择风场' || wind_turbine_name === '选择风机' || treeObj == null) {
             alert('请先选择左侧项目！');
         }
         else {
             // 当前选中节点
-            var sn = treeObj.getSelectedNodes();
+            let sn = treeObj.getSelectedNodes();
             if (sn.length === 0) {
                 alert('请选择测点！');
             }
@@ -448,7 +499,7 @@ $(document).ready(function () {
                 alert('请选择子节点！');
             }
             else {
-                var dataset = {'farm_name': farm_name,
+                let dataset = {'farm_name': farm_name,
                     'point': sn[0]['name'],
                     'criterion': criterion,
                     'wind_turbine_selected': JSON.stringify(wind_turbine_selected),
@@ -470,80 +521,67 @@ $(document).ready(function () {
                     },
                     success: function (data) {
                         console.log(data['vdi']);
-                        // JSON对象复制-深拷贝
-                        var option_ev = JSON.parse(JSON.stringify(option_trend));
-                        option_ev.title.text = 'ev图';
-                        for (let c in wind_turbine_selected) {
-                            option_ev.legend.data.push(wind_turbine_selected[c]);
-                            let ser = {
-                                name: wind_turbine_selected[c],
-                                type: 'scatter',
-                                showSymbol: 6,
-                                hoverAnimation: true,
-                                data: data['vdi'][wind_turbine_selected[c]]['ev'],
-                                markPoint: {
-                                    data: [],
-                                }
-                            };
-                            option_ev.series.push(ser);
+                        console.log(data['dimensionless']);
+                        if (criterion === '1') {
+                            let option_ev = {};
+                            setOption_trend(fig1, option_ev, 'ev图', 'vdi', 'ev', data, wind_turbine_selected);
+                            // 增加自定义参数而不覆盖原本的默认参数
+                            fig1.on('click', (params) => {
+                                addmarkPoint (params, fig1);
+                                document.getElementById('time_info').innerHTML = data['vdi'][params.seriesName]['time'][params.dataIndex];
+                            });
+                            fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
+
+                            let option_ev2 = {};
+                            setOption_trend(fig2, option_ev2, 'ev2图', 'vdi', 'ev2', data, wind_turbine_selected);
+                            fig2.on('click', (params) => {
+                                addmarkPoint (params, fig2);
+                                document.getElementById('time_info').innerHTML = data['vdi'][params.seriesName]['time'][params.dataIndex];
+                            });
+                            fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
+
+                            let option_iv = {};
+                            setOption_trend(fig3, option_iv, 'iv图', 'vdi', 'iv', data, wind_turbine_selected);
+                            fig3.on('click', (params) => {
+                                addmarkPoint (params, fig3);
+                                document.getElementById('time_info').innerHTML = data['vdi'][params.seriesName]['time'][params.dataIndex];
+                            });
+                            fig3.on('contextmenu', (params) => { deletemarkPoint (params, fig3) });
                         }
-                        if (option_ev.series.length !== 0) {
-                            fig1.setOption(option_ev);
+                        if (criterion === '2') {
+                            let option_k = {};
+                            setOption_trend(fig1, option_k, 'k图', 'dimensionless', 'kurtosisfactor', data, wind_turbine_selected);
+                            // 增加自定义参数而不覆盖原本的默认参数
+                            fig1.on('click', (params) => {
+                                addmarkPoint (params, fig1);
+                                document.getElementById('time_info').innerHTML = data['dimensionless'][params.seriesName]['time'][params.dataIndex];
+                            });
+                            fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
+
+                            let option_p = {};
+                            setOption_trend(fig2, option_p, 'p图', 'dimensionless', 'pulsefactor', data, wind_turbine_selected);
+                            fig2.on('click', (params) => {
+                                addmarkPoint (params, fig2);
+                                document.getElementById('time_info').innerHTML = data['dimensionless'][params.seriesName]['time'][params.dataIndex];
+                            });
+                            fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
+
+                            let option_k2 = {};
+                            setOption_trend(fig3, option_k2, 'k2图', 'dimensionless', 'kurtosisfactor2', data, wind_turbine_selected);
+                            fig3.on('click', (params) => {
+                                addmarkPoint (params, fig3);
+                                document.getElementById('time_info').innerHTML = data['dimensionless'][params.seriesName]['time'][params.dataIndex];
+                            });
+                            fig3.on('contextmenu', (params) => { deletemarkPoint (params, fig3) });
+
+                            let option_p2 = {};
+                            setOption_trend(fig4, option_p2, 'p2图', 'dimensionless', 'pulsefactor2', data, wind_turbine_selected);
+                            fig4.on('click', (params) => {
+                                addmarkPoint (params, fig4);
+                                document.getElementById('time_info').innerHTML = data['dimensionless'][params.seriesName]['time'][params.dataIndex];
+                            });
+                            fig4.on('contextmenu', (params) => { deletemarkPoint (params, fig4) });
                         }
-                        // 增加自定义参数而不覆盖原本的默认参数
-                        fig1.on('click', (params) => {
-                            addmarkPoint (params, fig1);
-                            document.getElementById('time_info').innerHTML = data['vdi'][params.seriesName]['time'][params.dataIndex];
-                        });
-                        fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
-                        var option_ev2 = JSON.parse(JSON.stringify(option_trend));
-                        option_ev2.title.text = 'ev2图';
-                        for (let c in wind_turbine_selected) {
-                            option_ev2.legend.data.push(wind_turbine_selected[c]);
-                            let ser = {
-                                name: wind_turbine_selected[c],
-                                type: 'scatter',
-                                showSymbol: 6,
-                                hoverAnimation: true,
-                                data: data['vdi'][wind_turbine_selected[c]]['ev2'],
-                                markPoint: {
-                                    data: [],
-                                }
-                            };
-                            option_ev2.series.push(ser);
-                        }
-                        if (option_ev2.series[0].data.length !== 0) {
-                            fig2.setOption(option_ev2);
-                        }
-                        fig2.on('click', (params) => {
-                            addmarkPoint (params, fig2);
-                            document.getElementById('time_info').innerHTML = data['vdi'][params.seriesName]['time'][params.dataIndex];
-                        });
-                        fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
-                        var option_iv = JSON.parse(JSON.stringify(option_trend));
-                        option_iv.title.text = 'iv图';
-                        for (let c in wind_turbine_selected) {
-                            option_iv.legend.data.push(wind_turbine_selected[c]);
-                            let ser = {
-                                name: wind_turbine_selected[c],
-                                type: 'scatter',
-                                showSymbol: 6,
-                                hoverAnimation: true,
-                                data: data['vdi'][wind_turbine_selected[c]]['iv'],
-                                markPoint: {
-                                    data: [],
-                                }
-                            };
-                            option_iv.series.push(ser);
-                        }
-                        if (option_iv.series.length !== 0) {
-                            fig3.setOption(option_iv);
-                        }
-                        fig3.on('click', (params) => {
-                            addmarkPoint (params, fig3);
-                            document.getElementById('time_info').innerHTML = data['vdi'][params.seriesName]['time'][params.dataIndex];
-                        });
-                        fig3.on('contextmenu', (params) => { deletemarkPoint (params, fig3) });
                     }
                 });
             }
@@ -657,7 +695,16 @@ window.onresize = function () {
         // ECharts随窗口大小改变而自适应
         fig3.resize();
     }
+    if (fig4.dispose) {
+        // ECharts随窗口大小改变而自适应
+        fig4.resize();
+    }
 };
+
+function isInArray(arr, val) {
+    let testStr = ',' + arr.join(",") + ",";
+    return testStr.indexOf("," + val + ",") === -1
+}
 
 // tooltip: {
 //     formatter : function (params) {
@@ -667,20 +714,20 @@ window.onresize = function () {
 //     position: function (point, params, dom, rect, size) {
 //         // 鼠标坐标和提示框位置的参考坐标系是：以外层div的左上角那一点为原点，x轴向右，y轴向下
 //         // 提示框位置
-//         var x = 0; // x坐标位置
-//         var y = 0; // y坐标位置
+//         let x = 0; // x坐标位置
+//         let y = 0; // y坐标位置
 //
 //         // 当前鼠标位置
-//         var pointX = point[0];
-//         var pointY = point[1];
+//         let pointX = point[0];
+//         let pointY = point[1];
 //
 //         // 外层div大小
-//         // var viewWidth = size.viewSize[0];
-//         // var viewHeight = size.viewSize[1];
+//         // let viewWidth = size.viewSize[0];
+//         // let viewHeight = size.viewSize[1];
 //
 //         // 提示框大小
-//         var boxWidth = size.contentSize[0];
-//         var boxHeight = size.contentSize[1];
+//         let boxWidth = size.contentSize[0];
+//         let boxHeight = size.contentSize[1];
 //
 //         // boxWidth > pointX 说明鼠标左边放不下提示框
 //         if (boxWidth > pointX) {

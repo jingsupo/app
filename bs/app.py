@@ -293,8 +293,8 @@ def trend():
             df = df[(df.iloc[:, 1] >= from_rotate_speed) & (df.iloc[:, 1] <= to_rotate_speed)]
 
             ev = []
-            iv = []
             ev2 = []
+            iv = []
 
             if point[-1] == '1':
                 ev = data[c]['EV_VDI_1']
@@ -359,6 +359,97 @@ def trend():
                     dic['name'] = 'ev2'
                     dic['value'] = v
                     vdi[c]['ev2'].append(dic)
+    else:
+        for c in collection:
+            df = pd.DataFrame([data[c]['date_time'], data[c]['rotate_speed']]).T
+            if df.iloc[:, 1].dtype is not float:
+                df.iloc[:, 1] = df.iloc[:, 1].astype('float')
+            df = df[(df.iloc[:, 0] >= from_time) & (df.iloc[:, 0] <= to_time)]
+            df = df[(df.iloc[:, 1] >= from_rotate_speed) & (df.iloc[:, 1] <= to_rotate_speed)]
+
+            kurtosisfactor = []
+            kurtosisfactor2 = []
+            pulsefactor = []
+            pulsefactor2 = []
+
+            if point[-1] == '1':
+                kurtosisfactor = data[c]['kurtosisfactor_1']
+                pulsefactor = data[c]['pulsefactor_1']
+            elif point[-1] == '2':
+                kurtosisfactor = data[c]['kurtosisfactor_2']
+                pulsefactor = data[c]['pulsefactor_2']
+            elif point[-1] == '3':
+                kurtosisfactor = data[c]['kurtosisfactor_3']
+                kurtosisfactor2 = data[c]['kurtosisfactor2_3']
+                pulsefactor = data[c]['pulsefactor_3']
+                pulsefactor2 = data[c]['pulsefactor2_3']
+            elif point[-1] == '4':
+                kurtosisfactor = data[c]['kurtosisfactor_4']
+                kurtosisfactor2 = data[c]['kurtosisfactor2_4']
+                pulsefactor = data[c]['pulsefactor_4']
+                pulsefactor2 = data[c]['pulsefactor2_4']
+            elif point[-1] == '5':
+                kurtosisfactor = data[c]['kurtosisfactor_5']
+                kurtosisfactor2 = data[c]['kurtosisfactor2_5']
+                pulsefactor = data[c]['pulsefactor_5']
+                pulsefactor2 = data[c]['pulsefactor2_5']
+            elif point[-1] == '6':
+                kurtosisfactor = data[c]['kurtosisfactor_6']
+                kurtosisfactor2 = data[c]['kurtosisfactor2_6']
+                pulsefactor = data[c]['pulsefactor_6']
+                pulsefactor2 = data[c]['pulsefactor2_6']
+            elif point[-1] == '7':
+                kurtosisfactor = data[c]['kurtosisfactor_7']
+                pulsefactor = data[c]['pulsefactor_7']
+            elif point[-1] == '8':
+                kurtosisfactor = data[c]['kurtosisfactor_8']
+                pulsefactor = data[c]['pulsefactor_8']
+
+            kurtosisfactor = np.array(kurtosisfactor)[df.index]
+            pulsefactor = np.array(pulsefactor)[df.index]
+            new_df = df.reset_index(drop=True).rename(columns={0: 'time', 1: 'rotate_speed'})
+            ret = pd.concat([new_df, pd.Series(kurtosisfactor).rename('kurtosisfactor')], axis=1)
+            ret = pd.concat([ret, pd.Series(pulsefactor).rename('pulsefactor')], axis=1)
+            ret['kurtosisfactor'] = ret['kurtosisfactor'].round(decimals=6)
+            ret['pulsefactor'] = ret['pulsefactor'].round(decimals=6)
+            if kurtosisfactor2:
+                kurtosisfactor2 = np.array(kurtosisfactor2)[df.index]
+                ret = pd.concat([ret, pd.Series(kurtosisfactor2).rename('kurtosisfactor2')], axis=1)
+                ret['kurtosisfactor2'] = ret['kurtosisfactor2'].round(decimals=6)
+            if pulsefactor2:
+                pulsefactor2 = np.array(pulsefactor2)[df.index]
+                ret = pd.concat([ret, pd.Series(pulsefactor2).rename('pulsefactor2')], axis=1)
+                ret['pulsefactor2'] = ret['pulsefactor2'].round(decimals=6)
+            ret['date'] = pd.to_datetime(ret['time']).map(lambda x: x.strftime('%Y/%m/%d'))
+
+            dimensionless[c] = {}
+            dimensionless[c]['kurtosisfactor'] = []
+            dimensionless[c]['kurtosisfactor2'] = []
+            dimensionless[c]['pulsefactor'] = []
+            dimensionless[c]['pulsefactor2'] = []
+            dimensionless[c]['time'] = ret['time'].tolist()
+            for v in zip(ret['date'], ret['kurtosisfactor']):
+                dic = dict()
+                dic['name'] = 'kurtosisfactor'
+                dic['value'] = v
+                dimensionless[c]['kurtosisfactor'].append(dic)
+            for v in zip(ret['date'], ret['pulsefactor']):
+                dic = dict()
+                dic['name'] = 'pulsefactor'
+                dic['value'] = v
+                dimensionless[c]['pulsefactor'].append(dic)
+            if 'kurtosisfactor2' in ret.columns:
+                for v in zip(ret['date'], ret['kurtosisfactor2']):
+                    dic = dict()
+                    dic['name'] = 'kurtosisfactor2'
+                    dic['value'] = v
+                    dimensionless[c]['kurtosisfactor2'].append(dic)
+            if 'pulsefactor2' in ret.columns:
+                for v in zip(ret['date'], ret['pulsefactor2']):
+                    dic = dict()
+                    dic['name'] = 'pulsefactor2'
+                    dic['value'] = v
+                    dimensionless[c]['pulsefactor2'].append(dic)
 
     dataset = dict()
     dataset['vdi'] = vdi
