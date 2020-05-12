@@ -51,6 +51,21 @@ $(document).ready(function () {
     let from_time = now - 600000000;
     $('#from_time').val(from_time);
     $('#to_time').val(now);
+    // addEventListener() 方法用于向指定元素添加事件句柄
+    document.getElementById("fig1").addEventListener('contextmenu', function (e) {
+        // event.preventDefault() 方法阻止元素发生默认的行为
+        e.preventDefault();
+    }, false);
+    // addEventListener() 方法用于向指定元素添加事件句柄
+    document.getElementById("fig2").addEventListener('contextmenu', function (e) {
+        // event.preventDefault() 方法阻止元素发生默认的行为
+        e.preventDefault();
+    }, false);
+    // addEventListener() 方法用于向指定元素添加事件句柄
+    document.getElementById("fig3").addEventListener('contextmenu', function (e) {
+        // event.preventDefault() 方法阻止元素发生默认的行为
+        e.preventDefault();
+    }, false);
 });
 
 $(document).ready(function () {
@@ -151,6 +166,60 @@ $(document).ready(function () {
     });
 });
 
+let option_tfe = {
+    title: {
+        text: ''
+    },
+    tooltip: {
+        trigger: 'axis',
+        triggerOn: 'mousemove|click',
+    },
+    xAxis: {
+        type: 'value',
+        splitLine: {
+            show: false
+        }
+    },
+    yAxis: {
+        type: 'value',
+        boundaryGap: [0, '100%'],
+        splitLine: {
+            show: false
+        }
+    },
+    series: [{
+        name: '',
+        type: 'line',
+        lineStyle: {
+            width: 1
+        },
+        showSymbol: false,
+        hoverAnimation: true,
+        data: [],
+        markPoint: {
+            data: [],
+        }
+    }],
+    dataZoom: [{
+        //
+    }],
+    toolbox: { // 工具栏
+        feature: {
+            dataZoom: { // 框选缩放功能
+                show: true, // show为true时，才能触发takeGlobalCursor事件
+                yAxisIndex: 'none',
+            },
+            restore: {
+                show: true
+            },
+            saveAsImage: {
+                show: true,
+                type: 'png',
+            },
+        }
+    }
+};
+
 $(document).ready(function () {
     $("input[name=tf]").click(function () {
         if (fig1.dispose) {
@@ -197,108 +266,29 @@ $(document).ready(function () {
                         document.getElementById('loading-image').style.display='none';
                     },
                     success: function (data) {
-                        var option_ts = {
-                            title: {
-                                text: '时域图'
-                            },
-                            tooltip: {
-                                trigger: 'axis',
-                                triggerOn: 'mousemove|click',
-                            },
-                            xAxis: {
-                                type: 'value',
-                                splitLine: {
-                                    show: false
-                                }
-                            },
-                            yAxis: {
-                                type: 'value',
-                                boundaryGap: [0, '100%'],
-                                splitLine: {
-                                    show: false
-                                }
-                            },
-                            series: [{
-                                name: '振动信号',
-                                type: 'line',
-                                lineStyle: {
-                                    width: 1
-                                },
-                                showSymbol: false,
-                                hoverAnimation: false,
-                                data: data['time_series']
-                            }],
-                            dataZoom: [{
-                                //
-                            }],
-                            toolbox: { // 工具栏
-                                feature: {
-                                    dataZoom: { // 框选缩放功能
-                                        show: true, // show为true时，才能触发takeGlobalCursor事件
-                                        yAxisIndex: 'none',
-                                    },
-                                    restore: {
-                                        show: true
-                                    },
-                                    saveAsImage: {
-                                        show: true,
-                                        type: 'png',
-                                    },
-                                }
-                            }
-                        };
+                        // JSON对象复制-深拷贝
+                        var option_ts = JSON.parse(JSON.stringify(option_tfe));
+                        option_ts.title.text = '时域图';
+                        option_ts.series[0].name = '振动信号';
+                        option_ts.series[0].data = data['time_series'];
                         fig1.setOption(option_ts);
-                        var option_freq = {
-                            title: {
-                                text: '频域图'
-                            },
-                            tooltip: {
-                                trigger: 'axis',
-                                triggerOn: 'mousemove|click',
-                            },
-                            xAxis: {
-                                type: 'value',
-                                splitLine: {
-                                    show: false
-                                }
-                            },
-                            yAxis: {
-                                type: 'value',
-                                boundaryGap: [0, '100%'],
-                                splitLine: {
-                                    show: false
-                                }
-                            },
-                            series: [{
-                                name: '振幅',
-                                type: 'line',
-                                lineStyle: {
-                                    width: 1
-                                },
-                                showSymbol: false,
-                                hoverAnimation: true,
-                                data: data['freq']
-                            }],
-                            dataZoom: [{
-                                //
-                            }],
-                            toolbox: { // 工具栏
-                                feature: {
-                                    dataZoom: { // 框选缩放功能
-                                        show: true, // show为true时，才能触发takeGlobalCursor事件
-                                        yAxisIndex: 'none',
-                                    },
-                                    restore: {
-                                        show: true
-                                    },
-                                    saveAsImage: {
-                                        show: true,
-                                        type: 'png',
-                                    },
-                                }
-                            }
-                        };
+                        // 增加自定义参数而不覆盖原本的默认参数
+                        fig1.on('click', (params) => {
+                            addmarkPoint (params, fig1);
+                            document.getElementById('time_info').innerHTML = 'fig1';
+                        });
+                        fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
+                        var option_freq = JSON.parse(JSON.stringify(option_tfe));
+                        option_freq.title.text = '频域图';
+                        option_freq.series[0].name = '振幅';
+                        option_freq.series[0].data = data['freq'];
                         fig2.setOption(option_freq);
+                        // 增加自定义参数而不覆盖原本的默认参数
+                        fig2.on('click', (params) => {
+                            addmarkPoint (params, fig2);
+                            document.getElementById('time_info').innerHTML = 'fig2';
+                        });
+                        fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
                     }
                 });
             }
@@ -351,122 +341,70 @@ $(document).ready(function () {
                         document.getElementById('loading-image').style.display='none';
                     },
                     success: function (data) {
-                        var option_envelope = {
-                            title: {
-                                text: '包络图'
-                            },
-                            tooltip: {
-                                trigger: 'axis',
-                                triggerOn: 'mousemove|click',
-                                // formatter : function (params) {
-                                //     console.log(params[0].value);
-                                // },
-                                // backgroundColor: "gray",
-                                position: function (point, params, dom, rect, size) {
-                                    // 鼠标坐标和提示框位置的参考坐标系是：以外层div的左上角那一点为原点，x轴向右，y轴向下
-                                    // 提示框位置
-                                    var x = 0; // x坐标位置
-                                    var y = 0; // y坐标位置
-
-                                    // 当前鼠标位置
-                                    var pointX = point[0];
-                                    var pointY = point[1];
-
-                                    // 外层div大小
-                                    // var viewWidth = size.viewSize[0];
-                                    // var viewHeight = size.viewSize[1];
-
-                                    // 提示框大小
-                                    var boxWidth = size.contentSize[0];
-                                    var boxHeight = size.contentSize[1];
-
-                                    // boxWidth > pointX 说明鼠标左边放不下提示框
-                                    if (boxWidth > pointX) {
-                                    x = 5;
-                                    } else { // 左边放的下
-                                    x = pointX;
-                                    }
-
-                                    // boxHeight > pointY 说明鼠标上边放不下提示框
-                                    if (boxHeight > pointY) {
-                                    y = 5;
-                                    } else { // 上边放得下
-                                    y = pointY;
-                                    }
-
-                                    return [x, y];
-                                },
-                            },
-                            xAxis: {
-                                type: 'value',
-                                splitLine: {
-                                    show: false
-                                }
-                            },
-                            yAxis: {
-                                type: 'value',
-                                boundaryGap: [0, '100%'],
-                                splitLine: {
-                                    show: false
-                                }
-                            },
-                            series: [{
-                                name: '振幅',
-                                type: 'line',
-                                lineStyle: {
-                                    width: 1
-                                },
-                                showSymbol: false,
-                                hoverAnimation: true,
-                                data: data['envelope']
-                            }],
-                            dataZoom: [{
-                                //
-                            }],
-                            toolbox: { // 工具栏
-                                feature: {
-                                    dataZoom: { // 框选缩放功能
-                                        show: true, // show为true时，才能触发takeGlobalCursor事件
-                                        yAxisIndex: 'none',
-                                    },
-                                    restore: {
-                                        show: true
-                                    },
-                                    saveAsImage: {
-                                        show: true,
-                                        type: 'png',
-                                    },
-                                }
-                            }
-                        };
+                        var option_envelope = JSON.parse(JSON.stringify(option_tfe));
+                        option_envelope.title.text = '包络图';
+                        option_envelope.series[0].name = '振幅';
+                        option_envelope.series[0].data = data['envelope'];
                         fig3.setOption(option_envelope);
-                        fig3.getZr().on('click', function (params) {
-                            // console.log(params);
-                            let point = [params.offsetX, params.offsetY];
-                            if (fig3.containPixel({seriesIndex: 0}, point)) {
-                                let xIndex = fig3.convertFromPixel({seriesIndex: 0}, point)[0];
-                                let op = fig3.getOption();
-                                // console.log(op);
-                                let allxIndex = op.series[0].data.map((x) => x.value[0]);
-                                let diff = allxIndex.map((x) => Math.abs(x-xIndex));
-                                let closest = Math.min.apply(null, diff);
-                                let idx = diff.indexOf(closest);
-                                let name = op.series[0].data[idx].value[0];
-                                let value = op.series[0].data[idx].value[1];
-                                fig3.dispatchAction({
-                                    type: 'showTip',
-                                    seriesIndex: 0,//这行不能省
-                                    dataIndex: idx
-                                });
-                                document.getElementById('time_info').innerHTML = name + ': ' + value;
-                            }
+                        // 增加自定义参数而不覆盖原本的默认参数
+                        fig3.on('click', (params) => {
+                            addmarkPoint (params, fig3);
+                            document.getElementById('time_info').innerHTML = 'fig3';
                         });
+                        fig3.on('contextmenu', (params) => { deletemarkPoint (params, fig3) });
                     }
                 });
             }
         }
     });
 });
+
+let option_trend = {
+    title: {
+        text: ''
+    },
+    tooltip: {
+        trigger: 'axis',
+        triggerOn: 'mousemove|click',
+    },
+    legend: {
+        data: []
+    },
+    xAxis: {
+        type: 'time',
+        splitLine: {
+            show: false
+        },
+        scale: true,
+    },
+    yAxis: {
+        type: 'value',
+        boundaryGap: [0, '100%'],
+        splitLine: {
+            show: false
+        },
+        scale: true,
+    },
+    series: [],
+    dataZoom: [{
+        //
+    }],
+    toolbox: { // 工具栏
+        feature: {
+            dataZoom: { // 框选缩放功能
+                show: true, // show为true时，才能触发takeGlobalCursor事件
+                yAxisIndex: 'none',
+            },
+            restore: {
+                show: true
+            },
+            saveAsImage: {
+                show: true,
+                type: 'png',
+            },
+        }
+    }
+};
 
 $(document).ready(function () {
     $("input[name=trend]").click(function () {
@@ -532,52 +470,9 @@ $(document).ready(function () {
                     },
                     success: function (data) {
                         console.log(data['vdi']);
-                        var option_ev = {
-                            title: {
-                                text: 'ev图'
-                            },
-                            tooltip: {
-                                trigger: 'axis',
-                                triggerOn: 'mousemove|click',
-                            },
-                            legend: {
-                                data: []
-                            },
-                            xAxis: {
-                                type: 'time',
-                                splitLine: {
-                                    show: false
-                                },
-                                scale: true,
-                            },
-                            yAxis: {
-                                type: 'value',
-                                boundaryGap: [0, '100%'],
-                                splitLine: {
-                                    show: false
-                                },
-                                scale: true,
-                            },
-                            series: [],
-                            dataZoom: [{
-                                //
-                            }],
-                            toolbox: { // 工具栏
-                                feature: {
-                                    dataZoom: { // 框选缩放功能
-                                        show: true, // show为true时，才能触发takeGlobalCursor事件
-                                        yAxisIndex: 'none',
-                                    },
-                                    restore: {
-                                        show: true
-                                    },
-                                    saveAsImage: {
-                                        show: true,
-                                        type: 'png',
-                                    },
-                                }
-                            }
-                        };
+                        // JSON对象复制-深拷贝
+                        var option_ev = JSON.parse(JSON.stringify(option_trend));
+                        option_ev.title.text = 'ev图';
                         for (let c in wind_turbine_selected) {
                             option_ev.legend.data.push(wind_turbine_selected[c]);
                             let ser = {
@@ -600,58 +495,9 @@ $(document).ready(function () {
                             addmarkPoint (params, fig1);
                             document.getElementById('time_info').innerHTML = data['vdi'][params.seriesName]['time'][params.dataIndex];
                         });
-                        // addEventListener() 方法用于向指定元素添加事件句柄
-                        document.getElementById("fig1").addEventListener('contextmenu', function (e) {
-                            // event.preventDefault() 方法阻止元素发生默认的行为
-                            e.preventDefault();
-                        }, false);
                         fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
-                        var option_ev2 = {
-                            title: {
-                                text: 'ev2图'
-                            },
-                            tooltip: {
-                                trigger: 'axis',
-                                triggerOn: 'mousemove|click',
-                            },
-                            legend: {
-                                data: []
-                            },
-                            xAxis: {
-                                type: 'time',
-                                splitLine: {
-                                    show: false
-                                },
-                                scale: true,
-                            },
-                            yAxis: {
-                                type: 'value',
-                                boundaryGap: [0, '100%'],
-                                splitLine: {
-                                    show: false
-                                },
-                                scale: true,
-                            },
-                            series: [],
-                            dataZoom: [{
-                                //
-                            }],
-                            toolbox: { // 工具栏
-                                feature: {
-                                    dataZoom: { // 框选缩放功能
-                                        show: true, // show为true时，才能触发takeGlobalCursor事件
-                                        yAxisIndex: 'none',
-                                    },
-                                    restore: {
-                                        show: true
-                                    },
-                                    saveAsImage: {
-                                        show: true,
-                                        type: 'png',
-                                    },
-                                }
-                            }
-                        };
+                        var option_ev2 = JSON.parse(JSON.stringify(option_trend));
+                        option_ev2.title.text = 'ev2图';
                         for (let c in wind_turbine_selected) {
                             option_ev2.legend.data.push(wind_turbine_selected[c]);
                             let ser = {
@@ -673,58 +519,9 @@ $(document).ready(function () {
                             addmarkPoint (params, fig2);
                             document.getElementById('time_info').innerHTML = data['vdi'][params.seriesName]['time'][params.dataIndex];
                         });
-                        // addEventListener() 方法用于向指定元素添加事件句柄
-                        document.getElementById("fig2").addEventListener('contextmenu', function (e) {
-                            // event.preventDefault() 方法阻止元素发生默认的行为
-                            e.preventDefault();
-                        }, false);
                         fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
-                        var option_iv = {
-                            title: {
-                                text: 'iv图'
-                            },
-                            tooltip: {
-                                trigger: 'axis',
-                                triggerOn: 'mousemove|click',
-                            },
-                            legend: {
-                                data: []
-                            },
-                            xAxis: {
-                                type: 'time',
-                                splitLine: {
-                                    show: false
-                                },
-                                scale: true,
-                            },
-                            yAxis: {
-                                type: 'value',
-                                boundaryGap: [0, '100%'],
-                                splitLine: {
-                                    show: false
-                                },
-                                scale: true,
-                            },
-                            series: [],
-                            dataZoom: [{
-                                //
-                            }],
-                            toolbox: { // 工具栏
-                                feature: {
-                                    dataZoom: { // 框选缩放功能
-                                        show: true, // show为true时，才能触发takeGlobalCursor事件
-                                        yAxisIndex: 'none',
-                                    },
-                                    restore: {
-                                        show: true
-                                    },
-                                    saveAsImage: {
-                                        show: true,
-                                        type: 'png',
-                                    },
-                                }
-                            }
-                        };
+                        var option_iv = JSON.parse(JSON.stringify(option_trend));
+                        option_iv.title.text = 'iv图';
                         for (let c in wind_turbine_selected) {
                             option_iv.legend.data.push(wind_turbine_selected[c]);
                             let ser = {
@@ -746,11 +543,6 @@ $(document).ready(function () {
                             addmarkPoint (params, fig3);
                             document.getElementById('time_info').innerHTML = data['vdi'][params.seriesName]['time'][params.dataIndex];
                         });
-                        // addEventListener() 方法用于向指定元素添加事件句柄
-                        document.getElementById("fig3").addEventListener('contextmenu', function (e) {
-                            // event.preventDefault() 方法阻止元素发生默认的行为
-                            e.preventDefault();
-                        }, false);
                         fig3.on('contextmenu', (params) => { deletemarkPoint (params, fig3) });
                     }
                 });
@@ -866,3 +658,66 @@ window.onresize = function () {
         fig3.resize();
     }
 };
+
+// tooltip: {
+//     formatter : function (params) {
+//         console.log(params[0].value);
+//     },
+//     backgroundColor: "gray",
+//     position: function (point, params, dom, rect, size) {
+//         // 鼠标坐标和提示框位置的参考坐标系是：以外层div的左上角那一点为原点，x轴向右，y轴向下
+//         // 提示框位置
+//         var x = 0; // x坐标位置
+//         var y = 0; // y坐标位置
+//
+//         // 当前鼠标位置
+//         var pointX = point[0];
+//         var pointY = point[1];
+//
+//         // 外层div大小
+//         // var viewWidth = size.viewSize[0];
+//         // var viewHeight = size.viewSize[1];
+//
+//         // 提示框大小
+//         var boxWidth = size.contentSize[0];
+//         var boxHeight = size.contentSize[1];
+//
+//         // boxWidth > pointX 说明鼠标左边放不下提示框
+//         if (boxWidth > pointX) {
+//         x = 5;
+//         } else { // 左边放的下
+//         x = pointX;
+//         }
+//
+//         // boxHeight > pointY 说明鼠标上边放不下提示框
+//         if (boxHeight > pointY) {
+//         y = 5;
+//         } else { // 上边放得下
+//         y = pointY;
+//         }
+//
+//         return [x, y];
+//     },
+// }
+
+// fig3.getZr().on('click', function (params) {
+//     // console.log(params);
+//     let point = [params.offsetX, params.offsetY];
+//     if (fig3.containPixel({seriesIndex: 0}, point)) {
+//         let xIndex = fig3.convertFromPixel({seriesIndex: 0}, point)[0];
+//         let op = fig3.getOption();
+//         // console.log(op);
+//         let allxIndex = op.series[0].data.map((x) => x.value[0]);
+//         let diff = allxIndex.map((x) => Math.abs(x-xIndex));
+//         let closest = Math.min.apply(null, diff);
+//         let idx = diff.indexOf(closest);
+//         let name = op.series[0].data[idx].value[0];
+//         let value = op.series[0].data[idx].value[1];
+//         fig3.dispatchAction({
+//             type: 'showTip',
+//             seriesIndex: 0,//这行不能省
+//             dataIndex: idx
+//         });
+//         document.getElementById('time_info').innerHTML = name + ': ' + value;
+//     }
+// });
