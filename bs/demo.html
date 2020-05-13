@@ -120,6 +120,70 @@
                     <label for="more_wind_turbine"> 风 机 </label>
                     <select id="more_wind_turbine" name="more_wind_turbine" multiple="multiple" size="5">
                     </select>
+                    <br/>
+                    <div class="layui-inline">
+                        <label>起始时间</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" id="from_time2" placeholder="yyyyMMddHHmmss">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label>结束时间</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" id="to_time2" placeholder="yyyyMMddHHmmss">
+                        </div>
+                    </div>
+                    <br/>
+                    <label for="from_rotate_speed2">转速 From</label>
+                    <select id="from_rotate_speed2" name="from_rotate_speed2">
+                        <option value="0">选择转速</option>
+                        <option value="1" selected="selected">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                    </select>
+                    <br/>
+                    <label for="to_rotate_speed2">转速 To</label>
+                    <select id="to_rotate_speed2" name="to_rotate_speed2">
+                        <option value="0">选择转速</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20" selected="selected">20</option>
+                    </select>
+                    <br/>
                     <input type="submit" value="绘图" id="trend" name="trend">
                 </div>
                 <div class="mask"></div>
@@ -131,6 +195,12 @@
             <div id="fig2"></div>
             <div id="fig3"></div>
             <div id="fig4"></div>
+        </div>
+        <div class="figure_side">
+            <div id="fig1_side"></div>
+            <div id="fig2_side"></div>
+            <div id="fig3_side"></div>
+            <div id="fig4_side"></div>
         </div>
     </div>
     <div class="right">

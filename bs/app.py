@@ -12,6 +12,8 @@ from scipy.fftpack import fft, ifft, hilbert
 
 client = pymongo.MongoClient(host='192.168.2.232', port=27017)
 
+# 密码认证
+client.admin.authenticate('nego', '123456abcd.')
 
 app = Flask(__name__, template_folder="templates")
 
@@ -55,6 +57,13 @@ def envelop(data, fs, low_cutoff, high_cutoff):
 @app.route("/")
 def index():
     return render_template("demo.html")
+
+
+@app.route("/2", methods=['POST', 'GET'])
+def index2():
+    if request.method == 'POST':
+        st = request.form
+        return render_template("demo2.html", st=st)
 
 
 @app.route('/get_db_names', methods=['POST'])
@@ -336,7 +345,7 @@ def trend():
                 ev2 = np.array(ev2)[df.index]
                 ret = pd.concat([ret, pd.Series(ev2).rename('ev2')], axis=1)
                 ret['ev2'] = ret['ev2'].round(decimals=6)
-            ret['date'] = pd.to_datetime(ret['time']).map(lambda x: x.strftime('%Y/%m/%d'))
+            ret['date'] = pd.to_datetime(ret['time']).map(lambda x: x.strftime('%Y/%m/%d %H:%M:%S'))
 
             vdi[c] = {}
             vdi[c]['ev'] = []
@@ -420,7 +429,7 @@ def trend():
                 pulsefactor2 = np.array(pulsefactor2)[df.index]
                 ret = pd.concat([ret, pd.Series(pulsefactor2).rename('pulsefactor2')], axis=1)
                 ret['pulsefactor2'] = ret['pulsefactor2'].round(decimals=6)
-            ret['date'] = pd.to_datetime(ret['time']).map(lambda x: x.strftime('%Y/%m/%d'))
+            ret['date'] = pd.to_datetime(ret['time']).map(lambda x: x.strftime('%Y/%m/%d %H:%M:%S'))
 
             dimensionless[c] = {}
             dimensionless[c]['kurtosisfactor'] = []
@@ -459,4 +468,5 @@ def trend():
 
 
 if __name__ == "__main__":
+    # app.run(host='0.0.0.0', debug=True)
     app.run(debug=True)

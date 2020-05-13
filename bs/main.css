@@ -50,8 +50,9 @@
 
 .figure {
     height: 1400px;
-    width: 100%;
+    width: 80%;
     background: white;
+    float: left;
 }
 
 #fig1 {
@@ -74,13 +75,44 @@
     width: 100%;
 }
 
+.figure_side {
+    height: 1400px;
+    width: 20%;
+    background: #f0f0f0;
+    float: left;
+}
+
+#fig1_side {
+    height: 320px;
+    width: 100%;
+    background: pink;
+}
+
+#fig2_side {
+    height: 320px;
+    width: 100%;
+    background: #f885ff;
+}
+
+#fig3_side {
+    height: 320px;
+    width: 100%;
+    background: #ffffb8;
+}
+
+#fig4_side {
+    height: 320px;
+    width: 100%;
+    background: #81ffa7;
+}
+
 .info {
     height: 200px;
     width: 100%;
 }
 
 #farm_info {
-    background: #f885ff;
+    background: #81ffa7;
 }
 
 #wind_turbine_info {
@@ -163,5 +195,5 @@ input[name=q] {
 }
 
 #con2 {
-    height: 220px;
+    height: 500px;
 }

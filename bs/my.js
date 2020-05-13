@@ -23,6 +23,18 @@ layui.use(['laydate'], function() {
         type: 'datetime',
         format: 'yyyyMMddHHmmss'
     });
+
+    laydate.render({
+        elem: '#from_time2',
+        type: 'datetime',
+        format: 'yyyyMMddHHmmss'
+    });
+
+    laydate.render({
+        elem: '#to_time2',
+        type: 'datetime',
+        format: 'yyyyMMddHHmmss'
+    });
 });
 
 $(document).ready(function () {
@@ -49,8 +61,11 @@ $(document).ready(function () {
     let Seconds = date.getSeconds()<10 ? '0' + date.getSeconds():date.getSeconds();
     let now = date.getFullYear() + Months + Dates + Hours + Minutes + Seconds;
     let from_time = now - 600000000;
+    // 设置默认时间
     $('#from_time').val(from_time);
+    $('#from_time2').val(from_time);
     $('#to_time').val(now);
+    $('#to_time2').val(now);
     // addEventListener() 方法用于向指定元素添加事件句柄
     document.getElementById("fig1").addEventListener('contextmenu', function (e) {
         // event.preventDefault() 方法阻止元素发生默认的行为
@@ -230,7 +245,7 @@ $(document).ready(function () {
             fig2.dispose();
         }
         fig2 = echarts.init(document.getElementById('fig2'), 'white', {renderer: 'canvas'});
-        if (fig3.dispose) {
+        if (fig3.dispose && fig3.getOption() !== undefined) {
             if (isInArray(['envelope'], fig3.getOption().series[0].data[0].name)) {
                 // 如果当前画布上不是包络图，则销毁实例
                 fig3.dispose();
@@ -311,13 +326,13 @@ $(document).ready(function () {
             fig3.dispose();
         }
         fig3 = echarts.init(document.getElementById('fig3'), 'white', {renderer: 'canvas'});
-        if (fig1.dispose) {
+        if (fig1.dispose && fig1.getOption() !== undefined) {
             if (isInArray(['ts', 'freq'], fig1.getOption().series[0].data[0].name)) {
                 // 如果当前画布上不是时域图和频域图，则销毁实例
                 fig1.dispose();
             }
         }
-        if (fig2.dispose) {
+        if (fig2.dispose && fig2.getOption() !== undefined) {
             if (isInArray(['ts', 'freq'], fig2.getOption().series[0].data[0].name)) {
                 // 如果当前画布上不是时域图和频域图，则销毁实例
                 fig2.dispose();
@@ -481,10 +496,10 @@ $(document).ready(function () {
         }
         let farm_name = $('#farm').find('option:selected').text();
         let wind_turbine_name = $('#wind_turbine').find('option:selected').text();
-        let from_time = $('#from_time').val();
-        let to_time = $('#to_time').val();
-        let from_rotate_speed = $('#from_rotate_speed').find('option:selected').text();
-        let to_rotate_speed = $('#to_rotate_speed').find('option:selected').text();
+        let from_time = $('#from_time2').val();
+        let to_time = $('#to_time2').val();
+        let from_rotate_speed = $('#from_rotate_speed2').find('option:selected').text();
+        let to_rotate_speed = $('#to_rotate_speed2').find('option:selected').text();
         let treeObj = $.fn.zTree.getZTreeObj("treeDemo");
         if (farm_name === '选择风场' || wind_turbine_name === '选择风机' || treeObj == null) {
             alert('请先选择左侧项目！');
@@ -499,91 +514,97 @@ $(document).ready(function () {
                 alert('请选择子节点！');
             }
             else {
-                let dataset = {'farm_name': farm_name,
-                    'point': sn[0]['name'],
-                    'criterion': criterion,
-                    'wind_turbine_selected': JSON.stringify(wind_turbine_selected),
-                    'from_time': from_time,
-                    'to_time': to_time,
-                    'from_rotate_speed': from_rotate_speed,
-                    'to_rotate_speed': to_rotate_speed,
-                };
-                $.ajax({
-                    url: "/trend",
-                    type: "POST",
-                    data: dataset,
-                    dataType: "json",
-                    beforeSend: function () {
-                        document.getElementById('loading-image').style.display='';
-                    },
-                    complete: function () {
-                        document.getElementById('loading-image').style.display='none';
-                    },
-                    success: function (data) {
-                        console.log(data['vdi']);
-                        console.log(data['dimensionless']);
-                        if (criterion === '1') {
-                            let option_ev = {};
-                            setOption_trend(fig1, option_ev, 'ev图', 'vdi', 'ev', data, wind_turbine_selected);
-                            // 增加自定义参数而不覆盖原本的默认参数
-                            fig1.on('click', (params) => {
-                                addmarkPoint (params, fig1);
-                                document.getElementById('time_info').innerHTML = data['vdi'][params.seriesName]['time'][params.dataIndex];
-                            });
-                            fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
+                if (wind_turbine_selected.length === 0) {
+                    alert('请选择风机！');
+                }
+                else {
+                    let dataset = {'farm_name': farm_name,
+                        'point': sn[0]['name'],
+                        'criterion': criterion,
+                        'wind_turbine_selected': JSON.stringify(wind_turbine_selected),
+                        'from_time': from_time,
+                        'to_time': to_time,
+                        'from_rotate_speed': from_rotate_speed,
+                        'to_rotate_speed': to_rotate_speed,
+                    };
+                    $.ajax({
+                        url: "/trend",
+                        type: "POST",
+                        data: dataset,
+                        dataType: "json",
+                        beforeSend: function () {
+                            document.getElementById('loading-image').style.display='';
+                        },
+                        complete: function () {
+                            document.getElementById('loading-image').style.display='none';
+                        },
+                        success: function (data) {
+                            if (criterion === '1') {
+                                let option_ev = {};
+                                setOption_trend(fig1, option_ev, 'ev图', 'vdi', 'ev', data, wind_turbine_selected);
+                                // 增加自定义参数而不覆盖原本的默认参数
+                                fig1.on('click', (params) => {
+                                    addmarkPoint (params, fig1);
+                                    let [x, y] = params.value;
+                                    let sampling_time = data['vdi'][params.seriesName]['time'][params.dataIndex];
+                                    document.getElementById('fig1_side').innerHTML = x+'<br>'+y+'<br>'+'<form action="/2" method="POST" target="_blank"><p>time <input type="text" name="time" value='+sampling_time+'></p ><input type="submit" id="draw"></form>';
+                                });
+                                fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
 
-                            let option_ev2 = {};
-                            setOption_trend(fig2, option_ev2, 'ev2图', 'vdi', 'ev2', data, wind_turbine_selected);
-                            fig2.on('click', (params) => {
-                                addmarkPoint (params, fig2);
-                                document.getElementById('time_info').innerHTML = data['vdi'][params.seriesName]['time'][params.dataIndex];
-                            });
-                            fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
+                                let option_ev2 = {};
+                                setOption_trend(fig2, option_ev2, 'ev2图', 'vdi', 'ev2', data, wind_turbine_selected);
+                                fig2.on('click', (params) => {
+                                    addmarkPoint (params, fig2);
+                                    document.getElementById('time_info').innerHTML = data['vdi'][params.seriesName]['time'][params.dataIndex];
+                                });
+                                fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
 
-                            let option_iv = {};
-                            setOption_trend(fig3, option_iv, 'iv图', 'vdi', 'iv', data, wind_turbine_selected);
-                            fig3.on('click', (params) => {
-                                addmarkPoint (params, fig3);
-                                document.getElementById('time_info').innerHTML = data['vdi'][params.seriesName]['time'][params.dataIndex];
-                            });
-                            fig3.on('contextmenu', (params) => { deletemarkPoint (params, fig3) });
+                                let option_iv = {};
+                                setOption_trend(fig3, option_iv, 'iv图', 'vdi', 'iv', data, wind_turbine_selected);
+                                fig3.on('click', (params) => {
+                                    addmarkPoint (params, fig3);
+                                    document.getElementById('time_info').innerHTML = data['vdi'][params.seriesName]['time'][params.dataIndex];
+                                });
+                                fig3.on('contextmenu', (params) => { deletemarkPoint (params, fig3) });
+                            }
+                            if (criterion === '2') {
+                                let option_k = {};
+                                setOption_trend(fig1, option_k, 'k图', 'dimensionless', 'kurtosisfactor', data, wind_turbine_selected);
+                                // 增加自定义参数而不覆盖原本的默认参数
+                                fig1.on('click', (params) => {
+                                    addmarkPoint (params, fig1);
+                                    document.getElementById('time_info').innerHTML = data['dimensionless'][params.seriesName]['time'][params.dataIndex];
+                                });
+                                fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
+
+                                let option_p = {};
+                                setOption_trend(fig2, option_p, 'p图', 'dimensionless', 'pulsefactor', data, wind_turbine_selected);
+                                fig2.on('click', (params) => {
+                                    addmarkPoint (params, fig2);
+                                    document.getElementById('time_info').innerHTML = data['dimensionless'][params.seriesName]['time'][params.dataIndex];
+                                });
+                                fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
+
+                                let option_k2 = {};
+                                setOption_trend(fig3, option_k2, 'k2图', 'dimensionless', 'kurtosisfactor2', data, wind_turbine_selected);
+                                fig3.on('click', (params) => {
+                                    addmarkPoint (params, fig3);
+                                    document.getElementById('time_info').innerHTML = data['dimensionless'][params.seriesName]['time'][params.dataIndex];
+                                });
+                                fig3.on('contextmenu', (params) => { deletemarkPoint (params, fig3) });
+
+                                let option_p2 = {};
+                                setOption_trend(fig4, option_p2, 'p2图', 'dimensionless', 'pulsefactor2', data, wind_turbine_selected);
+                                fig4.on('click', (params) => {
+                                    addmarkPoint (params, fig4);
+                                    document.getElementById('time_info').innerHTML = data['dimensionless'][params.seriesName]['time'][params.dataIndex];
+                                });
+                                fig4.on('contextmenu', (params) => { deletemarkPoint (params, fig4) });
+                            }
                         }
-                        if (criterion === '2') {
-                            let option_k = {};
-                            setOption_trend(fig1, option_k, 'k图', 'dimensionless', 'kurtosisfactor', data, wind_turbine_selected);
-                            // 增加自定义参数而不覆盖原本的默认参数
-                            fig1.on('click', (params) => {
-                                addmarkPoint (params, fig1);
-                                document.getElementById('time_info').innerHTML = data['dimensionless'][params.seriesName]['time'][params.dataIndex];
-                            });
-                            fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
+                    });
+                }
 
-                            let option_p = {};
-                            setOption_trend(fig2, option_p, 'p图', 'dimensionless', 'pulsefactor', data, wind_turbine_selected);
-                            fig2.on('click', (params) => {
-                                addmarkPoint (params, fig2);
-                                document.getElementById('time_info').innerHTML = data['dimensionless'][params.seriesName]['time'][params.dataIndex];
-                            });
-                            fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
-
-                            let option_k2 = {};
-                            setOption_trend(fig3, option_k2, 'k2图', 'dimensionless', 'kurtosisfactor2', data, wind_turbine_selected);
-                            fig3.on('click', (params) => {
-                                addmarkPoint (params, fig3);
-                                document.getElementById('time_info').innerHTML = data['dimensionless'][params.seriesName]['time'][params.dataIndex];
-                            });
-                            fig3.on('contextmenu', (params) => { deletemarkPoint (params, fig3) });
-
-                            let option_p2 = {};
-                            setOption_trend(fig4, option_p2, 'p2图', 'dimensionless', 'pulsefactor2', data, wind_turbine_selected);
-                            fig4.on('click', (params) => {
-                                addmarkPoint (params, fig4);
-                                document.getElementById('time_info').innerHTML = data['dimensionless'][params.seriesName]['time'][params.dataIndex];
-                            });
-                            fig4.on('contextmenu', (params) => { deletemarkPoint (params, fig4) });
-                        }
-                    }
-                });
             }
         }
     });
