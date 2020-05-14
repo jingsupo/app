@@ -39,7 +39,8 @@ layui.use(['laydate'], function() {
 
 $(document).ready(function () {
     // 初始化隐藏ztree插件
-    document.getElementById('treeDemo').style.display='none';
+    document.getElementById('tree1').style.display='none';
+    document.getElementById('tree2').style.display='none';
     // 初始化隐藏loading容器
     document.getElementById('loading-image').style.display='none';
     $.ajax({
@@ -140,48 +141,56 @@ $(document).ready(function () {
                 data: dataset,
                 dataType: "json",
                 success: function (data) {
-                    let zTreeObj;
-                    let setting = {
+                    let zTreeObj1;
+                    let setting1 = {
                         callback: {
-                            onClick: zTreeOnClick
+                            onClick: zTreeOnClick1
                         },
                         view: {
                             showLine: false
                         }
                     };
-                    let zNodes = [];
-                    let child = [];
+                    let zNodes1 = [];
+                    let child1 = [];
                     for (let key in data['point_description']) {
-                        child.push({name:data['point_description'][key]});
+                        child1.push({name:data['point_description'][key]});
                     }
+                    zNodes1.push({name:'测点', open:true, children:child1});
+                    function zTreeOnClick1(event, treeId, treeNode) {
+                    }
+                    zTreeObj1 = $.fn.zTree.init($("#tree1"), setting1, zNodes1);
+                    let zTreeObj2;
+                    let setting2 = {
+                        callback: {
+                            onClick: zTreeOnClick2
+                        },
+                        view: {
+                            showLine: false
+                        }
+                    };
+                    let zNodes2 = [];
+                    let child2 = [];
                     for (let i=0; i < data['sampling_time'].length; i++) {
-                        zNodes.push({name:data['sampling_time'][i], open:false, children:child})
+                        child2.push({name:data['sampling_time'][i]});
                     }
-                    function zTreeOnClick(event, treeId, treeNode) {
+                    zNodes2.push({name:'采样时间', open:true, children:child2});
+                    function zTreeOnClick2(event, treeId, treeNode) {
                         // console.log(treeNode.tId + ", " + treeNode.name);
-                        let treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+                        let treeObj = $.fn.zTree.getZTreeObj("tree2");
                         // 当前选中节点
                         let sn = treeObj.getSelectedNodes();
                         let html;
-                        if (sn[0].hasOwnProperty('children') && sn[0].children.length > 0) {
-                            html = data['rotate_speed'][sn[0].name];
-                        }
-                        else {
-                            // 选中节点的父节点
-                            let pn = sn[0].getParentNode();
-                            html = data['rotate_speed'][pn.name];
-                        }
+                        html = data['rotate_speed'][sn[0].name];
                         document.getElementById('time_info').innerHTML = '转速：' + html;
                         // 显示time_info容器
                         document.getElementById('time_info').style.display='';
                     }
-                    $(document).ready(function(){
-                        zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
-                    });
+                    zTreeObj2 = $.fn.zTree.init($("#tree2"), setting2, zNodes2);
+                    // 显示ztree插件
+                    document.getElementById('tree1').style.display='';
+                    document.getElementById('tree2').style.display='';
                 }
             });
-            // 显示ztree插件
-            document.getElementById('treeDemo').style.display='';
         }
     });
 });
@@ -207,26 +216,29 @@ $(document).ready(function () {
         }
         let farm_name = $('#farm').find('option:selected').text();
         let wind_turbine_name = $('#wind_turbine').find('option:selected').text();
-        let treeObj = $.fn.zTree.getZTreeObj("treeDemo");
-        if (farm_name === '选择风场' || wind_turbine_name === '选择风机' || treeObj == null) {
+        let treeObj1 = $.fn.zTree.getZTreeObj("tree1");
+        let treeObj2 = $.fn.zTree.getZTreeObj("tree2");
+        if (farm_name === '选择风场' || wind_turbine_name === '选择风机' || treeObj1 == null) {
             alert('请先选择左侧项目！');
         }
         else {
             // 当前选中节点
-            let sn = treeObj.getSelectedNodes();
-            if (sn.length === 0) {
+            let sn1 = treeObj1.getSelectedNodes();
+            let sn2 = treeObj2.getSelectedNodes();
+            if (sn1.length === 0 || sn2.length === 0) {
                 alert('请选择测点！');
             }
-            else if (sn[0].hasOwnProperty('children') && sn[0].children.length > 0) {
+            else if (sn1[0].hasOwnProperty('children') && sn1[0].children.length > 0) {
+                alert('请选择子节点！');
+            }
+            else if (sn2[0].hasOwnProperty('children') && sn2[0].children.length > 0) {
                 alert('请选择子节点！');
             }
             else {
-                // 选中节点的父节点
-                let pn = sn[0].getParentNode();
                 let dataset = {'farm_name': farm_name,
                     'wind_turbine_name': wind_turbine_name,
-                    'sampling_time': pn['name'],
-                    'point': sn[0]['name'],
+                    'point': sn1[0]['name'],
+                    'sampling_time': sn2[0]['name'],
                 };
                 $.ajax({
                     url: "/tf",
@@ -287,28 +299,31 @@ $(document).ready(function () {
         }
         let farm_name = $('#farm').find('option:selected').text();
         let wind_turbine_name = $('#wind_turbine').find('option:selected').text();
-        let treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+        let treeObj1 = $.fn.zTree.getZTreeObj("tree1");
+        let treeObj2 = $.fn.zTree.getZTreeObj("tree2");
         let low_cutoff = $('#low_cutoff').val();
         let high_cutoff = $('#high_cutoff').val();
-        if (farm_name === '选择风场' || wind_turbine_name === '选择风机' || treeObj == null) {
+        if (farm_name === '选择风场' || wind_turbine_name === '选择风机' || treeObj1 == null) {
             alert('请先选择左侧项目！');
         }
         else {
             // 当前选中节点
-            let sn = treeObj.getSelectedNodes();
-            if (sn.length === 0) {
+            let sn1 = treeObj1.getSelectedNodes();
+            let sn2 = treeObj2.getSelectedNodes();
+            if (sn1.length === 0 || sn2.length === 0) {
                 alert('请选择测点！');
             }
-            else if (sn[0].hasOwnProperty('children') && sn[0].children.length > 0) {
+            else if (sn1[0].hasOwnProperty('children') && sn1[0].children.length > 0) {
+                alert('请选择子节点！');
+            }
+            else if (sn2[0].hasOwnProperty('children') && sn2[0].children.length > 0) {
                 alert('请选择子节点！');
             }
             else {
-                // 选中节点的父节点
-                let pn = sn[0].getParentNode();
                 let dataset = {'farm_name': farm_name,
                     'wind_turbine_name': wind_turbine_name,
-                    'sampling_time': pn['name'],
-                    'point': sn[0]['name'],
+                    'point': sn1[0]['name'],
+                    'sampling_time': sn2[0]['name'],
                     'low_cutoff': low_cutoff,
                     'high_cutoff': high_cutoff,
                 };
@@ -468,13 +483,13 @@ $(document).ready(function () {
         let to_time = $('#to_time2').val();
         let from_rotate_speed = $('#from_rotate_speed2').find('option:selected').text();
         let to_rotate_speed = $('#to_rotate_speed2').find('option:selected').text();
-        let treeObj = $.fn.zTree.getZTreeObj("treeDemo");
-        if (farm_name === '选择风场' || wind_turbine_name === '选择风机' || treeObj == null) {
+        let treeObj1 = $.fn.zTree.getZTreeObj("tree1");
+        if (farm_name === '选择风场' || wind_turbine_name === '选择风机' || treeObj1 == null) {
             alert('请先选择左侧项目！');
         }
         else {
             // 当前选中节点
-            let sn = treeObj.getSelectedNodes();
+            let sn = treeObj1.getSelectedNodes();
             if (sn.length === 0) {
                 alert('请选择测点！');
             }

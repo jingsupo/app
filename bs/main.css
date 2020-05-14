@@ -37,8 +37,13 @@
     background: #f885ff;
 }
 
-.ztree {
-    height: 500px;
+#tree1 {
+    height: 200px;
+    overflow: auto;
+}
+
+#tree2 {
+    height: 300px;
     overflow: auto;
 }
 
