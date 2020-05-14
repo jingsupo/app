@@ -81,6 +81,11 @@ $(document).ready(function () {
         // event.preventDefault() 方法阻止元素发生默认的行为
         e.preventDefault();
     }, false);
+    // addEventListener() 方法用于向指定元素添加事件句柄
+    document.getElementById("fig4").addEventListener('contextmenu', function (e) {
+        // event.preventDefault() 方法阻止元素发生默认的行为
+        e.preventDefault();
+    }, false);
 });
 
 $(document).ready(function () {
@@ -604,7 +609,6 @@ $(document).ready(function () {
                         }
                     });
                 }
-
             }
         }
     });
