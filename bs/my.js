@@ -186,60 +186,6 @@ $(document).ready(function () {
     });
 });
 
-let option_tfe = {
-    title: {
-        text: ''
-    },
-    tooltip: {
-        trigger: 'axis',
-        triggerOn: 'mousemove|click',
-    },
-    xAxis: {
-        type: 'value',
-        splitLine: {
-            show: false
-        }
-    },
-    yAxis: {
-        type: 'value',
-        boundaryGap: [0, '100%'],
-        splitLine: {
-            show: false
-        }
-    },
-    series: [{
-        name: '',
-        type: 'line',
-        lineStyle: {
-            width: 1
-        },
-        showSymbol: false,
-        hoverAnimation: true,
-        data: [],
-        markPoint: {
-            data: [],
-        }
-    }],
-    dataZoom: [{
-        //
-    }],
-    toolbox: { // 工具栏
-        feature: {
-            dataZoom: { // 框选缩放功能
-                show: true, // show为true时，才能触发takeGlobalCursor事件
-                yAxisIndex: 'none',
-            },
-            restore: {
-                show: true
-            },
-            saveAsImage: {
-                show: true,
-                type: 'png',
-            },
-        }
-    }
-};
-
 $(document).ready(function () {
     $("input[name=tf]").click(function () {
         if (fig1.dispose) {
@@ -295,23 +241,16 @@ $(document).ready(function () {
                         document.getElementById('loading-image').style.display='none';
                     },
                     success: function (data) {
-                        // JSON对象复制-深拷贝
-                        let option_ts = JSON.parse(JSON.stringify(option_tfe));
-                        option_ts.title.text = '时域图';
-                        option_ts.series[0].name = '振动信号';
-                        option_ts.series[0].data = data['time_series'];
-                        fig1.setOption(option_ts);
+                        let option_ts = {};
+                        setOption_tfe(fig1, option_ts, '时域图', 'time_series', data, [wind_turbine_name]);
                         // 增加自定义参数而不覆盖原本的默认参数
                         fig1.on('click', (params) => {
                             addmarkPoint (params, fig1);
                             document.getElementById('time_info').innerHTML = 'fig1';
                         });
                         fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
-                        let option_freq = JSON.parse(JSON.stringify(option_tfe));
-                        option_freq.title.text = '频域图';
-                        option_freq.series[0].name = '振幅';
-                        option_freq.series[0].data = data['freq'];
-                        fig2.setOption(option_freq);
+                        let option_freq = {};
+                        setOption_tfe(fig2, option_freq, '频域图', 'freq', data, [wind_turbine_name]);
                         // 增加自定义参数而不覆盖原本的默认参数
                         fig2.on('click', (params) => {
                             addmarkPoint (params, fig2);
@@ -385,11 +324,8 @@ $(document).ready(function () {
                         document.getElementById('loading-image').style.display='none';
                     },
                     success: function (data) {
-                        let option_envelope = JSON.parse(JSON.stringify(option_tfe));
-                        option_envelope.title.text = '包络图';
-                        option_envelope.series[0].name = '振幅';
-                        option_envelope.series[0].data = data['envelope'];
-                        fig3.setOption(option_envelope);
+                        let option_envelope = {};
+                        setOption_tfe(fig3, option_envelope, '包络图', 'envelope', data, [wind_turbine_name]);
                         // 增加自定义参数而不覆盖原本的默认参数
                         fig3.on('click', (params) => {
                             addmarkPoint (params, fig3);
@@ -403,7 +339,7 @@ $(document).ready(function () {
     });
 });
 
-let option_trend = {
+let option_demo = {
     title: {
         text: ''
     },
@@ -450,9 +386,36 @@ let option_trend = {
     }
 };
 
+function setOption_tfe (fig, option, title_text, value, data, wind_turbine_selected) {
+    // JSON对象复制-深拷贝
+    option = JSON.parse(JSON.stringify(option_demo));
+    option.title.text = title_text;
+    option.xAxis.type = 'value';
+    for (let c in wind_turbine_selected) {
+        option.legend.data.push(wind_turbine_selected[c]);
+        let ser = {
+            name: wind_turbine_selected[c],
+            type: 'line',
+            lineStyle: {
+                width: 1
+            },
+            showSymbol: false,
+            hoverAnimation: true,
+            data: data[value],
+            markPoint: {
+                data: [],
+            }
+        };
+        option.series.push(ser);
+    }
+    if (option.series[0].data.length !== 0) {
+        fig.setOption(option);
+    }
+}
+
 function setOption_trend (fig, option, title_text, criterion, value, data, wind_turbine_selected) {
     // JSON对象复制-深拷贝
-    option = JSON.parse(JSON.stringify(option_trend));
+    option = JSON.parse(JSON.stringify(option_demo));
     option.title.text = title_text;
     for (let c in wind_turbine_selected) {
         option.legend.data.push(wind_turbine_selected[c]);
