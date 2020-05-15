@@ -9,7 +9,7 @@ require(['underscore'], function () {
 });
 
 // 加载日期与时间组件
-layui.use(['laydate'], function() {
+layui.use(['laydate'], function () {
     let laydate = layui.laydate;
 
     laydate.render({
@@ -36,6 +36,21 @@ layui.use(['laydate'], function() {
         format: 'yyyyMMddHHmmss'
     });
 });
+
+function msg (text) {
+    layui.use('layer', function () {
+        let layer = layui.layer;
+
+        layer.msg(text);
+    });
+}
+
+function loading () {
+    layui.use('layer', function () {
+        //加载层
+        let index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
+    });
+}
 
 $(document).ready(function () {
     // 初始化隐藏ztree插件
@@ -125,7 +140,7 @@ $(document).ready(function () {
         let from_rotate_speed = $('#from_rotate_speed').find('option:selected').text();
         let to_rotate_speed = $('#to_rotate_speed').find('option:selected').text();
         if (farm_name === '选择风场' || wind_turbine_name === '选择风机') {
-            alert('请先选择相应项目！');
+            msg('请先选择相应项目！');
         }
         else {
             let dataset = {'farm_name': farm_name,
@@ -175,12 +190,10 @@ $(document).ready(function () {
                     }
                     zNodes2.push({name:'采样时间', open:true, children:child2});
                     function zTreeOnClick2(event, treeId, treeNode) {
-                        // console.log(treeNode.tId + ", " + treeNode.name);
                         let treeObj = $.fn.zTree.getZTreeObj("tree2");
                         // 当前选中节点
                         let sn = treeObj.getSelectedNodes();
-                        let html;
-                        html = data['rotate_speed'][sn[0].name];
+                        let html = data['rotate_speed'][sn[0].name];
                         document.getElementById('time_info').innerHTML = '转速：' + html;
                         // 显示time_info容器
                         document.getElementById('time_info').style.display='';
@@ -219,20 +232,20 @@ $(document).ready(function () {
         let treeObj1 = $.fn.zTree.getZTreeObj("tree1");
         let treeObj2 = $.fn.zTree.getZTreeObj("tree2");
         if (farm_name === '选择风场' || wind_turbine_name === '选择风机' || treeObj1 == null) {
-            alert('请先选择左侧项目！');
+            msg('请先选择左侧项目！');
         }
         else {
             // 当前选中节点
             let sn1 = treeObj1.getSelectedNodes();
             let sn2 = treeObj2.getSelectedNodes();
             if (sn1.length === 0 || sn2.length === 0) {
-                alert('请选择测点！');
+                msg('请选择测点！');
             }
             else if (sn1[0].hasOwnProperty('children') && sn1[0].children.length > 0) {
-                alert('请选择子节点！');
+                msg('请选择子节点！');
             }
             else if (sn2[0].hasOwnProperty('children') && sn2[0].children.length > 0) {
-                alert('请选择子节点！');
+                msg('请选择子节点！');
             }
             else {
                 let dataset = {'farm_name': farm_name,
@@ -246,11 +259,12 @@ $(document).ready(function () {
                     data: dataset,
                     dataType: "json",
                     beforeSend: function () {
-                        document.getElementById('loading-image').style.display='';
+                        loading();
                     },
                     complete: function () {
-                        // $('#loading-image').remove();
-                        document.getElementById('loading-image').style.display='none';
+                        setTimeout(function () {
+                            layer.closeAll('loading');
+                        }, 0);
                     },
                     success: function (data) {
                         let option_ts = {};
@@ -304,20 +318,20 @@ $(document).ready(function () {
         let low_cutoff = $('#low_cutoff').val();
         let high_cutoff = $('#high_cutoff').val();
         if (farm_name === '选择风场' || wind_turbine_name === '选择风机' || treeObj1 == null) {
-            alert('请先选择左侧项目！');
+            msg('请先选择左侧项目！');
         }
         else {
             // 当前选中节点
             let sn1 = treeObj1.getSelectedNodes();
             let sn2 = treeObj2.getSelectedNodes();
             if (sn1.length === 0 || sn2.length === 0) {
-                alert('请选择测点！');
+                msg('请选择测点！');
             }
             else if (sn1[0].hasOwnProperty('children') && sn1[0].children.length > 0) {
-                alert('请选择子节点！');
+                msg('请选择子节点！');
             }
             else if (sn2[0].hasOwnProperty('children') && sn2[0].children.length > 0) {
-                alert('请选择子节点！');
+                msg('请选择子节点！');
             }
             else {
                 let dataset = {'farm_name': farm_name,
@@ -333,10 +347,12 @@ $(document).ready(function () {
                     data: dataset,
                     dataType: "json",
                     beforeSend: function () {
-                        document.getElementById('loading-image').style.display='';
+                        loading();
                     },
                     complete: function () {
-                        document.getElementById('loading-image').style.display='none';
+                        setTimeout(function () {
+                            layer.closeAll('loading');
+                        }, 0);
                     },
                     success: function (data) {
                         let option_envelope = {};
@@ -485,20 +501,20 @@ $(document).ready(function () {
         let to_rotate_speed = $('#to_rotate_speed2').find('option:selected').text();
         let treeObj1 = $.fn.zTree.getZTreeObj("tree1");
         if (farm_name === '选择风场' || wind_turbine_name === '选择风机' || treeObj1 == null) {
-            alert('请先选择左侧项目！');
+            msg('请先选择左侧项目！');
         }
         else {
             // 当前选中节点
             let sn = treeObj1.getSelectedNodes();
             if (sn.length === 0) {
-                alert('请选择测点！');
+                msg('请选择测点！');
             }
             else if (sn[0].hasOwnProperty('children') && sn[0].children.length > 0) {
-                alert('请选择子节点！');
+                msg('请选择子节点！');
             }
             else {
                 if (wind_turbine_selected.length === 0) {
-                    alert('请选择风机！');
+                    msg('请选择风机！');
                 }
                 else {
                     let dataset = {'farm_name': farm_name,
@@ -516,10 +532,12 @@ $(document).ready(function () {
                         data: dataset,
                         dataType: "json",
                         beforeSend: function () {
-                            document.getElementById('loading-image').style.display='';
+                            loading();
                         },
                         complete: function () {
-                            document.getElementById('loading-image').style.display='none';
+                            setTimeout(function () {
+                                layer.closeAll('loading');
+                            }, 0);
                         },
                         success: function (data) {
                             if (criterion === '1') {
