@@ -56,8 +56,6 @@ $(document).ready(function () {
     // 初始化隐藏ztree插件
     document.getElementById('tree1').style.display='none';
     document.getElementById('tree2').style.display='none';
-    // 初始化隐藏loading容器
-    document.getElementById('loading-image').style.display='none';
     $.ajax({
         url: "/get_db_names",
         type: "POST",
