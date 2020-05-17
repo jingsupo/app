@@ -26,12 +26,12 @@
 }
 
 .query {
-    height: 480px;
+    height: 600px;
     width: 100%;
     background: #81ffa7;
 }
 
-#time_info {
+#query_info {
     height: 20px;
     width: 100%;
     background: #f885ff;
@@ -165,40 +165,6 @@ input[name=q] {
     left: 60px;
 }
 
-.layui-form-label, .layui-input {
+.layui-input {
     margin: 18px 0 0 10px;
-}
-
-.pop_main {
-    display: none;
-}
-
-.pop_con {
-    width: 500px;
-    height: 50px;
-    background: #81ffa7;
-    border-radius: 3px;
-    position: fixed;
-    left: 50%;
-    top: 25%;
-    margin-left: -250px;
-    margin-top: -150px;
-    z-index: 9999;
-    border: 1px solid #f0f0f0;
-}
-
-.mask {
-    width: 100%;
-    height: 100%;
-    background: #666666;
-    z-index: 9000;
-    position: fixed;
-    left: 0;
-    top: 0;
-    opacity: 0.5;
-    filter:alpha(opacity=50);
-}
-
-#con2 {
-    height: 500px;
 }

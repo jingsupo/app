@@ -4,12 +4,13 @@ import json
 import struct
 from flask import Flask, render_template, request, jsonify
 import loguru as log
-import pymongo
 import numpy as np
 import pandas as pd
+import pymongo
 from scipy.fftpack import fft, ifft, hilbert
 
 
+# client = pymongo.MongoClient()
 client = pymongo.MongoClient(host='192.168.2.232', port=27017)
 
 # 密码认证
@@ -114,84 +115,8 @@ def q():
                     'rotate_speed': rotate_speed})
 
 
-@app.route('/tf', methods=['POST'])
-def tf():
-    dbname = request.form.get('farm_name')
-    db = client[dbname]
-    collection = request.form.get('wind_turbine_name')
-    sampling_time = request.form.get('sampling_time')
-    # 当前选中测点的中文描述
-    point_zh = request.form.get('point')
-
-    # 测点信息
-    point_description = db['information'].find_one({'desc': '机组信息'})['point_description']
-    # 当前选中测点的中文描述对应的数据库中的键
-    point = [key for key in point_description if point_description[key] == point_zh][0]
-
-    data = db[collection].find_one({'sampling_time': sampling_time})
-
-    # 时域数据
-    time_series = []
-    # 频域数据
-    freq = []
-
-    try:
-        if 'drivechain_' in point:
-            if 'data_length_drivechain' in data.keys():
-                data_length = str(data['data_length_drivechain'])
-                sampling_fre = data['sampling_fre_drivechain']
-            elif int(point[-1]) < 6:
-                data_length = str(data['data_length_drivechain_15'])
-                sampling_fre = data['sampling_fre_drivechain_15']
-            else:
-                data_length = str(data['data_length_drivechain_68'])
-                sampling_fre = data['sampling_fre_drivechain_68']
-        elif 'tower_' in point:
-            data_length = str(data['data_length_tower'])
-            sampling_fre = data['sampling_fre_tower']
-        elif 'nacelle_' in point:
-            data_length = str(data['data_length_nacelle'])
-            sampling_fre = data['sampling_fre_nacelle']
-        else:
-            if int(point[-1]) < 6:
-                data_length = str(data['data_nums_15'][0])
-                sampling_fre = data['sampling_fre_15']
-            else:
-                data_length = str(data['data_nums_68'][0])
-                sampling_fre = data['sampling_fre_68']
-
-        data = struct.unpack(data_length + 'f', data[point])
-        data = pd.Series(data)
-        data = data.round(decimals=6)
-
-        for v in zip(range(len(data)), data):
-            dic = dict()
-            dic['name'] = 'ts'
-            dic['value'] = v
-            time_series.append(dic)
-
-        fre, am = fourier_transform(data, sampling_fre)
-        am = pd.Series(am)
-        am = am.round(decimals=6)
-
-        for v in zip(fre, am):
-            dic = dict()
-            dic['name'] = 'freq'
-            dic['value'] = v
-            freq.append(dic)
-
-    except Exception as e:
-        log.logger.debug(e)
-
-    dataset = dict()
-    dataset['time_series'] = time_series
-    dataset['freq'] = freq
-
-    return jsonify(dataset)
-
-
-@app.route('/envelope', methods=['POST'])
-def envelope():
+@app.route('/tfe', methods=['POST'])
+def tfe():
     dbname = request.form.get('farm_name')
     db = client[dbname]
     collection = request.form.get('wind_turbine_name')
@@ -208,6 +133,10 @@ def envelope():
 
     data = db[collection].find_one({'sampling_time': sampling_time})
 
+    # 时域数据
+    time_series = []
+    # 频域数据
+    freq = []
     # 频谱包络数据
     spectrum_envelope = []
 
@@ -228,6 +157,9 @@ def envelope():
         elif 'nacelle_' in point:
             data_length = str(data['data_length_nacelle'])
             sampling_fre = data['sampling_fre_nacelle']
+        elif 'blade_' in point:
+            data_length = str(data['data_length_blade'])
+            sampling_fre = data['sampling_fre_blade']
         else:
             if int(point[-1]) < 6:
                 data_length = str(data['data_nums_15'][0])
@@ -239,6 +171,24 @@ def envelope():
         data = struct.unpack(data_length + 'f', data[point])
         data = pd.Series(data)
         data = data.round(decimals=6)
+
+        # time series
+        for v in zip(range(len(data)), data):
+            dic = dict()
+            dic['name'] = 'ts'
+            dic['value'] = v
+            time_series.append(dic)
+
+        # freq
+        fre, am = fourier_transform(data, sampling_fre)
+        am = pd.Series(am)
+        am = am.round(decimals=6)
+
+        for v in zip(fre, am):
+            dic = dict()
+            dic['name'] = 'freq'
+            dic['value'] = v
+            freq.append(dic)
 
         # spectrum envelope
         fre, am, _ = envelop(data, sampling_fre, low_cutoff, high_cutoff)
@@ -255,6 +205,8 @@ def envelope():
         log.logger.debug(e)
 
     dataset = dict()
+    dataset['time_series'] = time_series
+    dataset['freq'] = freq
     dataset['envelope'] = spectrum_envelope[:500]
 
     return jsonify(dataset)
@@ -468,5 +420,4 @@ def trend():
 
 
 if __name__ == "__main__":
-    # app.run(host='0.0.0.0', debug=True)
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
