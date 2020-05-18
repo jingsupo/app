@@ -32,7 +32,7 @@
                 </select>
             </div>
             <div id="wind_turbine_div">
-                <label for="wind_turbine" > 风 机 </label>
+                <label for="wind_turbine"> 风 机 </label>
                 <select id="wind_turbine" name="wind_turbine">
                     <option value="0">选择风机</option>
                 </select>
@@ -43,13 +43,13 @@
                 </select>
             </div>
             <div class="layui-inline" id="from_time_div">
-                <label>起始时间</label>
+                <label for="from_time">起始时间</label>
                 <div class="layui-input-inline">
                     <input type="text" class="layui-input" id="from_time" placeholder="yyyyMMddHHmmss">
                 </div>
             </div>
             <div class="layui-inline" id="to_time_div">
-                <label>结束时间</label>
+                <label for="to_time">结束时间</label>
                 <div class="layui-input-inline">
                     <input type="text" class="layui-input" id="to_time" placeholder="yyyyMMddHHmmss">
                 </div>
@@ -105,9 +105,12 @@
                 <option value="19">19</option>
                 <option value="20" selected="selected">20</option>
             </select>
-            </div><br/>
+            </div>
             <div id="cutoff_div">
-                <input type="text" id="low_cutoff" name="low_cutoff" placeholder="请输入低截止频率"><br/><br/>
+                <label for="low_cutoff">低截止频率</label>
+                <input type="text" id="low_cutoff" name="low_cutoff" placeholder="请输入低截止频率">
+                <br />
+                <label for="high_cutoff">高截止频率</label>
                 <input type="text" id="high_cutoff" name="high_cutoff" placeholder="请输入高截止频率">
             </div>
             <input type="submit" value="查询" id="q" name="q">

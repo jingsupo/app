@@ -650,16 +650,13 @@ function deletemarkPoint (params, fig) {
 }
 
 window.onresize = function () {
-    if (fig1.dispose && fig2.dispose) {
-        let chartsArr = [];
-
-        chartsArr.push(fig1);
-        chartsArr.push(fig2);
-
-        for (let i = 0; i < chartsArr.length; i++) {
-            // ECharts随窗口大小改变而自适应
-            chartsArr[i].resize();
-        }
+    if (fig1.dispose) {
+        // ECharts随窗口大小改变而自适应
+        fig1.resize();
+    }
+    if (fig2.dispose) {
+        // ECharts随窗口大小改变而自适应
+        fig2.resize();
     }
     if (fig3.dispose) {
         // ECharts随窗口大小改变而自适应
@@ -675,66 +672,3 @@ function isInArray(arr, val) {
     let testStr = ',' + arr.join(",") + ",";
     return testStr.indexOf("," + val + ",") === -1
 }
-
-// tooltip: {
-//     formatter : function (params) {
-//         console.log(params[0].value);
-//     },
-//     backgroundColor: "gray",
-//     position: function (point, params, dom, rect, size) {
-//         // 鼠标坐标和提示框位置的参考坐标系是：以外层div的左上角那一点为原点，x轴向右，y轴向下
-//         // 提示框位置
-//         let x = 0; // x坐标位置
-//         let y = 0; // y坐标位置
-//
-//         // 当前鼠标位置
-//         let pointX = point[0];
-//         let pointY = point[1];
-//
-//         // 外层div大小
-//         // let viewWidth = size.viewSize[0];
-//         // let viewHeight = size.viewSize[1];
-//
-//         // 提示框大小
-//         let boxWidth = size.contentSize[0];
-//         let boxHeight = size.contentSize[1];
-//
-//         // boxWidth > pointX 说明鼠标左边放不下提示框
-//         if (boxWidth > pointX) {
-//         x = 5;
-//         } else { // 左边放的下
-//         x = pointX;
-//         }
-//
-//         // boxHeight > pointY 说明鼠标上边放不下提示框
-//         if (boxHeight > pointY) {
-//         y = 5;
-//         } else { // 上边放得下
-//         y = pointY;
-//         }
-//
-//         return [x, y];
-//     },
-// }
-
-// fig3.getZr().on('click', function (params) {
-//     // console.log(params);
-//     let point = [params.offsetX, params.offsetY];
-//     if (fig3.containPixel({seriesIndex: 0}, point)) {
-//         let xIndex = fig3.convertFromPixel({seriesIndex: 0}, point)[0];
-//         let op = fig3.getOption();
-//         // console.log(op);
-//         let allxIndex = op.series[0].data.map((x) => x.value[0]);
-//         let diff = allxIndex.map((x) => Math.abs(x-xIndex));
-//         let closest = Math.min.apply(null, diff);
-//         let idx = diff.indexOf(closest);
-//         let name = op.series[0].data[idx].value[0];
-//         let value = op.series[0].data[idx].value[1];
-//         fig3.dispatchAction({
-//             type: 'showTip',
-//             seriesIndex: 0,//这行不能省
-//             dataIndex: idx
-//         });
-//         document.getElementById('query_info').innerHTML = name + ': ' + value;
-//     }
-// });
