@@ -583,7 +583,7 @@ function setOption_trend (fig, option, title_text, criterion, value, data, wind_
         let ser = {
             name: wind_turbine_selected[c],
             type: 'scatter',
-            showSymbol: 6,
+            symbolSize: 6,
             hoverAnimation: true,
             data: data[criterion][wind_turbine_selected[c]][value],
             markPoint: {
@@ -667,8 +667,3 @@ window.onresize = function () {
         fig4.resize();
     }
 };
-
-function isInArray(arr, val) {
-    let testStr = ',' + arr.join(",") + ",";
-    return testStr.indexOf("," + val + ",") === -1
-}

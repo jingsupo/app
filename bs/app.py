@@ -123,8 +123,11 @@ def tfe():
     sampling_time = request.form.get('sampling_time')
     # 当前选中测点的中文描述
     point_zh = request.form.get('point')
-    low_cutoff = float(request.form.get('low_cutoff'))
-    high_cutoff = float(request.form.get('high_cutoff'))
+    low_cutoff = request.form.get('low_cutoff')
+    high_cutoff = request.form.get('high_cutoff')
+    if low_cutoff != '' and high_cutoff != '':
+        low_cutoff = float(low_cutoff)
+        high_cutoff = float(high_cutoff)
 
     # 测点信息
     point_description = db['information'].find_one({'desc': '机组信息'})['point_description']
@@ -190,16 +193,17 @@ def tfe():
             dic['value'] = v
             freq.append(dic)
 
-        # spectrum envelope
-        fre, am, _ = envelop(data, sampling_fre, low_cutoff, high_cutoff)
-        am = pd.Series(am)
-        am = am.round(decimals=6)
+        if low_cutoff != '' and high_cutoff != '':
+            # spectrum envelope
+            fre, am, _ = envelop(data, sampling_fre, low_cutoff, high_cutoff)
+            am = pd.Series(am)
+            am = am.round(decimals=6)
 
-        for v in zip(fre, am):
-            dic = dict()
-            dic['name'] = 'envelope'
-            dic['value'] = v
-            spectrum_envelope.append(dic)
+            for v in zip(fre, am):
+                dic = dict()
+                dic['name'] = 'envelope'
+                dic['value'] = v
+                spectrum_envelope.append(dic)
 
     except Exception as e:
         log.logger.debug(e)
