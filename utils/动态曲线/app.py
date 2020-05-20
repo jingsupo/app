@@ -15,16 +15,16 @@ app = Flask(__name__, template_folder='.')
 
 @app.route('/getdata')
 def getdata():
-    data = pd.DataFrame(db.c11.find({},{'_id':0,'传感器1':1}).limit(2000))
+    data = pd.DataFrame(db['11'].find({},{'_id':0,'传感器1':1}).limit(2000))
 
-    json = []
+    dataset = []
     for v in zip(range(len(data)), data.values.flatten()):
         d = {}
         d['name'] = 'haha'
         d['value'] = v
-        json.append(d)
+        dataset.append(d)
 
-    return jsonify(json)
+    return jsonify(dataset)
 
 @app.route("/")
 def index():
