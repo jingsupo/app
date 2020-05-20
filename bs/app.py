@@ -63,8 +63,9 @@ def index():
 @app.route("/2", methods=['POST', 'GET'])
 def index2():
     if request.method == 'POST':
-        st = request.form
-        return render_template("demo2.html", st=st)
+        result = request.form
+        return render_template("_demo2.html", result=result)
+    return render_template("demo2.html")
 
 
 @app.route('/get_db_names', methods=['POST'])

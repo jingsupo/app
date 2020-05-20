@@ -1,13 +1,3 @@
-// 配置加载模块
-require.config({
-    paths: {
-        "underscore": "static/js/underscore-min",
-    }
-});
-require(['underscore'], function () {
-    //
-});
-
 // 加载日期与时间组件
 layui.use(['laydate'], function () {
     let laydate = layui.laydate;
@@ -513,10 +503,11 @@ let option_demo = {
     },
     xAxis: {
         type: 'time',
+        max: 'dataMax',
         splitLine: {
             show: false
         },
-        scale: true,
+        // scale: true,
     },
     yAxis: {
         type: 'value',
