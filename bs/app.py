@@ -16,7 +16,7 @@ client = pymongo.MongoClient(host='192.168.2.232', port=27017)
 # 密码认证
 client.admin.authenticate('nego', '123456abcd.')
 
-app = Flask(__name__, template_folder="templates")
+app = Flask(__name__)
 
 
 # ******频谱计算函数******
@@ -57,15 +57,15 @@ def envelop(data, fs, low_cutoff, high_cutoff):
 
 @app.route("/")
 def index():
-    return render_template("demo.html")
+    return render_template("index.html")
 
 
-@app.route("/2", methods=['POST', 'GET'])
-def index2():
+@app.route("/draw", methods=['GET', 'POST'])
+def draw():
     if request.method == 'POST':
         result = request.form
-        return render_template("_demo2.html", result=result)
-    return render_template("demo2.html")
+        return render_template("_demo.html", result=result)
+    return render_template("draw.html")
 
 
 @app.route('/get_db_names', methods=['POST'])
@@ -124,11 +124,33 @@ def tfe():
     sampling_time = request.form.get('sampling_time')
     # 当前选中测点的中文描述
     point_zh = request.form.get('point')
-    low_cutoff = request.form.get('low_cutoff')
-    high_cutoff = request.form.get('high_cutoff')
-    if low_cutoff != '' and high_cutoff != '':
-        low_cutoff = float(low_cutoff)
-        high_cutoff = float(high_cutoff)
+    # 获取时域频域包络复选框的选中状态
+    ts_checked = request.form.get('ts_checked')
+    freq_checked = request.form.get('freq_checked')
+    env_checked = request.form.get('env_checked')
+    if ts_checked == 'true':
+        ts_checked = True
+    else:
+        ts_checked = False
+    if freq_checked == 'true':
+        freq_checked = True
+    else:
+        freq_checked = False
+    if env_checked == 'true':
+        env_checked = True
+    else:
+        env_checked = False
+    # 要请求的图形类型(时域频域、包络)
+    fig_type = request.form.get('fig_type')
+    if env_checked or fig_type == '2':
+        low_cutoff = request.form.get('low_cutoff')
+        high_cutoff = request.form.get('high_cutoff')
+        if low_cutoff != '' and high_cutoff != '':
+            low_cutoff = float(low_cutoff)
+            high_cutoff = float(high_cutoff)
+    else:
+        low_cutoff = ''
+        high_cutoff = ''
 
     # 测点信息
     point_description = db['information'].find_one({'desc': '机组信息'})['point_description']
@@ -176,35 +198,38 @@ def tfe():
         data = pd.Series(data)
         data = data.round(decimals=6)
 
-        # time series
-        for v in zip(range(len(data)), data):
-            dic = dict()
-            dic['name'] = 'ts'
-            dic['value'] = v
-            time_series.append(dic)
+        if ts_checked or fig_type == '1':
+            # time series
+            for v in zip(range(len(data)), data):
+                dic = dict()
+                dic['name'] = 'ts'
+                dic['value'] = v
+                time_series.append(dic)
 
-        # freq
-        fre, am = fourier_transform(data, sampling_fre)
-        am = pd.Series(am)
-        am = am.round(decimals=6)
-
-        for v in zip(fre, am):
-            dic = dict()
-            dic['name'] = 'freq'
-            dic['value'] = v
-            freq.append(dic)
-
-        if low_cutoff != '' and high_cutoff != '':
-            # spectrum envelope
-            fre, am, _ = envelop(data, sampling_fre, low_cutoff, high_cutoff)
+        if freq_checked or fig_type == '1':
+            # freq
+            fre, am = fourier_transform(data, sampling_fre)
             am = pd.Series(am)
             am = am.round(decimals=6)
 
             for v in zip(fre, am):
                 dic = dict()
-                dic['name'] = 'envelope'
+                dic['name'] = 'freq'
                 dic['value'] = v
-                spectrum_envelope.append(dic)
+                freq.append(dic)
+
+        if env_checked or fig_type == '2':
+            # spectrum envelope
+            if low_cutoff != '' and high_cutoff != '':
+                fre, am, _ = envelop(data, sampling_fre, low_cutoff, high_cutoff)
+                am = pd.Series(am)
+                am = am.round(decimals=6)
+
+                for v in zip(fre, am):
+                    dic = dict()
+                    dic['name'] = 'envelope'
+                    dic['value'] = v
+                    spectrum_envelope.append(dic)
 
     except Exception as e:
         log.logger.debug(e)
@@ -242,13 +267,17 @@ def trend():
     vdi = {}
     # 无量纲数据
     dimensionless = {}
+    # narrowband数据
+    narrowband = {}
 
     data = {}
     for c in collection:
         if criterion == '1':
             data[c] = db['eigen_value'].find_one({'criterion': 'VDI3834', 'windturbine': c})
-        else:
+        if criterion == '2':
             data[c] = db['eigen_value'].find_one({'criterion': 'dimensionless', 'windturbine': c})
+        if criterion == '3':
+            data[c] = db['eigen_value'].find_one({'criterion': 'narrowband', 'windturbine': c})
 
     if criterion == '1':
         for c in collection:
@@ -303,6 +332,8 @@ def trend():
                 ret = pd.concat([ret, pd.Series(ev2).rename('ev2')], axis=1)
                 ret['ev2'] = ret['ev2'].round(decimals=6)
             ret['date'] = pd.to_datetime(ret['time']).map(lambda x: x.strftime('%Y/%m/%d %H:%M:%S'))
+            ret = ret.sort_values(by='date')
+            ret.reset_index(drop=True, inplace=True)
 
             vdi[c] = {}
             vdi[c]['ev'] = []
@@ -325,7 +356,7 @@ def trend():
                     dic['name'] = 'ev2'
                     dic['value'] = v
                     vdi[c]['ev2'].append(dic)
-    else:
+    if criterion == '2':
         for c in collection:
             df = pd.DataFrame([data[c]['date_time'], data[c]['rotate_speed']]).T
             if df.iloc[:, 1].dtype is not float:
@@ -387,6 +418,8 @@ def trend():
                 ret = pd.concat([ret, pd.Series(pulsefactor2).rename('pulsefactor2')], axis=1)
                 ret['pulsefactor2'] = ret['pulsefactor2'].round(decimals=6)
             ret['date'] = pd.to_datetime(ret['time']).map(lambda x: x.strftime('%Y/%m/%d %H:%M:%S'))
+            ret = ret.sort_values(by='date')
+            ret.reset_index(drop=True, inplace=True)
 
             dimensionless[c] = {}
             dimensionless[c]['kurtosisfactor'] = []
@@ -416,10 +449,54 @@ def trend():
                     dic['name'] = 'pulsefactor2'
                     dic['value'] = v
                     dimensionless[c]['pulsefactor2'].append(dic)
+    if criterion == '3':
+        for c in collection:
+            df = pd.DataFrame([data[c]['data_time'], data[c]['rotation_speed']]).T
+            if df.iloc[:, 1].dtype is not float:
+                df.iloc[:, 1] = df.iloc[:, 1].astype('float')
+            df = df[(df.iloc[:, 0] >= from_time) & (df.iloc[:, 0] <= to_time)]
+            df = df[(df.iloc[:, 1] >= from_rotate_speed) & (df.iloc[:, 1] <= to_rotate_speed)]
+
+            value_rms = []
+            value_kurtosis = []
+
+            if point[-1] == '3':
+                value_rms = data[c]['value_rms_3']
+                value_kurtosis = data[c]['value_kurtosis_3']
+            elif point[-1] == '4':
+                value_rms = data[c]['value_rms_4']
+                value_kurtosis = data[c]['value_kurtosis_4']
+
+            value_rms = np.array(value_rms)[df.index]
+            value_kurtosis = np.array(value_kurtosis)[df.index]
+            new_df = df.reset_index(drop=True).rename(columns={0: 'time', 1: 'rotate_speed'})
+            ret = pd.concat([new_df, pd.Series(value_rms).rename('value_rms')], axis=1)
+            ret = pd.concat([ret, pd.Series(value_kurtosis).rename('value_kurtosis')], axis=1)
+            ret['value_rms'] = ret['value_rms'].round(decimals=6)
+            ret['value_kurtosis'] = ret['value_kurtosis'].round(decimals=6)
+            ret['date'] = pd.to_datetime(ret['time']).map(lambda x: x.strftime('%Y/%m/%d %H:%M:%S'))
+            ret = ret.sort_values(by='date')
+            ret.reset_index(drop=True, inplace=True)
+
+            narrowband[c] = {}
+            narrowband[c]['value_rms'] = []
+            narrowband[c]['value_kurtosis'] = []
+            narrowband[c]['time'] = ret['time'].tolist()
+            for v in zip(ret['date'], ret['value_rms']):
+                dic = dict()
+                dic['name'] = 'value_rms'
+                dic['value'] = v
+                narrowband[c]['value_rms'].append(dic)
+            for v in zip(ret['date'], ret['value_kurtosis']):
+                dic = dict()
+                dic['name'] = 'value_kurtosis'
+                dic['value'] = v
+                narrowband[c]['value_kurtosis'].append(dic)
 
     dataset = dict()
     dataset['vdi'] = vdi
     dataset['dimensionless'] = dimensionless
+    dataset['narrowband'] = narrowband
 
     return jsonify(dataset)
 

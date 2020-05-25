@@ -1,0 +1,164 @@
+.left {
+    height: 1600px;
+    width: 20%;
+    background: pink;
+    float: left;
+}
+
+.middle {
+    height: 1600px;
+    width: 80%;
+    background: skyblue;
+    float: left;
+}
+
+/*.right {*/
+    /*height: 1600px;*/
+    /*width: 20%;*/
+    /*background: #00B83F;*/
+    /*float: left;*/
+/*}*/
+
+.logo {
+    height: 45px;
+    width: 100%;
+    background: orange;
+}
+
+.query {
+    height: 600px;
+    width: 100%;
+    background: #81ffa7;
+}
+
+#query_info {
+    height: 20px;
+    width: 100%;
+    background: #f885ff;
+}
+
+#tree1 {
+    height: 200px;
+    overflow: auto;
+}
+
+#tree2 {
+    height: 300px;
+    overflow: auto;
+}
+
+.toolbar {
+    height: 50px;
+    width: 100%;
+    background: #9ed0ff;
+}
+
+.figure {
+    height: 1400px;
+    width: 80%;
+    background: white;
+    float: left;
+}
+
+#fig1 {
+    height: 320px;
+    width: 100%;
+}
+
+#fig2 {
+    height: 320px;
+    width: 100%;
+}
+
+#fig3 {
+    height: 320px;
+    width: 100%;
+}
+
+#fig4 {
+    height: 320px;
+    width: 100%;
+}
+
+.figure_side {
+    height: 1400px;
+    width: 20%;
+    background: #f0f0f0;
+    float: left;
+}
+
+#fig1_side {
+    height: 320px;
+    width: 100%;
+    background: pink;
+}
+
+#fig2_side {
+    height: 320px;
+    width: 100%;
+    background: #f885ff;
+}
+
+#fig3_side {
+    height: 320px;
+    width: 100%;
+    background: #ffffb8;
+}
+
+#fig4_side {
+    height: 320px;
+    width: 100%;
+    background: #81ffa7;
+}
+
+/*.info {*/
+    /*height: 200px;*/
+    /*width: 100%;*/
+/*}*/
+
+/*#farm_info {*/
+    /*background: #81ffa7;*/
+/*}*/
+
+/*#wind_turbine_info {*/
+    /*background: #ffffb8;*/
+/*}*/
+
+/*#fault_history {*/
+    /*background: #81ffa7;*/
+/*}*/
+
+input[type=submit] {
+    background-color: rgb(30,160,255);
+    color: white;
+    padding: 10px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 120px;
+    margin-top: 5px;
+    position: relative;
+    left: 5px;
+}
+
+input[type=submit]:hover {
+    background-color: #00B83F;
+}
+
+input[name=q] {
+    padding: 14px 20px;
+    width: 50%;
+    margin-top: 20px;
+    left: 60px;
+}
+
+select, .layui-input, #low_cutoff, #high_cutoff {
+    width: 50%;
+    padding: 12px 20px;
+    margin: 18px 0 0 10px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
