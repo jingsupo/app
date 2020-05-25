@@ -1,7 +1,7 @@
 .left {
     height: 1600px;
     width: 20%;
-    background: pink;
+    background: rgb(235,235,235);
     float: left;
 }
 
@@ -15,7 +15,6 @@
 .logo {
     height: 45px;
     width: 100%;
-    background: orange;
 }
 
 .query {
@@ -83,25 +82,25 @@
 #fig1_side {
     height: 320px;
     width: 100%;
-    background: pink;
+    background: rgb(232,240,254);
 }
 
 #fig2_side {
     height: 320px;
     width: 100%;
-    background: #f885ff;
+    background: rgb(235,235,235);
 }
 
 #fig3_side {
     height: 320px;
     width: 100%;
-    background: #ffffb8;
+    background: rgb(232,240,254);
 }
 
 #fig4_side {
     height: 320px;
     width: 100%;
-    background: #81ffa7;
+    background: rgb(235,235,235);
 }
 
 input[type=submit] {
@@ -128,7 +127,7 @@ input[name=q] {
     left: 60px;
 }
 
-select, #from_time, #to_time, #from_rotate_speed, #to_rotate_speed, .cutoff {
+select, .time, .rotate_speed, .cutoff {
     width: 50%;
     padding: 12px 20px;
     margin: 10px 0 0 10px;

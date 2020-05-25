@@ -47,6 +47,7 @@ let option_demo = {
         splitLine: {
             show: false
         },
+        splitNumber: 10,
         // scale: true,
     },
     yAxis: {
