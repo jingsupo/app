@@ -12,13 +12,6 @@
     float: left;
 }
 
-/*.right {*/
-    /*height: 1600px;*/
-    /*width: 20%;*/
-    /*background: #00B83F;*/
-    /*float: left;*/
-/*}*/
-
 .logo {
     height: 45px;
     width: 100%;
@@ -26,7 +19,7 @@
 }
 
 .query {
-    height: 600px;
+    height: 560px;
     width: 100%;
     background: #81ffa7;
 }
@@ -111,23 +104,6 @@
     background: #81ffa7;
 }
 
-/*.info {*/
-    /*height: 200px;*/
-    /*width: 100%;*/
-/*}*/
-
-/*#farm_info {*/
-    /*background: #81ffa7;*/
-/*}*/
-
-/*#wind_turbine_info {*/
-    /*background: #ffffb8;*/
-/*}*/
-
-/*#fault_history {*/
-    /*background: #81ffa7;*/
-/*}*/
-
 input[type=submit] {
     background-color: rgb(30,160,255);
     color: white;
@@ -146,16 +122,16 @@ input[type=submit]:hover {
 }
 
 input[name=q] {
-    padding: 14px 20px;
+    padding: 12px 20px;
     width: 50%;
-    margin-top: 20px;
+    margin-top: 10px;
     left: 60px;
 }
 
-select, .layui-input, #low_cutoff, #high_cutoff {
+select, #from_time, #to_time, #from_rotate_speed, #to_rotate_speed, .cutoff {
     width: 50%;
     padding: 12px 20px;
-    margin: 18px 0 0 10px;
+    margin: 10px 0 0 10px;
     display: inline-block;
     border: 1px solid #ccc;
     border-radius: 4px;

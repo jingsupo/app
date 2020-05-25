@@ -29,49 +29,6 @@ function loading () {
     });
 }
 
-function draw_iframe (content, title, id, flag, data, params) {
-    layui.use('layer', function () {
-        let $ = layui.jquery, layer = layui.layer;
-
-        //触发事件
-        let active = {
-            setTop: function(){
-                let that = this;
-                //多窗口模式，层叠置顶
-                layer.open({
-                    type: 2 //iframe
-                    ,title: title
-                    ,area: ['37.5%', '70%']
-                    ,shade: 0
-                    ,maxmin: true
-                    ,offset: []
-                    ,content: content
-                    ,btn: ['全部关闭']
-                    ,yes: function(){
-                        layer.closeAll();
-                    }
-                    ,zIndex: layer.zIndex //重点1
-                    ,success: function(layero, index){
-                        layer.setTop(layero); //重点2
-                        //拿到iframe元素
-                        let iframe = window['layui-layer-iframe' + index];
-                        //调用子页面的全局函数
-                        iframe.child(flag, data, params);
-                    }
-                });
-            }
-        };
-
-        // 解决JQuery中click里面包含click事件，出现重复执行的问题
-        $("#"+id).unbind('click').on('click', function(){
-            let othis = $(this), method = othis.data('method');
-            active[method] ? active[method].call(this, othis) : '';
-            // 只允许点击一次按钮
-            btn_disabled(id);
-        });
-    });
-}
-
 let option_demo = {
     color: ['blue', '#00B83F', 'red', '#FF7F00', '#FF00FF', '#A020F0'],
     title: {
@@ -227,3 +184,101 @@ function deletemarkPoint (params, fig) {
         series: series
     });
 }
+
+function draw_iframe (content, title, id, flag, data, params) {
+    layui.use('layer', function () {
+        let $ = layui.jquery, layer = layui.layer;
+
+        //触发事件
+        let active = {
+            setTop: function(){
+                let that = this;
+                //多窗口模式，层叠置顶
+                layer.open({
+                    type: 2 //iframe
+                    ,title: title
+                    ,area: ['37.5%', '70%']
+                    ,shade: 0
+                    ,maxmin: true
+                    ,offset: []
+                    ,content: content
+                    ,btn: ['全部关闭']
+                    ,yes: function(){
+                        layer.closeAll();
+                    }
+                    ,zIndex: layer.zIndex //重点1
+                    ,success: function(layero, index){
+                        layer.setTop(layero); //重点2
+                        //拿到iframe元素
+                        let iframe = window['layui-layer-iframe' + index];
+                        //调用子页面的全局函数
+                        iframe.child(flag, data, params);
+                    }
+                });
+            }
+        };
+
+        // 解决JQuery中click里面包含click事件，出现重复执行的问题
+        $("#"+id).unbind('click').on('click', function(){
+            let othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+            // 只允许点击一次按钮
+            btn_disabled(id);
+        });
+    });
+}
+
+function draw(btn1, btn2, fig_side, low_cutoff_id, high_cutoff_id, farm_name, sn, criterion, data, params) {
+    document.getElementById(fig_side).style.display='';
+    let sampling_time = data[criterion][params.seriesName]['time'][params.dataIndex];
+    let dataset = {'farm_name': farm_name,
+        'wind_turbine_name': params.seriesName,
+        'point': sn[0]['name'],
+        'sampling_time': sampling_time,
+    };
+    let id1 = btn1;
+    // 激活按钮
+    btn_enabled(id1);
+    let id2 = btn2;
+    let lc = $('#'+low_cutoff_id);
+    let hc = $('#'+high_cutoff_id);
+    let low_cutoff = lc.val();
+    let high_cutoff = hc.val();
+    if (low_cutoff !== '' && high_cutoff !== '') {
+        // 激活按钮
+        btn_enabled(id2);
+    }
+    else {
+        // 禁用按钮
+        btn_disabled(id2);
+    }
+    if (low_cutoff !== '') {
+        dataset['low_cutoff'] = low_cutoff;
+    }
+    if (high_cutoff !== '') {
+        dataset['high_cutoff'] = high_cutoff;
+    }
+    lc.bind('input propertychange', function() {
+        if (lc.val() !== '' && hc.val() !== '') {
+            btn_enabled(id2);
+        }
+        else {
+            btn_disabled(id2);
+        }
+        low_cutoff = lc.val();
+        dataset['low_cutoff'] = low_cutoff;
+    });
+    hc.bind('input propertychange', function() {
+        if (lc.val() !== '' && hc.val() !== '') {
+            btn_enabled(id2);
+        }
+        else {
+            btn_disabled(id2);
+        }
+        high_cutoff = hc.val();
+        dataset['high_cutoff'] = high_cutoff;
+    });
+    draw_iframe('/draw', '时域频域图', id1, 1, dataset, params);
+    draw_iframe('/draw', '包络图', id2, 2, dataset, params);
+}
+

@@ -18,6 +18,7 @@
     <div class="left">
         <div class="logo"><img src="http://www.bj-nego.com/res/tpl/default/images/icon/logo.jpg" alt=""></div>
         <div class="query">
+            <h1 id="query_title"></h1>
             <div id="criterion_div">
                 <label for="criterion"> 标 准 </label>
                 <select id="criterion" name="criterion">
@@ -43,69 +44,21 @@
                 <select id="more_wind_turbine" name="more_wind_turbine" multiple="multiple" size="5">
                 </select>
             </div>
-            <div class="layui-inline" id="from_time_div">
+            <div id="from_time_div">
                 <label for="from_time">起始时间</label>
-                <div class="layui-input-inline">
-                    <input type="text" class="layui-input" id="from_time" placeholder="yyyyMMddHHmmss">
-                </div>
+                <input type="text" class="time" id="from_time" placeholder="yyyyMMddHHmmss">
             </div>
-            <div class="layui-inline" id="to_time_div">
+            <div id="to_time_div">
                 <label for="to_time">结束时间</label>
-                <div class="layui-input-inline">
-                    <input type="text" class="layui-input" id="to_time" placeholder="yyyyMMddHHmmss">
-                </div>
+                <input type="text" class="time" id="to_time" placeholder="yyyyMMddHHmmss">
             </div>
             <div id="from_rotate_speed_div">
                 <label for="from_rotate_speed">转速 From</label>
-                <select id="from_rotate_speed" name="from_rotate_speed">
-                <option value="0">选择转速</option>
-                <option value="1" selected="selected">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
-                <option value="11">11</option>
-                <option value="12">12</option>
-                <option value="13">13</option>
-                <option value="14">14</option>
-                <option value="15">15</option>
-                <option value="16">16</option>
-                <option value="17">17</option>
-                <option value="18">18</option>
-                <option value="19">19</option>
-                <option value="20">20</option>
-            </select>
+                <input type="text" class="rotate_speed" id="from_rotate_speed" placeholder="请输入转速">
             </div>
             <div id="to_rotate_speed_div">
                 <label for="to_rotate_speed">转速 To</label>
-                <select id="to_rotate_speed" name="to_rotate_speed">
-                <option value="0">选择转速</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
-                <option value="11">11</option>
-                <option value="12">12</option>
-                <option value="13">13</option>
-                <option value="14">14</option>
-                <option value="15">15</option>
-                <option value="16">16</option>
-                <option value="17">17</option>
-                <option value="18">18</option>
-                <option value="19">19</option>
-                <option value="20" selected="selected">20</option>
-            </select>
+                <input type="text" class="rotate_speed" id="to_rotate_speed" placeholder="请输入转速">
             </div>
             <br />
             <div id="fig_type_div">
@@ -115,10 +68,10 @@
             </div>
             <div id="cutoff_div">
                 <label for="low_cutoff">低截止频率</label>
-                <input type="text" id="low_cutoff" placeholder="请输入低截止频率">
+                <input type="text" class="cutoff" id="low_cutoff" placeholder="请输入低截止频率">
                 <br />
                 <label for="high_cutoff">高截止频率</label>
-                <input type="text" id="high_cutoff" placeholder="请输入高截止频率">
+                <input type="text" class="cutoff" id="high_cutoff" placeholder="请输入高截止频率">
             </div>
             <input type="submit" value="查询" id="q" name="q">
         </div>
@@ -140,25 +93,49 @@
         <div class="figure_side">
             <div id="fig1_side">
                 <button data-method="setTop" class="layui-btn" id="tf_1">时域频域图</button>
-                <div id="cutoff_div_1">
-                    <label for="low_cutoff_1">低截止频率</label>
-                    <input type="text" id="low_cutoff_1" placeholder="请输入低截止频率">
-                    <br />
-                    <label for="high_cutoff_1">高截止频率</label>
-                    <input type="text" id="high_cutoff_1" placeholder="请输入高截止频率">
-                    <br />
-                    <button data-method="setTop" class="layui-btn" id="env_1">包络图</button>
-                </div>
+                <br />
+                <label for="low_cutoff_1">低</label>
+                <input type="text" class="cutoff" id="low_cutoff_1" placeholder="请输入低截止频率">
+                <br />
+                <label for="high_cutoff_1">高</label>
+                <input type="text" class="cutoff" id="high_cutoff_1" placeholder="请输入高截止频率">
+                <br /><br />
+                <button data-method="setTop" class="layui-btn" id="env_1">包络图</button>
             </div>
-            <div id="fig2_side"></div>
-            <div id="fig3_side"></div>
-            <div id="fig4_side"></div>
+            <div id="fig2_side">
+                <button data-method="setTop" class="layui-btn" id="tf_2">时域频域图</button>
+                <br />
+                <label for="low_cutoff_1">低</label>
+                <input type="text" class="cutoff" id="low_cutoff_2" placeholder="请输入低截止频率">
+                <br />
+                <label for="high_cutoff_1">高</label>
+                <input type="text" class="cutoff" id="high_cutoff_2" placeholder="请输入高截止频率">
+                <br /><br />
+                <button data-method="setTop" class="layui-btn" id="env_2">包络图</button>
+            </div>
+            <div id="fig3_side">
+                <button data-method="setTop" class="layui-btn" id="tf_3">时域频域图</button>
+                <br />
+                <label for="low_cutoff_1">低</label>
+                <input type="text" class="cutoff" id="low_cutoff_3" placeholder="请输入低截止频率">
+                <br />
+                <label for="high_cutoff_1">高</label>
+                <input type="text" class="cutoff" id="high_cutoff_3" placeholder="请输入高截止频率">
+                <br /><br />
+                <button data-method="setTop" class="layui-btn" id="env_3">包络图</button>
+            </div>
+            <div id="fig4_side">
+                <button data-method="setTop" class="layui-btn" id="tf_4">时域频域图</button>
+                <br />
+                <label for="low_cutoff_1">低</label>
+                <input type="text" class="cutoff" id="low_cutoff_4" placeholder="请输入低截止频率">
+                <br />
+                <label for="high_cutoff_1">高</label>
+                <input type="text" class="cutoff" id="high_cutoff_4" placeholder="请输入高截止频率">
+                <br /><br />
+                <button data-method="setTop" class="layui-btn" id="env_4">包络图</button>
+            </div>
         </div>
     </div>
-    <!--<div class="right">-->
-        <!--<div id="farm_info" class="info">风场信息</div>-->
-        <!--<div id="wind_turbine_info" class="info">风机信息</div>-->
-        <!--<div id="fault_history" class="info">故障历史</div>-->
-    <!--</div>-->
 </body>
 </html>

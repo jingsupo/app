@@ -103,7 +103,7 @@ def q():
 
     rs = pd.DataFrame(rotate_speed.items())
 
-    if from_time != '' and to_time != '' and from_rotate_speed != '选择转速' and to_rotate_speed != '选择转速':
+    if from_time != '' and to_time != '' and from_rotate_speed != '' and to_rotate_speed != '':
         from_rotate_speed = float(from_rotate_speed)
         to_rotate_speed = float(to_rotate_speed)
         rs = rs[(rs.iloc[:, 0] >= from_time) & (rs.iloc[:, 0] <= to_time)]

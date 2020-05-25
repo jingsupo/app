@@ -46,8 +46,10 @@ $(document).ready(function () {
     document.getElementById('query_info').style.display='none';
     document.getElementById('tree1').style.display='none';
     document.getElementById('tree2').style.display='none';
-    document.getElementById('tf_1').style.display='none';
-    document.getElementById('cutoff_div_1').style.display='none';
+    document.getElementById('fig1_side').style.display='none';
+    document.getElementById('fig2_side').style.display='none';
+    document.getElementById('fig3_side').style.display='none';
+    document.getElementById('fig4_side').style.display='none';
     $.ajax({
         url: "/get_db_names",
         type: "POST",
@@ -135,10 +137,13 @@ $(document).ready(function () {
         let wind_turbine_name = $('#wind_turbine').find('option:selected').text();
         let from_time = $('#from_time').val();
         let to_time = $('#to_time').val();
-        let from_rotate_speed = $('#from_rotate_speed').find('option:selected').text();
-        let to_rotate_speed = $('#to_rotate_speed').find('option:selected').text();
+        let from_rotate_speed = $('#from_rotate_speed').val();
+        let to_rotate_speed = $('#to_rotate_speed').val();
         if (farm_name === '选择风场' || wind_turbine_name === '选择风机') {
             msg('请先选择相应项目！');
+        }
+        else if (from_rotate_speed === '' || to_rotate_speed === '') {
+            msg('请输入转速！');
         }
         else {
             let dataset = {'farm_name': farm_name,
@@ -218,6 +223,7 @@ $(document).ready(function () {
     $("input[name=tfe]").click(function () {
         // 设置点击标识为1
         flag = 1;
+        document.getElementById('query_title').innerHTML = '时域频域包络图';
         document.getElementById('criterion_div').style.display='none';
         document.getElementById('farm_div').style.display='';
         document.getElementById('wind_turbine_div').style.display='';
@@ -239,6 +245,7 @@ $(document).ready(function () {
     $("input[name=trend]").click(function () {
         // 设置点击标识为2
         flag = 2;
+        document.getElementById('query_title').innerHTML = '趋势图';
         document.getElementById('criterion_div').style.display='';
         document.getElementById('farm_div').style.display='';
         document.getElementById('wind_turbine_div').style.display='none';
@@ -326,23 +333,22 @@ function tfe () {
                 // 增加自定义参数而不覆盖原本的默认参数
                 fig1.on('click', (params) => {
                     addmarkPoint (params, fig1);
-                    document.getElementById('query_info').innerHTML = 'fig1';
                 });
                 fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
+
                 let option_freq = {};
                 setOption_tfe(fig2, option_freq, '频域图', 'freq', data, [wind_turbine_name]);
                 // 增加自定义参数而不覆盖原本的默认参数
                 fig2.on('click', (params) => {
                     addmarkPoint (params, fig2);
-                    document.getElementById('query_info').innerHTML = 'fig2';
                 });
                 fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
+
                 let option_envelope = {};
                 setOption_tfe(fig3, option_envelope, '包络图', 'envelope', data, [wind_turbine_name]);
                 // 增加自定义参数而不覆盖原本的默认参数
                 fig3.on('click', (params) => {
                     addmarkPoint (params, fig3);
-                    document.getElementById('query_info').innerHTML = 'fig3';
                 });
                 fig3.on('contextmenu', (params) => { deletemarkPoint (params, fig3) });
             }
@@ -378,8 +384,8 @@ function trend () {
     }
     let from_time = $('#from_time').val();
     let to_time = $('#to_time').val();
-    let from_rotate_speed = $('#from_rotate_speed').find('option:selected').text();
-    let to_rotate_speed = $('#to_rotate_speed').find('option:selected').text();
+    let from_rotate_speed = $('#from_rotate_speed').val();
+    let to_rotate_speed = $('#to_rotate_speed').val();
     let treeObj1 = $.fn.zTree.getZTreeObj("tree1");
     // 当前选中节点
     let sn = treeObj1.getSelectedNodes();
@@ -389,160 +395,116 @@ function trend () {
     else if (sn[0].hasOwnProperty('children') && sn[0].children.length > 0) {
         msg('请选择子节点！');
     }
+    else if (wind_turbine_selected.length === 0) {
+        msg('请选择风机！');
+    }
+    else if (from_rotate_speed === '' || to_rotate_speed === '') {
+        msg('请输入转速！');
+    }
     else {
-        if (wind_turbine_selected.length === 0) {
-            msg('请选择风机！');
-        }
-        else {
-            let dataset = {'farm_name': farm_name,
-                'point': sn[0]['name'],
-                'criterion': criterion,
-                'wind_turbine_selected': JSON.stringify(wind_turbine_selected),
-                'from_time': from_time,
-                'to_time': to_time,
-                'from_rotate_speed': from_rotate_speed,
-                'to_rotate_speed': to_rotate_speed,
-            };
-            $.ajax({
-                url: "/trend",
-                type: "POST",
-                data: dataset,
-                dataType: "json",
-                beforeSend: function () {
-                    loading();
-                },
-                complete: function () {
-                    setTimeout(function () {
-                        layer.closeAll('loading');
-                    }, 0);
-                },
-                success: function (data) {
-                    if (criterion === '1') {
-                        let option_ev = {};
-                        setOption_trend(fig1, option_ev, 'ev图', 'vdi', 'ev', data, wind_turbine_selected);
-                        // 增加自定义参数而不覆盖原本的默认参数
-                        fig1.on('click', (params) => {
-                            addmarkPoint (params, fig1);
-                        });
-                        fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
+        let dataset = {'farm_name': farm_name,
+            'point': sn[0]['name'],
+            'criterion': criterion,
+            'wind_turbine_selected': JSON.stringify(wind_turbine_selected),
+            'from_time': from_time,
+            'to_time': to_time,
+            'from_rotate_speed': from_rotate_speed,
+            'to_rotate_speed': to_rotate_speed,
+        };
+        $.ajax({
+            url: "/trend",
+            type: "POST",
+            data: dataset,
+            dataType: "json",
+            beforeSend: function () {
+                loading();
+            },
+            complete: function () {
+                setTimeout(function () {
+                    layer.closeAll('loading');
+                }, 0);
+            },
+            success: function (data) {
+                if (criterion === '1') {
+                    let option_ev = {};
+                    setOption_trend(fig1, option_ev, 'ev图', 'vdi', 'ev', data, wind_turbine_selected);
+                    // 增加自定义参数而不覆盖原本的默认参数
+                    fig1.on('click', (params) => {
+                        addmarkPoint (params, fig1);
+                        draw('tf_1', 'env_1', 'fig1_side', 'low_cutoff_1', 'high_cutoff_1', farm_name, sn, 'vdi', data, params);
+                    });
+                    fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
 
-                        let option_ev2 = {};
-                        setOption_trend(fig2, option_ev2, 'ev2图', 'vdi', 'ev2', data, wind_turbine_selected);
-                        fig2.on('click', (params) => {
-                            addmarkPoint (params, fig2);
-                        });
-                        fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
+                    let option_ev2 = {};
+                    setOption_trend(fig2, option_ev2, 'ev2图', 'vdi', 'ev2', data, wind_turbine_selected);
+                    fig2.on('click', (params) => {
+                        addmarkPoint (params, fig2);
+                        draw('tf_2', 'env_2', 'fig2_side', 'low_cutoff_2', 'high_cutoff_2', farm_name, sn, 'vdi', data, params);
+                    });
+                    fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
 
-                        let option_iv = {};
-                        setOption_trend(fig3, option_iv, 'iv图', 'vdi', 'iv', data, wind_turbine_selected);
-                        fig3.on('click', (params) => {
-                            addmarkPoint (params, fig3);
-                        });
-                        fig3.on('contextmenu', (params) => { deletemarkPoint (params, fig3) });
-                    }
-                    if (criterion === '2') {
-                        let option_k = {};
-                        setOption_trend(fig1, option_k, 'k图', 'dimensionless', 'kurtosisfactor', data, wind_turbine_selected);
-                        // 增加自定义参数而不覆盖原本的默认参数
-                        fig1.on('click', (params) => {
-                            addmarkPoint (params, fig1);
-                        });
-                        fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
-
-                        let option_p = {};
-                        setOption_trend(fig2, option_p, 'p图', 'dimensionless', 'pulsefactor', data, wind_turbine_selected);
-                        fig2.on('click', (params) => {
-                            addmarkPoint (params, fig2);
-                        });
-                        fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
-
-                        let option_k2 = {};
-                        setOption_trend(fig3, option_k2, 'k2图', 'dimensionless', 'kurtosisfactor2', data, wind_turbine_selected);
-                        fig3.on('click', (params) => {
-                            addmarkPoint (params, fig3);
-                        });
-                        fig3.on('contextmenu', (params) => { deletemarkPoint (params, fig3) });
-
-                        let option_p2 = {};
-                        setOption_trend(fig4, option_p2, 'p2图', 'dimensionless', 'pulsefactor2', data, wind_turbine_selected);
-                        fig4.on('click', (params) => {
-                            addmarkPoint (params, fig4);
-                        });
-                        fig4.on('contextmenu', (params) => { deletemarkPoint (params, fig4) });
-                    }
-                    if (criterion === '3') {
-                        let option_rms = {};
-                        setOption_trend(fig1, option_rms, 'rms图', 'narrowband', 'value_rms', data, wind_turbine_selected);
-                        // 增加自定义参数而不覆盖原本的默认参数
-                        fig1.on('click', (params) => {
-                            addmarkPoint (params, fig1);
-                            //******
-                            let sampling_time = data['narrowband'][params.seriesName]['time'][params.dataIndex];
-                            let dataset = {'farm_name': farm_name,
-                                'wind_turbine_name': params.seriesName,
-                                'point': sn[0]['name'],
-                                'sampling_time': sampling_time,
-                            };
-                            let id1 = 'tf_1';
-                            // 激活按钮
-                            btn_enabled(id1);
-                            document.getElementById(id1).style.display='';
-                            document.getElementById('cutoff_div_1').style.display='';
-                            let id2 = 'env_1';
-                            let lc = $('#low_cutoff_1');
-                            let hc = $('#high_cutoff_1');
-                            let low_cutoff = lc.val();
-                            let high_cutoff = hc.val();
-                            if (low_cutoff !== '' && high_cutoff !== '') {
-                                // 激活按钮
-                                btn_enabled(id2);
-                            }
-                            else {
-                                // 禁用按钮
-                                btn_disabled(id2);
-                            }
-                            if (low_cutoff !== '') {
-                                dataset['low_cutoff'] = low_cutoff;
-                            }
-                            if (high_cutoff !== '') {
-                                dataset['high_cutoff'] = high_cutoff;
-                            }
-                            lc.bind('input propertychange', function() {
-                                if (lc.val() !== '' && hc.val() !== '') {
-                                    btn_enabled(id2);
-                                }
-                                else {
-                                    btn_disabled(id2);
-                                }
-                                low_cutoff = lc.val();
-                                dataset['low_cutoff'] = low_cutoff;
-                            });
-                            hc.bind('input propertychange', function() {
-                                if (lc.val() !== '' && hc.val() !== '') {
-                                    btn_enabled(id2);
-                                }
-                                else {
-                                    btn_disabled(id2);
-                                }
-                                high_cutoff = hc.val();
-                                dataset['high_cutoff'] = high_cutoff;
-                            });
-                            draw_iframe('/draw', '时域频域图', id1, 1, dataset, params);
-                            draw_iframe('/draw', '包络图', id2, 2, dataset, params);
-                            //******
-                        });
-                        fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
-
-                        let option_kurtosis = {};
-                        setOption_trend(fig2, option_kurtosis, 'kurtosis图', 'narrowband', 'value_kurtosis', data, wind_turbine_selected);
-                        fig2.on('click', (params) => {
-                            addmarkPoint (params, fig2);
-                        });
-                        fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
-                    }
+                    let option_iv = {};
+                    setOption_trend(fig3, option_iv, 'iv图', 'vdi', 'iv', data, wind_turbine_selected);
+                    fig3.on('click', (params) => {
+                        addmarkPoint (params, fig3);
+                        draw('tf_3', 'env_3', 'fig3_side', 'low_cutoff_3', 'high_cutoff_3', farm_name, sn, 'vdi', data, params);
+                    });
+                    fig3.on('contextmenu', (params) => { deletemarkPoint (params, fig3) });
                 }
-            });
-        }
+                if (criterion === '2') {
+                    let option_k = {};
+                    setOption_trend(fig1, option_k, 'k图', 'dimensionless', 'kurtosisfactor', data, wind_turbine_selected);
+                    // 增加自定义参数而不覆盖原本的默认参数
+                    fig1.on('click', (params) => {
+                        addmarkPoint (params, fig1);
+                        draw('tf_1', 'env_1', 'fig1_side', 'low_cutoff_1', 'high_cutoff_1', farm_name, sn, 'dimensionless', data, params);
+                    });
+                    fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
+
+                    let option_p = {};
+                    setOption_trend(fig2, option_p, 'p图', 'dimensionless', 'pulsefactor', data, wind_turbine_selected);
+                    fig2.on('click', (params) => {
+                        addmarkPoint (params, fig2);
+                        draw('tf_2', 'env_2', 'fig2_side', 'low_cutoff_2', 'high_cutoff_2', farm_name, sn, 'dimensionless', data, params);
+                    });
+                    fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
+
+                    let option_k2 = {};
+                    setOption_trend(fig3, option_k2, 'k2图', 'dimensionless', 'kurtosisfactor2', data, wind_turbine_selected);
+                    fig3.on('click', (params) => {
+                        addmarkPoint (params, fig3);
+                        draw('tf_3', 'env_3', 'fig3_side', 'low_cutoff_3', 'high_cutoff_3', farm_name, sn, 'dimensionless', data, params);
+                    });
+                    fig3.on('contextmenu', (params) => { deletemarkPoint (params, fig3) });
+
+                    let option_p2 = {};
+                    setOption_trend(fig4, option_p2, 'p2图', 'dimensionless', 'pulsefactor2', data, wind_turbine_selected);
+                    fig4.on('click', (params) => {
+                        addmarkPoint (params, fig4);
+                        draw('tf_4', 'env_4', 'fig4_side', 'low_cutoff_4', 'high_cutoff_4', farm_name, sn, 'dimensionless', data, params);
+                    });
+                    fig4.on('contextmenu', (params) => { deletemarkPoint (params, fig4) });
+                }
+                if (criterion === '3') {
+                    let option_rms = {};
+                    setOption_trend(fig1, option_rms, 'rms图', 'narrowband', 'value_rms', data, wind_turbine_selected);
+                    // 增加自定义参数而不覆盖原本的默认参数
+                    fig1.on('click', (params) => {
+                        addmarkPoint (params, fig1);
+                        draw('tf_1', 'env_1', 'fig1_side', 'low_cutoff_1', 'high_cutoff_1', farm_name, sn, 'narrowband', data, params);
+                    });
+                    fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
+
+                    let option_kurtosis = {};
+                    setOption_trend(fig2, option_kurtosis, 'kurtosis图', 'narrowband', 'value_kurtosis', data, wind_turbine_selected);
+                    fig2.on('click', (params) => {
+                        addmarkPoint (params, fig2);
+                        draw('tf_2', 'env_2', 'fig2_side', 'low_cutoff_2', 'high_cutoff_2', farm_name, sn, 'narrowband', data, params);
+                    });
+                    fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
+                }
+            }
+        });
     }
 }
 
