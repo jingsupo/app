@@ -39,10 +39,14 @@ let option_demo = {
         triggerOn: 'mousemove|click',
     },
     legend: {
-        data: []
+        top:"6%",
+        data: [],
     },
     xAxis: {
         type: 'time',
+        name: '',
+        nameLocation: 'center',
+        nameGap: 35,
         max: 'dataMax',
         splitLine: {
             show: false
@@ -52,6 +56,9 @@ let option_demo = {
     },
     yAxis: {
         type: 'value',
+        name: '',
+        nameLocation: 'center',
+        nameGap: 35,
         boundaryGap: [0, '100%'],
         splitLine: {
             show: false
@@ -59,9 +66,9 @@ let option_demo = {
         scale: true,
     },
     series: [],
-    dataZoom: [{
-        //
-    }],
+    // dataZoom: [{
+    //     //
+    // }],
     toolbox: { // 工具栏
         feature: {
             dataZoom: { // 框选缩放功能
@@ -106,10 +113,12 @@ function setOption_tfe (fig, option, title_text, value, data, wind_turbine_selec
     }
 }
 
-function setOption_trend (fig, option, title_text, criterion, value, data, wind_turbine_selected) {
+function setOption_trend (fig, option, title_text, xAxis_name, yAxis_name, criterion, value, data, wind_turbine_selected) {
     // JSON对象复制-深拷贝
     option = JSON.parse(JSON.stringify(option_demo));
     option.title.text = title_text;
+    option.xAxis.name = xAxis_name;
+    option.yAxis.name = yAxis_name;
     for (let c in wind_turbine_selected) {
         option.legend.data.push(wind_turbine_selected[c]);
         let ser = {

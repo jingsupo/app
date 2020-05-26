@@ -494,6 +494,7 @@ def trend():
                 narrowband[c]['value_kurtosis'].append(dic)
 
     dataset = dict()
+    dataset['point'] = point
     dataset['vdi'] = vdi
     dataset['dimensionless'] = dimensionless
     dataset['narrowband'] = narrowband
