@@ -39,7 +39,7 @@ let option_demo = {
         triggerOn: 'mousemove|click',
     },
     legend: {
-        top:"6%",
+        top: '6%',
         data: [],
     },
     xAxis: {

@@ -439,16 +439,16 @@ function trend () {
                     });
                     fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
 
-                    let option_ev2 = {};
-                    setOption_trend(fig2, option_ev2, sn[0]['name']+'有效值(10-2000Hz)', '时间(s)', '加速度(m/s^2)', 'vdi', 'ev2', data, wind_turbine_selected);
+                    let option_iv = {};
+                    setOption_trend(fig2, option_iv, sn[0]['name']+'烈度(10-1000Hz)', '时间(s)', '速度(m/s)', 'vdi', 'iv', data, wind_turbine_selected);
                     fig2.on('click', (params) => {
                         addmarkPoint (params, fig2);
                         draw('tf_2', 'env_2', 'fig2_side', 'low_cutoff_2', 'high_cutoff_2', farm_name, sn, 'vdi', data, params);
                     });
                     fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
 
-                    let option_iv = {};
-                    setOption_trend(fig3, option_iv, sn[0]['name']+'烈度(10-1000Hz)', '时间(s)', '速度(m/s)', 'vdi', 'iv', data, wind_turbine_selected);
+                    let option_ev2 = {};
+                    setOption_trend(fig3, option_ev2, sn[0]['name']+'有效值(10-2000Hz)', '时间(s)', '加速度(m/s^2)', 'vdi', 'ev2', data, wind_turbine_selected);
                     fig3.on('click', (params) => {
                         addmarkPoint (params, fig3);
                         draw('tf_3', 'env_3', 'fig3_side', 'low_cutoff_3', 'high_cutoff_3', farm_name, sn, 'vdi', data, params);
