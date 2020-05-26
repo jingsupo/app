@@ -427,7 +427,7 @@ function trend () {
             success: function (data) {
                 if (criterion === '1') {
                     let cutoff = '(0.1-10Hz)';
-                    if (data['point'].charAt(data['point'].length-1) > 5) {
+                    if (data['point'].charAt(data['point'].length-1) > 6) {
                         cutoff = '(10-5000Hz)';
                     }
                     let option_ev = {};
@@ -457,7 +457,7 @@ function trend () {
                 }
                 if (criterion === '2') {
                     let cutoff = '(0.1-10Hz)';
-                    if (data['point'].charAt(data['point'].length-1) > 5) {
+                    if (data['point'].charAt(data['point'].length-1) > 6) {
                         cutoff = '(10-5000Hz)';
                     }
                     let option_k = {};
