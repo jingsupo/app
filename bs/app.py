@@ -79,7 +79,7 @@ def get_db_names():
 def farm():
     dbname = request.form.get('farm_name')
     db = client[dbname]
-    collection = [c for c in db.list_collection_names() if c not in ['information', 'eigen_value']]
+    collection = [c for c in db.list_collection_names() if c not in ['information', 'eigenvalue']]
     collection.sort()
 
     return jsonify(collection)
@@ -273,11 +273,11 @@ def trend():
     data = {}
     for c in collection:
         if criterion == '1':
-            data[c] = db['eigen_value'].find_one({'criterion': 'VDI3834', 'windturbine': c})
+            data[c] = db['eigenvalue'].find_one({'criterion': 'VDI3834', 'windturbine': c})
         if criterion == '2':
-            data[c] = db['eigen_value'].find_one({'criterion': 'dimensionless', 'windturbine': c})
+            data[c] = db['eigenvalue'].find_one({'criterion': 'dimensionless', 'windturbine': c})
         if criterion == '3':
-            data[c] = db['eigen_value'].find_one({'criterion': 'narrowband', 'windturbine': c})
+            data[c] = db['eigenvalue'].find_one({'criterion': 'narrowband', 'windturbine': c})
 
     if criterion == '1':
         for c in collection:
