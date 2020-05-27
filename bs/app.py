@@ -156,6 +156,7 @@ def tfe():
     point_description = db['information'].find_one({'desc': '机组信息'})['point_description']
     # 当前选中测点的中文描述对应的数据库中的键
     point = [key for key in point_description if point_description[key] == point_zh][0]
+    point_num = point.split('_')[-1]
 
     data = db[collection].find_one({'sampling_time': sampling_time})
 
@@ -171,7 +172,7 @@ def tfe():
             if 'data_length_drivechain' in data.keys():
                 data_length = str(data['data_length_drivechain'])
                 sampling_fre = data['sampling_fre_drivechain']
-            elif int(point[-1]) < 6:
+            elif int(point_num) < 6:
                 data_length = str(data['data_length_drivechain_15'])
                 sampling_fre = data['sampling_fre_drivechain_15']
             else:
@@ -187,7 +188,7 @@ def tfe():
             data_length = str(data['data_length_blade'])
             sampling_fre = data['sampling_fre_blade']
         else:
-            if int(point[-1]) < 6:
+            if int(point_num) < 6:
                 data_length = str(data['data_nums_15'][0])
                 sampling_fre = data['sampling_fre_15']
             else:
@@ -262,6 +263,7 @@ def trend():
     point_description = db['information'].find_one({'desc': '机组信息'})['point_description']
     # 当前选中测点的中文描述对应的数据库中的键
     point = [key for key in point_description if point_description[key] == point_zh][0]
+    point_num = point.split('_')[-1]
 
     # VDI数据
     vdi = {}
@@ -291,32 +293,32 @@ def trend():
             ev2 = []
             iv = []
 
-            if point[-1] == '1':
+            if point_num == '1':
                 ev = data[c]['EV_VDI_1']
                 iv = data[c]['IV_VDI_1']
-            elif point[-1] == '2':
+            elif point_num == '2':
                 ev = data[c]['EV_VDI_2']
                 iv = data[c]['IV_VDI_2']
-            elif point[-1] == '3':
+            elif point_num == '3':
                 ev = data[c]['EV_VDI_3']
                 ev2 = data[c]['EV2_VDI_3']
                 iv = data[c]['IV_VDI_3']
-            elif point[-1] == '4':
+            elif point_num == '4':
                 ev = data[c]['EV_VDI_4']
                 ev2 = data[c]['EV2_VDI_4']
                 iv = data[c]['IV_VDI_4']
-            elif point[-1] == '5':
+            elif point_num == '5':
                 ev = data[c]['EV_VDI_5']
                 ev2 = data[c]['EV2_VDI_5']
                 iv = data[c]['IV_VDI_5']
-            elif point[-1] == '6':
+            elif point_num == '6':
                 ev = data[c]['EV_VDI_6']
                 ev2 = data[c]['EV2_VDI_6']
                 iv = data[c]['IV_VDI_6']
-            elif point[-1] == '7':
+            elif point_num == '7':
                 ev = data[c]['EV_VDI_7']
                 iv = data[c]['IV_VDI_7']
-            elif point[-1] == '8':
+            elif point_num == '8':
                 ev = data[c]['EV_VDI_8']
                 iv = data[c]['IV_VDI_8']
 
@@ -369,36 +371,36 @@ def trend():
             pulsefactor = []
             pulsefactor2 = []
 
-            if point[-1] == '1':
+            if point_num == '1':
                 kurtosisfactor = data[c]['kurtosisfactor_1']
                 pulsefactor = data[c]['pulsefactor_1']
-            elif point[-1] == '2':
+            elif point_num == '2':
                 kurtosisfactor = data[c]['kurtosisfactor_2']
                 pulsefactor = data[c]['pulsefactor_2']
-            elif point[-1] == '3':
+            elif point_num == '3':
                 kurtosisfactor = data[c]['kurtosisfactor_3']
                 kurtosisfactor2 = data[c]['kurtosisfactor2_3']
                 pulsefactor = data[c]['pulsefactor_3']
                 pulsefactor2 = data[c]['pulsefactor2_3']
-            elif point[-1] == '4':
+            elif point_num == '4':
                 kurtosisfactor = data[c]['kurtosisfactor_4']
                 kurtosisfactor2 = data[c]['kurtosisfactor2_4']
                 pulsefactor = data[c]['pulsefactor_4']
                 pulsefactor2 = data[c]['pulsefactor2_4']
-            elif point[-1] == '5':
+            elif point_num == '5':
                 kurtosisfactor = data[c]['kurtosisfactor_5']
                 kurtosisfactor2 = data[c]['kurtosisfactor2_5']
                 pulsefactor = data[c]['pulsefactor_5']
                 pulsefactor2 = data[c]['pulsefactor2_5']
-            elif point[-1] == '6':
+            elif point_num == '6':
                 kurtosisfactor = data[c]['kurtosisfactor_6']
                 kurtosisfactor2 = data[c]['kurtosisfactor2_6']
                 pulsefactor = data[c]['pulsefactor_6']
                 pulsefactor2 = data[c]['pulsefactor2_6']
-            elif point[-1] == '7':
+            elif point_num == '7':
                 kurtosisfactor = data[c]['kurtosisfactor_7']
                 pulsefactor = data[c]['pulsefactor_7']
-            elif point[-1] == '8':
+            elif point_num == '8':
                 kurtosisfactor = data[c]['kurtosisfactor_8']
                 pulsefactor = data[c]['pulsefactor_8']
 
@@ -460,10 +462,10 @@ def trend():
             value_rms = []
             value_kurtosis = []
 
-            if point[-1] == '3':
+            if point_num == '3':
                 value_rms = data[c]['value_rms_3']
                 value_kurtosis = data[c]['value_kurtosis_3']
-            elif point[-1] == '4':
+            elif point_num == '4':
                 value_rms = data[c]['value_rms_4']
                 value_kurtosis = data[c]['value_kurtosis_4']
 
