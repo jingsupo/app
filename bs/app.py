@@ -317,10 +317,23 @@ def trend():
                 iv = data[c]['IV_VDI_6']
             elif point_num == '7':
                 ev = data[c]['EV_VDI_7']
+                if 'EV2_VDI_7' in data[c].keys():
+                    ev2 = data[c]['EV2_VDI_7']
                 iv = data[c]['IV_VDI_7']
             elif point_num == '8':
                 ev = data[c]['EV_VDI_8']
+                if 'EV2_VDI_8' in data[c].keys():
+                    ev2 = data[c]['EV2_VDI_8']
                 iv = data[c]['IV_VDI_8']
+            elif point_num == '9':
+                ev = data[c]['EV_VDI_9']
+                iv = data[c]['IV_VDI_9']
+            elif point_num == '10':
+                ev = data[c]['EV_VDI_10']
+                iv = data[c]['IV_VDI_10']
+            elif point_num == '11':
+                ev = data[c]['EV_VDI_11']
+                iv = data[c]['IV_VDI_11']
 
             ev = np.array(ev)[df.index]
             iv = np.array(iv)[df.index]
