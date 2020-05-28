@@ -132,6 +132,20 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
+    // 必须使用#id进行选择才有效果
+    $('#wind_turbine').change(function () {
+        let treeObj1 = $.fn.zTree.getZTreeObj("tree1");
+        if (treeObj1) {
+            treeObj1.destroy()
+        }
+        let treeObj2 = $.fn.zTree.getZTreeObj("tree2");
+        if (treeObj2) {
+            treeObj2.destroy()
+        }
+    });
+});
+
+$(document).ready(function () {
     $("input[name=q]").click(function () {
         let farm_name = $('#farm').find('option:selected').text();
         let wind_turbine_name = $('#wind_turbine').find('option:selected').text();
@@ -426,12 +440,90 @@ function trend () {
             },
             success: function (data) {
                 if (criterion === '1') {
+                    let warning_acc = {
+                        lineStyle: {
+                            color: 'orange'
+                        },
+                        name: '预警线',
+                        yAxis: 0.3
+                    };
+                    let alarm_acc = {
+                        lineStyle: {
+                            color: 'red'
+                        },
+                        name: '报警线',
+                        yAxis: 0.5
+                    };
+                    let warning_vel = {
+                        lineStyle: {
+                            color: 'orange'
+                        },
+                        name: '预警线',
+                        yAxis: 2.0
+                    };
+                    let alarm_vel = {
+                        lineStyle: {
+                            color: 'red'
+                        },
+                        name: '报警线',
+                        yAxis: 3.2
+                    };
+                    let warning2_acc = {
+                        lineStyle: {
+                            color: 'orange'
+                        },
+                        name: '预警线',
+                        yAxis: 7.5
+                    };
+                    let alarm2_acc = {
+                        lineStyle: {
+                            color: 'red'
+                        },
+                        name: '报警线',
+                        yAxis: 12
+                    };
                     let cutoff = '(0.1-10Hz)';
-                    if (data['point'].charAt(data['point'].length-1) > 6) {
-                        cutoff = '(10-5000Hz)';
+                    if (data['point_cnt'] === 8) {
+                        if (data['point_num'] > 2 && data['point_num'] < 7) {
+                            warning_vel.yAxis = 3.5;
+                            alarm_vel.yAxis = 5.6;
+                        }
+                        if (data['point_num'] > 6) {
+                            warning_acc.yAxis = 10;
+                            alarm_acc.yAxis = 16;
+                            warning_vel.yAxis = 6;
+                            alarm_vel.yAxis = 10;
+                            cutoff = '(10-5000Hz)';
+                        }
                     }
+                    if (data['point_cnt'] === 11) {
+                        if (data['point_num'] > 2 && data['point_num'] < 9) {
+                            warning_vel.yAxis = 3.5;
+                            alarm_vel.yAxis = 5.6;
+                        }
+                        if (data['point_num'] > 8) {
+                            warning_acc.yAxis = 10;
+                            alarm_acc.yAxis = 16;
+                            warning_vel.yAxis = 6;
+                            alarm_vel.yAxis = 10;
+                            cutoff = '(10-5000Hz)';
+                        }
+                    }
+
                     let option_ev = {};
                     setOption_trend(fig1, option_ev, sn[0]['name']+'有效值'+cutoff, '时间(s)', '加速度(m/s^2)', 'vdi', 'ev', data, wind_turbine_selected);
+                    fig1.setOption({
+                        series: [{
+                            markLine: {
+                                silent: true,
+                                symbol: 'none',
+                                label: {
+                                    formatter: '{b}: {c}'
+                                },
+                                data: [warning_acc, alarm_acc]
+                            }
+                        }]
+                    });
                     // 增加自定义参数而不覆盖原本的默认参数
                     fig1.on('click', (params) => {
                         addmarkPoint (params, fig1);
@@ -441,6 +533,18 @@ function trend () {
 
                     let option_iv = {};
                     setOption_trend(fig2, option_iv, sn[0]['name']+'烈度(10-1000Hz)', '时间(s)', '速度(m/s)', 'vdi', 'iv', data, wind_turbine_selected);
+                    fig2.setOption({
+                        series: [{
+                            markLine: {
+                                silent: true,
+                                symbol: 'none',
+                                label: {
+                                    formatter: '{b}: {c}'
+                                },
+                                data: [warning_vel, alarm_vel]
+                            }
+                        }]
+                    });
                     fig2.on('click', (params) => {
                         addmarkPoint (params, fig2);
                         draw('tf_2', 'env_2', 'fig2_side', 'low_cutoff_2', 'high_cutoff_2', farm_name, sn, 'vdi', data, params);
@@ -449,6 +553,38 @@ function trend () {
 
                     let option_ev2 = {};
                     setOption_trend(fig3, option_ev2, sn[0]['name']+'有效值(10-2000Hz)', '时间(s)', '加速度(m/s^2)', 'vdi', 'ev2', data, wind_turbine_selected);
+                    if (data['point_cnt'] === 8) {
+                        if (data['point_num'] > 2 && data['point_num'] < 7) {
+                            fig3.setOption({
+                                series: [{
+                                    markLine: {
+                                        silent: true,
+                                        symbol: 'none',
+                                        label: {
+                                            formatter: '{b}: {c}'
+                                        },
+                                        data: [warning2_acc, alarm2_acc]
+                                    }
+                                }]
+                            });
+                        }
+                    }
+                    if (data['point_cnt'] === 11) {
+                        if (data['point_num'] > 2 && data['point_num'] < 9) {
+                            fig3.setOption({
+                                series: [{
+                                    markLine: {
+                                        silent: true,
+                                        symbol: 'none',
+                                        label: {
+                                            formatter: '{b}: {c}'
+                                        },
+                                        data: [warning2_acc, alarm2_acc]
+                                    }
+                                }]
+                            });
+                        }
+                    }
                     fig3.on('click', (params) => {
                         addmarkPoint (params, fig3);
                         draw('tf_3', 'env_3', 'fig3_side', 'low_cutoff_3', 'high_cutoff_3', farm_name, sn, 'vdi', data, params);
@@ -457,7 +593,7 @@ function trend () {
                 }
                 if (criterion === '2') {
                     let cutoff = '(0.1-10Hz)';
-                    if (data['point'].charAt(data['point'].length-1) > 6) {
+                    if (data['point_num'] > 6) {
                         cutoff = '(10-5000Hz)';
                     }
                     let option_k = {};

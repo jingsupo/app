@@ -347,6 +347,8 @@ def trend():
                 ret = pd.concat([ret, pd.Series(ev2).rename('ev2')], axis=1)
                 ret['ev2'] = ret['ev2'].round(decimals=6)
             ret['date'] = pd.to_datetime(ret['time']).map(lambda x: x.strftime('%Y/%m/%d %H:%M:%S'))
+            # 个别机组特征值中存在NaN，需要删除，否则数据传不回前端
+            ret = ret.dropna()
             ret = ret.sort_values(by='date')
             ret.reset_index(drop=True, inplace=True)
 
@@ -509,7 +511,8 @@ def trend():
                 narrowband[c]['value_kurtosis'].append(dic)
 
     dataset = dict()
-    dataset['point'] = point
+    dataset['point_cnt'] = len(point_description.keys())
+    dataset['point_num'] = point_num
     dataset['vdi'] = vdi
     dataset['dimensionless'] = dimensionless
     dataset['narrowband'] = narrowband

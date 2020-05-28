@@ -59,11 +59,19 @@ let option_demo = {
         name: '',
         nameLocation: 'center',
         nameGap: 35,
+        max: function(value) {
+            if (value.max > 1) {
+                return value.max;
+            }
+            else {
+                return 1;
+            }
+        },
         boundaryGap: [0, '100%'],
         splitLine: {
             show: false
         },
-        scale: true,
+        // scale: true,
     },
     series: [],
     // dataZoom: [{
@@ -134,7 +142,10 @@ function setOption_trend (fig, option, title_text, xAxis_name, yAxis_name, crite
             data: data[criterion][wind_turbine_selected[c]][value],
             markPoint: {
                 data: [],
-            }
+            },
+            markLine: {
+                data: [],
+            },
         };
         option.series.push(ser);
     }
