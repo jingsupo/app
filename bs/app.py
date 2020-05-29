@@ -292,87 +292,95 @@ def trend():
             ev = []
             ev2 = []
             iv = []
+            ret = pd.DataFrame()
 
-            if point_num == '1':
-                ev = data[c]['EV_VDI_1']
-                iv = data[c]['IV_VDI_1']
-            elif point_num == '2':
-                ev = data[c]['EV_VDI_2']
-                iv = data[c]['IV_VDI_2']
-            elif point_num == '3':
-                ev = data[c]['EV_VDI_3']
-                ev2 = data[c]['EV2_VDI_3']
-                iv = data[c]['IV_VDI_3']
-            elif point_num == '4':
-                ev = data[c]['EV_VDI_4']
-                ev2 = data[c]['EV2_VDI_4']
-                iv = data[c]['IV_VDI_4']
-            elif point_num == '5':
-                ev = data[c]['EV_VDI_5']
-                ev2 = data[c]['EV2_VDI_5']
-                iv = data[c]['IV_VDI_5']
-            elif point_num == '6':
-                ev = data[c]['EV_VDI_6']
-                ev2 = data[c]['EV2_VDI_6']
-                iv = data[c]['IV_VDI_6']
-            elif point_num == '7':
-                ev = data[c]['EV_VDI_7']
-                if 'EV2_VDI_7' in data[c].keys():
-                    ev2 = data[c]['EV2_VDI_7']
-                iv = data[c]['IV_VDI_7']
-            elif point_num == '8':
-                ev = data[c]['EV_VDI_8']
-                if 'EV2_VDI_8' in data[c].keys():
-                    ev2 = data[c]['EV2_VDI_8']
-                iv = data[c]['IV_VDI_8']
-            elif point_num == '9':
-                ev = data[c]['EV_VDI_9']
-                iv = data[c]['IV_VDI_9']
-            elif point_num == '10':
-                ev = data[c]['EV_VDI_10']
-                iv = data[c]['IV_VDI_10']
-            elif point_num == '11':
-                ev = data[c]['EV_VDI_11']
-                iv = data[c]['IV_VDI_11']
+            if 'drivechain_' in point or 'vibration_' in point:
+                if point_num == '1':
+                    ev = data[c]['EV_VDI_1']
+                    iv = data[c]['IV_VDI_1']
+                elif point_num == '2':
+                    ev = data[c]['EV_VDI_2']
+                    if 'EV2_VDI_2' in data[c].keys():
+                        ev2 = data[c]['EV2_VDI_2']
+                    iv = data[c]['IV_VDI_2']
+                elif point_num == '3':
+                    ev = data[c]['EV_VDI_3']
+                    ev2 = data[c]['EV2_VDI_3']
+                    iv = data[c]['IV_VDI_3']
+                elif point_num == '4':
+                    ev = data[c]['EV_VDI_4']
+                    ev2 = data[c]['EV2_VDI_4']
+                    iv = data[c]['IV_VDI_4']
+                elif point_num == '5':
+                    ev = data[c]['EV_VDI_5']
+                    if 'EV2_VDI_5' in data[c].keys():
+                        ev2 = data[c]['EV2_VDI_5']
+                    iv = data[c]['IV_VDI_5']
+                elif point_num == '6':
+                    ev = data[c]['EV_VDI_6']
+                    if 'EV2_VDI_6' in data[c].keys():
+                        ev2 = data[c]['EV2_VDI_6']
+                    iv = data[c]['IV_VDI_6']
+                elif point_num == '7':
+                    ev = data[c]['EV_VDI_7']
+                    if 'EV2_VDI_7' in data[c].keys():
+                        ev2 = data[c]['EV2_VDI_7']
+                    iv = data[c]['IV_VDI_7']
+                elif point_num == '8':
+                    ev = data[c]['EV_VDI_8']
+                    if 'EV2_VDI_8' in data[c].keys():
+                        ev2 = data[c]['EV2_VDI_8']
+                    iv = data[c]['IV_VDI_8']
+                elif point_num == '9':
+                    ev = data[c]['EV_VDI_9']
+                    iv = data[c]['IV_VDI_9']
+                elif point_num == '10':
+                    ev = data[c]['EV_VDI_10']
+                    iv = data[c]['IV_VDI_10']
+                elif point_num == '11':
+                    ev = data[c]['EV_VDI_11']
+                    iv = data[c]['IV_VDI_11']
 
-            ev = np.array(ev)[df.index]
-            iv = np.array(iv)[df.index]
-            new_df = df.reset_index(drop=True).rename(columns={0: 'time', 1: 'rotate_speed'})
-            ret = pd.concat([new_df, pd.Series(ev).rename('ev')], axis=1)
-            ret = pd.concat([ret, pd.Series(iv).rename('iv')], axis=1)
-            ret['ev'] = ret['ev'].round(decimals=6)
-            ret['iv'] = ret['iv'].round(decimals=6)
+            if ev and iv:
+                ev = np.array(ev)[df.index]
+                iv = np.array(iv)[df.index]
+                new_df = df.reset_index(drop=True).rename(columns={0: 'time', 1: 'rotate_speed'})
+                ret = pd.concat([new_df, pd.Series(ev).rename('ev')], axis=1)
+                ret = pd.concat([ret, pd.Series(iv).rename('iv')], axis=1)
+                ret['ev'] = ret['ev'].round(decimals=6)
+                ret['iv'] = ret['iv'].round(decimals=6)
             if ev2:
                 ev2 = np.array(ev2)[df.index]
                 ret = pd.concat([ret, pd.Series(ev2).rename('ev2')], axis=1)
                 ret['ev2'] = ret['ev2'].round(decimals=6)
-            ret['date'] = pd.to_datetime(ret['time']).map(lambda x: x.strftime('%Y/%m/%d %H:%M:%S'))
-            # 个别机组特征值中存在NaN，需要删除，否则数据传不回前端
-            ret = ret.dropna()
-            ret = ret.sort_values(by='date')
-            ret.reset_index(drop=True, inplace=True)
+            if not ret.empty:
+                ret['date'] = pd.to_datetime(ret['time']).map(lambda x: x.strftime('%Y/%m/%d %H:%M:%S'))
+                # 个别机组特征值中存在NaN，需要删除，否则数据传不回前端
+                ret = ret.dropna()
+                ret = ret.sort_values(by='date')
+                ret.reset_index(drop=True, inplace=True)
 
-            vdi[c] = {}
-            vdi[c]['ev'] = []
-            vdi[c]['ev2'] = []
-            vdi[c]['iv'] = []
-            vdi[c]['time'] = ret['time'].tolist()
-            for v in zip(ret['date'], ret['ev']):
-                dic = dict()
-                dic['name'] = 'ev'
-                dic['value'] = v
-                vdi[c]['ev'].append(dic)
-            for v in zip(ret['date'], ret['iv']):
-                dic = dict()
-                dic['name'] = 'iv'
-                dic['value'] = v
-                vdi[c]['iv'].append(dic)
-            if 'ev2' in ret.columns:
-                for v in zip(ret['date'], ret['ev2']):
+                vdi[c] = {}
+                vdi[c]['ev'] = []
+                vdi[c]['ev2'] = []
+                vdi[c]['iv'] = []
+                vdi[c]['time'] = ret['time'].tolist()
+                for v in zip(ret['date'], ret['ev']):
                     dic = dict()
-                    dic['name'] = 'ev2'
+                    dic['name'] = 'ev'
                     dic['value'] = v
-                    vdi[c]['ev2'].append(dic)
+                    vdi[c]['ev'].append(dic)
+                for v in zip(ret['date'], ret['iv']):
+                    dic = dict()
+                    dic['name'] = 'iv'
+                    dic['value'] = v
+                    vdi[c]['iv'].append(dic)
+                if 'ev2' in ret.columns:
+                    for v in zip(ret['date'], ret['ev2']):
+                        dic = dict()
+                        dic['name'] = 'ev2'
+                        dic['value'] = v
+                        vdi[c]['ev2'].append(dic)
     if criterion == '2':
         for c in collection:
             df = pd.DataFrame([data[c]['date_time'], data[c]['rotate_speed']]).T
@@ -511,8 +519,8 @@ def trend():
                 narrowband[c]['value_kurtosis'].append(dic)
 
     dataset = dict()
-    dataset['point_cnt'] = len(point_description.keys())
-    dataset['point_num'] = point_num
+    # dataset['point_cnt'] = len(point_description.keys())
+    # dataset['point_num'] = point_num
     dataset['vdi'] = vdi
     dataset['dimensionless'] = dimensionless
     dataset['narrowband'] = narrowband

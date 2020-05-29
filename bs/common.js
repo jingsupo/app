@@ -249,12 +249,12 @@ function draw_iframe (content, title, id, flag, data, params) {
     });
 }
 
-function draw(btn1, btn2, fig_side, low_cutoff_id, high_cutoff_id, farm_name, sn, criterion, data, params) {
+function draw(btn1, btn2, fig_side, low_cutoff_id, high_cutoff_id, farm_name, point_name, criterion, data, params) {
     document.getElementById(fig_side).style.display='';
     let sampling_time = data[criterion][params.seriesName]['time'][params.dataIndex];
     let dataset = {'farm_name': farm_name,
         'wind_turbine_name': params.seriesName,
-        'point': sn[0]['name'],
+        'point': point_name,
         'sampling_time': sampling_time,
     };
     let id1 = btn1;

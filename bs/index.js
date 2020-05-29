@@ -416,8 +416,9 @@ function trend () {
         msg('请输入转速！');
     }
     else {
+        let point_name = sn[0]['name'];
         let dataset = {'farm_name': farm_name,
-            'point': sn[0]['name'],
+            'point': point_name,
             'criterion': criterion,
             'wind_turbine_selected': JSON.stringify(wind_turbine_selected),
             'from_time': from_time,
@@ -483,35 +484,21 @@ function trend () {
                         yAxis: 12
                     };
                     let cutoff = '(0.1-10Hz)';
-                    if (data['point_cnt'] === 8) {
-                        if (data['point_num'] > 2 && data['point_num'] < 7) {
-                            warning_vel.yAxis = 3.5;
-                            alarm_vel.yAxis = 5.6;
-                        }
-                        if (data['point_num'] > 6) {
-                            warning_acc.yAxis = 10;
-                            alarm_acc.yAxis = 16;
-                            warning_vel.yAxis = 6;
-                            alarm_vel.yAxis = 10;
-                            cutoff = '(10-5000Hz)';
-                        }
+
+                    if (point_name.indexOf('齿轮箱') !== -1) {
+                        warning_vel.yAxis = 3.5;
+                        alarm_vel.yAxis = 5.6;
                     }
-                    if (data['point_cnt'] === 11) {
-                        if (data['point_num'] > 2 && data['point_num'] < 9) {
-                            warning_vel.yAxis = 3.5;
-                            alarm_vel.yAxis = 5.6;
-                        }
-                        if (data['point_num'] > 8) {
-                            warning_acc.yAxis = 10;
-                            alarm_acc.yAxis = 16;
-                            warning_vel.yAxis = 6;
-                            alarm_vel.yAxis = 10;
-                            cutoff = '(10-5000Hz)';
-                        }
+                    if (point_name.indexOf('发电机') !== -1) {
+                        warning_acc.yAxis = 10;
+                        alarm_acc.yAxis = 16;
+                        warning_vel.yAxis = 6;
+                        alarm_vel.yAxis = 10;
+                        cutoff = '(10-5000Hz)';
                     }
 
                     let option_ev = {};
-                    setOption_trend(fig1, option_ev, sn[0]['name']+'有效值'+cutoff, '时间(s)', '加速度(m/s^2)', 'vdi', 'ev', data, wind_turbine_selected);
+                    setOption_trend(fig1, option_ev, point_name+'有效值'+cutoff, '时间(s)', '加速度(m/s^2)', 'vdi', 'ev', data, wind_turbine_selected);
                     fig1.setOption({
                         series: [{
                             markLine: {
@@ -527,12 +514,12 @@ function trend () {
                     // 增加自定义参数而不覆盖原本的默认参数
                     fig1.on('click', (params) => {
                         addmarkPoint (params, fig1);
-                        draw('tf_1', 'env_1', 'fig1_side', 'low_cutoff_1', 'high_cutoff_1', farm_name, sn, 'vdi', data, params);
+                        draw('tf_1', 'env_1', 'fig1_side', 'low_cutoff_1', 'high_cutoff_1', farm_name, point_name, 'vdi', data, params);
                     });
                     fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
 
                     let option_iv = {};
-                    setOption_trend(fig2, option_iv, sn[0]['name']+'烈度(10-1000Hz)', '时间(s)', '速度(m/s)', 'vdi', 'iv', data, wind_turbine_selected);
+                    setOption_trend(fig2, option_iv, point_name+'烈度(10-1000Hz)', '时间(s)', '速度(m/s)', 'vdi', 'iv', data, wind_turbine_selected);
                     fig2.setOption({
                         series: [{
                             markLine: {
@@ -547,103 +534,85 @@ function trend () {
                     });
                     fig2.on('click', (params) => {
                         addmarkPoint (params, fig2);
-                        draw('tf_2', 'env_2', 'fig2_side', 'low_cutoff_2', 'high_cutoff_2', farm_name, sn, 'vdi', data, params);
+                        draw('tf_2', 'env_2', 'fig2_side', 'low_cutoff_2', 'high_cutoff_2', farm_name, point_name, 'vdi', data, params);
                     });
                     fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
 
                     let option_ev2 = {};
-                    setOption_trend(fig3, option_ev2, sn[0]['name']+'有效值(10-2000Hz)', '时间(s)', '加速度(m/s^2)', 'vdi', 'ev2', data, wind_turbine_selected);
-                    if (data['point_cnt'] === 8) {
-                        if (data['point_num'] > 2 && data['point_num'] < 7) {
-                            fig3.setOption({
-                                series: [{
-                                    markLine: {
-                                        silent: true,
-                                        symbol: 'none',
-                                        label: {
-                                            formatter: '{b}: {c}'
-                                        },
-                                        data: [warning2_acc, alarm2_acc]
-                                    }
-                                }]
-                            });
-                        }
-                    }
-                    if (data['point_cnt'] === 11) {
-                        if (data['point_num'] > 2 && data['point_num'] < 9) {
-                            fig3.setOption({
-                                series: [{
-                                    markLine: {
-                                        silent: true,
-                                        symbol: 'none',
-                                        label: {
-                                            formatter: '{b}: {c}'
-                                        },
-                                        data: [warning2_acc, alarm2_acc]
-                                    }
-                                }]
-                            });
-                        }
+                    setOption_trend(fig3, option_ev2, point_name+'有效值(10-2000Hz)', '时间(s)', '加速度(m/s^2)', 'vdi', 'ev2', data, wind_turbine_selected);
+                    if (point_name.indexOf('齿轮箱') !== -1) {
+                        fig3.setOption({
+                            series: [{
+                                markLine: {
+                                    silent: true,
+                                    symbol: 'none',
+                                    label: {
+                                        formatter: '{b}: {c}'
+                                    },
+                                    data: [warning2_acc, alarm2_acc]
+                                }
+                            }]
+                        });
                     }
                     fig3.on('click', (params) => {
                         addmarkPoint (params, fig3);
-                        draw('tf_3', 'env_3', 'fig3_side', 'low_cutoff_3', 'high_cutoff_3', farm_name, sn, 'vdi', data, params);
+                        draw('tf_3', 'env_3', 'fig3_side', 'low_cutoff_3', 'high_cutoff_3', farm_name, point_name, 'vdi', data, params);
                     });
                     fig3.on('contextmenu', (params) => { deletemarkPoint (params, fig3) });
                 }
                 if (criterion === '2') {
                     let cutoff = '(0.1-10Hz)';
-                    if (data['point_num'] > 6) {
+                    if (point_name.indexOf('发电机') !== -1) {
                         cutoff = '(10-5000Hz)';
                     }
                     let option_k = {};
-                    setOption_trend(fig1, option_k, sn[0]['name']+'峭度'+cutoff, '时间(s)', '峭度', 'dimensionless', 'kurtosisfactor', data, wind_turbine_selected);
+                    setOption_trend(fig1, option_k, point_name+'峭度'+cutoff, '时间(s)', '峭度', 'dimensionless', 'kurtosisfactor', data, wind_turbine_selected);
                     // 增加自定义参数而不覆盖原本的默认参数
                     fig1.on('click', (params) => {
                         addmarkPoint (params, fig1);
-                        draw('tf_1', 'env_1', 'fig1_side', 'low_cutoff_1', 'high_cutoff_1', farm_name, sn, 'dimensionless', data, params);
+                        draw('tf_1', 'env_1', 'fig1_side', 'low_cutoff_1', 'high_cutoff_1', farm_name, point_name, 'dimensionless', data, params);
                     });
                     fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
 
                     let option_p = {};
-                    setOption_trend(fig2, option_p, sn[0]['name']+'脉冲因子'+cutoff, '时间(s)', '脉冲因子', 'dimensionless', 'pulsefactor', data, wind_turbine_selected);
+                    setOption_trend(fig2, option_p, point_name+'脉冲因子'+cutoff, '时间(s)', '脉冲因子', 'dimensionless', 'pulsefactor', data, wind_turbine_selected);
                     fig2.on('click', (params) => {
                         addmarkPoint (params, fig2);
-                        draw('tf_2', 'env_2', 'fig2_side', 'low_cutoff_2', 'high_cutoff_2', farm_name, sn, 'dimensionless', data, params);
+                        draw('tf_2', 'env_2', 'fig2_side', 'low_cutoff_2', 'high_cutoff_2', farm_name, point_name, 'dimensionless', data, params);
                     });
                     fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
 
                     let option_k2 = {};
-                    setOption_trend(fig3, option_k2, sn[0]['name']+'峭度(10-2000Hz)', '时间(s)', '峭度', 'dimensionless', 'kurtosisfactor2', data, wind_turbine_selected);
+                    setOption_trend(fig3, option_k2, point_name+'峭度(10-2000Hz)', '时间(s)', '峭度', 'dimensionless', 'kurtosisfactor2', data, wind_turbine_selected);
                     fig3.on('click', (params) => {
                         addmarkPoint (params, fig3);
-                        draw('tf_3', 'env_3', 'fig3_side', 'low_cutoff_3', 'high_cutoff_3', farm_name, sn, 'dimensionless', data, params);
+                        draw('tf_3', 'env_3', 'fig3_side', 'low_cutoff_3', 'high_cutoff_3', farm_name, point_name, 'dimensionless', data, params);
                     });
                     fig3.on('contextmenu', (params) => { deletemarkPoint (params, fig3) });
 
                     let option_p2 = {};
-                    setOption_trend(fig4, option_p2, sn[0]['name']+'脉冲因子(10-2000Hz)', '时间(s)', '脉冲因子', 'dimensionless', 'pulsefactor2', data, wind_turbine_selected);
+                    setOption_trend(fig4, option_p2, point_name+'脉冲因子(10-2000Hz)', '时间(s)', '脉冲因子', 'dimensionless', 'pulsefactor2', data, wind_turbine_selected);
                     fig4.on('click', (params) => {
                         addmarkPoint (params, fig4);
-                        draw('tf_4', 'env_4', 'fig4_side', 'low_cutoff_4', 'high_cutoff_4', farm_name, sn, 'dimensionless', data, params);
+                        draw('tf_4', 'env_4', 'fig4_side', 'low_cutoff_4', 'high_cutoff_4', farm_name, point_name, 'dimensionless', data, params);
                     });
                     fig4.on('contextmenu', (params) => { deletemarkPoint (params, fig4) });
                 }
                 if (criterion === '3') {
                     let option_rms = {};
-                    setOption_trend(fig1, option_rms, sn[0]['name']+'有效值', '时间(s)', '加速度(m/s^2)', 'narrowband', 'value_rms', data, wind_turbine_selected);
+                    setOption_trend(fig1, option_rms, point_name+'有效值', '时间(s)', '加速度(m/s^2)', 'narrowband', 'value_rms', data, wind_turbine_selected);
                     // 增加自定义参数而不覆盖原本的默认参数
                     fig1.on('click', (params) => {
                         addmarkPoint (params, fig1);
-                        draw('tf_1', 'env_1', 'fig1_side', 'low_cutoff_1', 'high_cutoff_1', farm_name, sn, 'narrowband', data, params);
+                        draw('tf_1', 'env_1', 'fig1_side', 'low_cutoff_1', 'high_cutoff_1', farm_name, point_name, 'narrowband', data, params);
                     });
                     fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
 
                     let option_kurtosis = {};
-                    setOption_trend(fig2, option_kurtosis, sn[0]['name']+'峭度', '时间(s)', '峭度', 'narrowband', 'value_kurtosis', data, wind_turbine_selected);
+                    setOption_trend(fig2, option_kurtosis, point_name+'峭度', '时间(s)', '峭度', 'narrowband', 'value_kurtosis', data, wind_turbine_selected);
                     fig2.on('click', (params) => {
                         addmarkPoint (params, fig2);
-                        draw('tf_2', 'env_2', 'fig2_side', 'low_cutoff_2', 'high_cutoff_2', farm_name, sn, 'narrowband', data, params);
+                        draw('tf_2', 'env_2', 'fig2_side', 'low_cutoff_2', 'high_cutoff_2', farm_name, point_name, 'narrowband', data, params);
                     });
                     fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
                 }
