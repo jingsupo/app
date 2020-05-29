@@ -237,7 +237,7 @@ $(document).ready(function () {
     $("input[name=tfe]").click(function () {
         // 设置点击标识为1
         flag = 1;
-        document.getElementById('query_title').innerHTML = '时域频域包络图';
+        document.getElementById('collapse').innerHTML = '时域频域包络图';
         document.getElementById('criterion_div').style.display='none';
         document.getElementById('farm_div').style.display='';
         document.getElementById('wind_turbine_div').style.display='';
@@ -259,7 +259,7 @@ $(document).ready(function () {
     $("input[name=trend]").click(function () {
         // 设置点击标识为2
         flag = 2;
-        document.getElementById('query_title').innerHTML = '趋势图';
+        document.getElementById('collapse').innerHTML = '趋势图';
         document.getElementById('criterion_div').style.display='';
         document.getElementById('farm_div').style.display='';
         document.getElementById('wind_turbine_div').style.display='none';

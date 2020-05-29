@@ -170,7 +170,7 @@ function addmarkPoint (params, fig) {
             formatter: `x:${x}\ny:${y}`,
             position: 'top'
         },
-        symbolSize: 4,
+        symbolSize: 6,
         symbol: 'rect',
         itemStyle: {
             color: '#000'

@@ -17,10 +17,14 @@
     width: 100%;
 }
 
+#collapse {
+    background: #81ffa7;
+}
+
 .query {
     height: 560px;
     width: 100%;
-    background: #81ffa7;
+    background: rgb(235,235,235);
 }
 
 #query_info {
@@ -30,7 +34,7 @@
 }
 
 #tree1 {
-    height: 200px;
+    height: 250px;
     overflow: auto;
 }
 
