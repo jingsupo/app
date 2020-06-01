@@ -13,18 +13,6 @@ layui.use(['laydate'], function () {
         type: 'datetime',
         format: 'yyyyMMddHHmmss'
     });
-
-    laydate.render({
-        elem: '#from_time2',
-        type: 'datetime',
-        format: 'yyyyMMddHHmmss'
-    });
-
-    laydate.render({
-        elem: '#to_time2',
-        type: 'datetime',
-        format: 'yyyyMMddHHmmss'
-    });
 });
 
 // 标识哪个按钮被点击了
@@ -46,10 +34,6 @@ $(document).ready(function () {
     document.getElementById('query_info').style.display='none';
     document.getElementById('tree1').style.display='none';
     document.getElementById('tree2').style.display='none';
-    document.getElementById('fig1_side').style.display='none';
-    document.getElementById('fig2_side').style.display='none';
-    document.getElementById('fig3_side').style.display='none';
-    document.getElementById('fig4_side').style.display='none';
     $.ajax({
         url: "/get_db_names",
         type: "POST",
@@ -514,7 +498,7 @@ function trend () {
                     // 增加自定义参数而不覆盖原本的默认参数
                     fig1.on('click', (params) => {
                         addmarkPoint (params, fig1);
-                        draw('tf_1', 'env_1', 'fig1_side', 'low_cutoff_1', 'high_cutoff_1', farm_name, point_name, 'vdi', data, params);
+                        draw(farm_name, point_name, 'vdi', data, params);
                     });
                     fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
 
@@ -534,7 +518,7 @@ function trend () {
                     });
                     fig2.on('click', (params) => {
                         addmarkPoint (params, fig2);
-                        draw('tf_2', 'env_2', 'fig2_side', 'low_cutoff_2', 'high_cutoff_2', farm_name, point_name, 'vdi', data, params);
+                        draw(farm_name, point_name, 'vdi', data, params);
                     });
                     fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
 
@@ -556,7 +540,7 @@ function trend () {
                     }
                     fig3.on('click', (params) => {
                         addmarkPoint (params, fig3);
-                        draw('tf_3', 'env_3', 'fig3_side', 'low_cutoff_3', 'high_cutoff_3', farm_name, point_name, 'vdi', data, params);
+                        draw(farm_name, point_name, 'vdi', data, params);
                     });
                     fig3.on('contextmenu', (params) => { deletemarkPoint (params, fig3) });
                 }
@@ -570,7 +554,7 @@ function trend () {
                     // 增加自定义参数而不覆盖原本的默认参数
                     fig1.on('click', (params) => {
                         addmarkPoint (params, fig1);
-                        draw('tf_1', 'env_1', 'fig1_side', 'low_cutoff_1', 'high_cutoff_1', farm_name, point_name, 'dimensionless', data, params);
+                        draw(farm_name, point_name, 'dimensionless', data, params);
                     });
                     fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
 
@@ -578,7 +562,7 @@ function trend () {
                     setOption_trend(fig2, option_p, point_name+'脉冲因子'+cutoff, '时间(s)', '脉冲因子', 'dimensionless', 'pulsefactor', data, wind_turbine_selected);
                     fig2.on('click', (params) => {
                         addmarkPoint (params, fig2);
-                        draw('tf_2', 'env_2', 'fig2_side', 'low_cutoff_2', 'high_cutoff_2', farm_name, point_name, 'dimensionless', data, params);
+                        draw(farm_name, point_name, 'dimensionless', data, params);
                     });
                     fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
 
@@ -586,7 +570,7 @@ function trend () {
                     setOption_trend(fig3, option_k2, point_name+'峭度(10-2000Hz)', '时间(s)', '峭度', 'dimensionless', 'kurtosisfactor2', data, wind_turbine_selected);
                     fig3.on('click', (params) => {
                         addmarkPoint (params, fig3);
-                        draw('tf_3', 'env_3', 'fig3_side', 'low_cutoff_3', 'high_cutoff_3', farm_name, point_name, 'dimensionless', data, params);
+                        draw(farm_name, point_name, 'dimensionless', data, params);
                     });
                     fig3.on('contextmenu', (params) => { deletemarkPoint (params, fig3) });
 
@@ -594,7 +578,7 @@ function trend () {
                     setOption_trend(fig4, option_p2, point_name+'脉冲因子(10-2000Hz)', '时间(s)', '脉冲因子', 'dimensionless', 'pulsefactor2', data, wind_turbine_selected);
                     fig4.on('click', (params) => {
                         addmarkPoint (params, fig4);
-                        draw('tf_4', 'env_4', 'fig4_side', 'low_cutoff_4', 'high_cutoff_4', farm_name, point_name, 'dimensionless', data, params);
+                        draw(farm_name, point_name, 'dimensionless', data, params);
                     });
                     fig4.on('contextmenu', (params) => { deletemarkPoint (params, fig4) });
                 }
@@ -604,7 +588,7 @@ function trend () {
                     // 增加自定义参数而不覆盖原本的默认参数
                     fig1.on('click', (params) => {
                         addmarkPoint (params, fig1);
-                        draw('tf_1', 'env_1', 'fig1_side', 'low_cutoff_1', 'high_cutoff_1', farm_name, point_name, 'narrowband', data, params);
+                        draw(farm_name, point_name, 'narrowband', data, params);
                     });
                     fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
 
@@ -612,7 +596,7 @@ function trend () {
                     setOption_trend(fig2, option_kurtosis, point_name+'峭度', '时间(s)', '峭度', 'narrowband', 'value_kurtosis', data, wind_turbine_selected);
                     fig2.on('click', (params) => {
                         addmarkPoint (params, fig2);
-                        draw('tf_2', 'env_2', 'fig2_side', 'low_cutoff_2', 'high_cutoff_2', farm_name, point_name, 'narrowband', data, params);
+                        draw(farm_name, point_name, 'narrowband', data, params);
                     });
                     fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
                 }

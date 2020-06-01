@@ -14,11 +14,11 @@
     <script src="static/js/common.js?ver=1.0"></script>
     <script src="static/js/index.js?ver=1.0"></script>
     <script>
-    //注意：折叠面板 依赖 element 模块，否则无法进行功能性操作
-    layui.use('element', function(){
-      let element = layui.element;
-      //…
-    });
+        //注意：折叠面板 依赖 element 模块，否则无法进行功能性操作
+        layui.use('element', function(){
+          let element = layui.element;
+          //…
+        });
     </script>
 </head>
 <body>
@@ -104,50 +104,6 @@
             <div id="fig4"></div>
         </div>
         <div class="figure_side">
-            <div id="fig1_side">
-                <button data-method="setTop" class="layui-btn" id="tf_1">时域频域图</button>
-                <br />
-                <label for="low_cutoff_1">低</label>
-                <input type="text" class="cutoff" id="low_cutoff_1" placeholder="请输入低截止频率">
-                <br />
-                <label for="high_cutoff_1">高</label>
-                <input type="text" class="cutoff" id="high_cutoff_1" placeholder="请输入高截止频率">
-                <br /><br />
-                <button data-method="setTop" class="layui-btn" id="env_1">包络图</button>
-            </div>
-            <div id="fig2_side">
-                <button data-method="setTop" class="layui-btn" id="tf_2">时域频域图</button>
-                <br />
-                <label for="low_cutoff_1">低</label>
-                <input type="text" class="cutoff" id="low_cutoff_2" placeholder="请输入低截止频率">
-                <br />
-                <label for="high_cutoff_1">高</label>
-                <input type="text" class="cutoff" id="high_cutoff_2" placeholder="请输入高截止频率">
-                <br /><br />
-                <button data-method="setTop" class="layui-btn" id="env_2">包络图</button>
-            </div>
-            <div id="fig3_side">
-                <button data-method="setTop" class="layui-btn" id="tf_3">时域频域图</button>
-                <br />
-                <label for="low_cutoff_1">低</label>
-                <input type="text" class="cutoff" id="low_cutoff_3" placeholder="请输入低截止频率">
-                <br />
-                <label for="high_cutoff_1">高</label>
-                <input type="text" class="cutoff" id="high_cutoff_3" placeholder="请输入高截止频率">
-                <br /><br />
-                <button data-method="setTop" class="layui-btn" id="env_3">包络图</button>
-            </div>
-            <div id="fig4_side">
-                <button data-method="setTop" class="layui-btn" id="tf_4">时域频域图</button>
-                <br />
-                <label for="low_cutoff_1">低</label>
-                <input type="text" class="cutoff" id="low_cutoff_4" placeholder="请输入低截止频率">
-                <br />
-                <label for="high_cutoff_1">高</label>
-                <input type="text" class="cutoff" id="high_cutoff_4" placeholder="请输入高截止频率">
-                <br /><br />
-                <button data-method="setTop" class="layui-btn" id="env_4">包络图</button>
-            </div>
         </div>
     </div>
 </body>

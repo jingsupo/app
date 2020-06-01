@@ -83,30 +83,6 @@
     float: left;
 }
 
-#fig1_side {
-    height: 320px;
-    width: 100%;
-    background: rgb(232,240,254);
-}
-
-#fig2_side {
-    height: 320px;
-    width: 100%;
-    background: rgb(235,235,235);
-}
-
-#fig3_side {
-    height: 320px;
-    width: 100%;
-    background: rgb(232,240,254);
-}
-
-#fig4_side {
-    height: 320px;
-    width: 100%;
-    background: rgb(235,235,235);
-}
-
 input[type=submit] {
     background-color: rgb(30,160,255);
     color: white;

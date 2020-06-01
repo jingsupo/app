@@ -249,20 +249,33 @@ function draw_iframe (content, title, id, flag, data, params) {
     });
 }
 
-function draw(btn1, btn2, fig_side, low_cutoff_id, high_cutoff_id, farm_name, point_name, criterion, data, params) {
-    document.getElementById(fig_side).style.display='';
+function draw(farm_name, point_name, criterion, data, params) {
+    layui.use('layer', function () {
+        let layer = layui.layer;
+
+        layer.open({
+            type: 1
+            ,title: '详细分析'
+            ,shade: 0
+            ,area: ['16%', '250px']
+            ,id: 'trend_layer'  //设置该值后，不管是什么类型的层，都只允许同时弹出一个。
+            ,resize: false
+            ,offset: 'r'
+            ,content: '<button data-method="setTop" class="layui-btn" id="btn-tf">时域频域图</button><br /><label for="lc">低</label><input type="text" class="cutoff" id="lc" placeholder="请输入低截止频率"><br /><label for="hc">高</label><input type="text" class="cutoff" id="hc" placeholder="请输入高截止频率"><br /><br /><button data-method="setTop" class="layui-btn" id="btn-env">包络图</button>'
+        });
+    });
     let sampling_time = data[criterion][params.seriesName]['time'][params.dataIndex];
     let dataset = {'farm_name': farm_name,
         'wind_turbine_name': params.seriesName,
         'point': point_name,
         'sampling_time': sampling_time,
     };
-    let id1 = btn1;
+    let id1 = 'btn-tf';
     // 激活按钮
     btn_enabled(id1);
-    let id2 = btn2;
-    let lc = $('#'+low_cutoff_id);
-    let hc = $('#'+high_cutoff_id);
+    let id2 = 'btn-env';
+    let lc = $('#lc');
+    let hc = $('#hc');
     let low_cutoff = lc.val();
     let high_cutoff = hc.val();
     if (low_cutoff !== '' && high_cutoff !== '') {
