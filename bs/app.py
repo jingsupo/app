@@ -170,32 +170,32 @@ def tfe():
     try:
         if 'drivechain_' in point:
             if 'data_length_drivechain' in data.keys():
-                data_length = str(data['data_length_drivechain'])
+                data_length = data['data_length_drivechain']
                 sampling_fre = data['sampling_fre_drivechain']
             elif int(point_num) < 6:
-                data_length = str(data['data_length_drivechain_15'])
+                data_length = data['data_length_drivechain_15']
                 sampling_fre = data['sampling_fre_drivechain_15']
             else:
-                data_length = str(data['data_length_drivechain_68'])
+                data_length = data['data_length_drivechain_68']
                 sampling_fre = data['sampling_fre_drivechain_68']
         elif 'tower_' in point:
-            data_length = str(data['data_length_tower'])
+            data_length = data['data_length_tower']
             sampling_fre = data['sampling_fre_tower']
         elif 'nacelle_' in point:
-            data_length = str(data['data_length_nacelle'])
+            data_length = data['data_length_nacelle']
             sampling_fre = data['sampling_fre_nacelle']
         elif 'blade_' in point:
-            data_length = str(data['data_length_blade'])
+            data_length = data['data_length_blade']
             sampling_fre = data['sampling_fre_blade']
         else:
             if int(point_num) < 6:
-                data_length = str(data['data_nums_15'][0])
+                data_length = data['data_nums_15'][0]
                 sampling_fre = data['sampling_fre_15']
             else:
-                data_length = str(data['data_nums_68'][0])
+                data_length = data['data_nums_68'][0]
                 sampling_fre = data['sampling_fre_68']
 
-        data = struct.unpack(data_length + 'f', data[point])
+        data = struct.unpack(str(data_length) + 'f', data[point])
         data = pd.Series(data)
         data = data.round(decimals=6)
 
