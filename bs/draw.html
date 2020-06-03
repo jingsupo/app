@@ -53,6 +53,11 @@
                     }, 0);
                 },
                 success: function (data) {
+                    let new_data = [];
+                    for (let i in data['time_series']) {
+                        new_data.push([parseInt(i), data['time_series'][i]])
+                    }
+                    data['time_series'] = new_data;
                     if (flag === 1) {
                         let option_ts = {};
                         setOption_tfe(fig1, option_ts, '时域图', 'time_series', data, [params.seriesName]);

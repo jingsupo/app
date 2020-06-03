@@ -160,6 +160,9 @@ def tfe():
 
     data = db[collection].find_one({'sampling_time': sampling_time})
 
+    # 采样频率
+    sampling_fre = 0
+
     # 时域数据
     time_series = []
     # 频域数据
@@ -201,11 +204,10 @@ def tfe():
 
         if ts_checked or fig_type == '1':
             # time series
-            for v in zip(range(len(data)), data):
-                dic = dict()
-                dic['name'] = 'ts'
-                dic['value'] = v
-                time_series.append(dic)
+            # for v in zip(range(len(data)), data):
+            #     time_series.append(v)
+
+            time_series = data.tolist()
 
         if freq_checked or fig_type == '1':
             # freq
@@ -214,10 +216,7 @@ def tfe():
             am = am.round(decimals=6)
 
             for v in zip(fre, am):
-                dic = dict()
-                dic['name'] = 'freq'
-                dic['value'] = v
-                freq.append(dic)
+                freq.append(v)
 
         if env_checked or fig_type == '2':
             # spectrum envelope
@@ -227,15 +226,13 @@ def tfe():
                 am = am.round(decimals=6)
 
                 for v in zip(fre, am):
-                    dic = dict()
-                    dic['name'] = 'envelope'
-                    dic['value'] = v
-                    spectrum_envelope.append(dic)
+                    spectrum_envelope.append(v)
 
     except Exception as e:
         log.logger.debug(e)
 
     dataset = dict()
+    dataset['fs'] = sampling_fre
     dataset['time_series'] = time_series
     dataset['freq'] = freq
     dataset['envelope'] = spectrum_envelope[:500]

@@ -13,13 +13,6 @@
     <script src="static/layui/layui.js"></script>
     <script src="static/js/common.js?ver=1.0"></script>
     <script src="static/js/index.js?ver=1.0"></script>
-    <script>
-        //注意：折叠面板 依赖 element 模块，否则无法进行功能性操作
-        layui.use('element', function(){
-          let element = layui.element;
-          //…
-        });
-    </script>
 </head>
 <body>
     <div class="left">
@@ -29,7 +22,7 @@
             <h2 class="layui-colla-title" id="collapse"></h2>
             <div class="layui-colla-content layui-show">
                 <div class="query">
-                    <div id="criterion_div">
+                    <div id="criterion_div" style="text-align:right">
                         <label for="criterion"> 标 准 </label>
                         <select id="criterion" name="criterion">
                             <option value="1">VDI</option>
@@ -37,56 +30,55 @@
                             <option value="3">narrowband</option>
                         </select>
                     </div>
-                    <div id="farm_div">
+                    <div id="farm_div" style="text-align:right">
                         <label for="farm"> 风 场 </label>
                         <select id="farm" name="farm">
                             <option value="0">选择风场</option>
                         </select>
                     </div>
-                    <div id="wind_turbine_div">
+                    <div id="wind_turbine_div" style="text-align:right">
                         <label for="wind_turbine"> 风 机 </label>
                         <select id="wind_turbine" name="wind_turbine">
                             <option value="0">选择风机</option>
                         </select>
                     </div>
-                    <div id="more_wind_turbine_div">
+                    <div id="more_wind_turbine_div" style="text-align:right">
                         <label for="more_wind_turbine"> 风 机 </label>
                         <select id="more_wind_turbine" name="more_wind_turbine" multiple="multiple" size="5">
                         </select>
                     </div>
-                    <div id="from_time_div">
+                    <div id="from_time_div" style="text-align:right">
                         <label for="from_time">起始时间</label>
                         <input type="text" class="time" id="from_time" placeholder="yyyyMMddHHmmss">
                     </div>
-                    <div id="to_time_div">
+                    <div id="to_time_div" style="text-align:right">
                         <label for="to_time">结束时间</label>
                         <input type="text" class="time" id="to_time" placeholder="yyyyMMddHHmmss">
                     </div>
-                    <div id="from_rotate_speed_div">
+                    <div id="from_rotate_speed_div" style="text-align:right">
                         <label for="from_rotate_speed">转速 From</label>
                         <input type="text" class="rotate_speed" id="from_rotate_speed" placeholder="请输入转速">
                     </div>
-                    <div id="to_rotate_speed_div">
+                    <div id="to_rotate_speed_div" style="text-align:right">
                         <label for="to_rotate_speed">转速 To</label>
                         <input type="text" class="rotate_speed" id="to_rotate_speed" placeholder="请输入转速">
                     </div>
-                    <br />
-                    <div id="fig_type_div">
-                        <input type="checkbox" id="ts">时域
-                        <input type="checkbox" id="freq" checked="checked">频域
-                        <input type="checkbox" id="env">包络
-                    </div>
-                    <div id="cutoff_div">
+                    <div id="cutoff_div" style="text-align:right">
                         <label for="low_cutoff">低截止频率</label>
                         <input type="text" class="cutoff" id="low_cutoff" placeholder="请输入低截止频率">
                         <br />
                         <label for="high_cutoff">高截止频率</label>
                         <input type="text" class="cutoff" id="high_cutoff" placeholder="请输入高截止频率">
                     </div>
-                    <input type="submit" value="查询" id="q" name="q">
                 </div>
             </div>
           </div>
+        </div>
+        <input type="submit" value="查询" id="q" name="q">
+        <div id="fig_type_div" style="text-align:center">
+            <label><input type="radio" name="spectrum" id="ts" checked="checked">时域</label>
+            <label><input type="radio" name="spectrum" id="freq">频域</label>
+            <label><input type="radio" name="spectrum" id="env">包络</label>
         </div>
         <div id="query_info"></div>
         <div id="tree1" class="ztree">加载中...</div>
@@ -98,10 +90,31 @@
             <input type="submit" value="趋势图" id="trend" name="trend">
         </div>
         <div class="figure">
-            <div id="fig1"></div>
-            <div id="fig2"></div>
-            <div id="fig3"></div>
-            <div id="fig4"></div>
+            <div class="layui-tab" lay-filter="spectrum">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">时域图</li>
+                    <li>频域图</li>
+                    <li>包络图</li>
+                    <li>趋势图</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <div id="fig-t"></div>
+                    </div>
+                    <div class="layui-tab-item">
+                        <div id="fig-f"></div>
+                    </div>
+                    <div class="layui-tab-item">
+                        <div id="fig-e"></div>
+                    </div>
+                    <div class="layui-tab-item">
+                        <div id="fig1"></div>
+                        <div id="fig2"></div>
+                        <div id="fig3"></div>
+                        <div id="fig4"></div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="figure_side">
         </div>

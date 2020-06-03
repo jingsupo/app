@@ -15,6 +15,16 @@ layui.use(['laydate'], function () {
     });
 });
 
+//注意：折叠面板 依赖 element 模块，否则无法进行功能性操作
+//注意：选项卡 依赖 element 模块，否则无法进行功能性操作
+layui.use('element', function () {
+    let element = layui.element;
+
+    // 监听Tab切换
+    element.on('tab(spectrum)', function(data){
+    });
+});
+
 // 标识哪个按钮被点击了
 let flag = 0;
 
@@ -262,21 +272,12 @@ $(document).ready(function () {
 });
 
 function tfe () {
-    if (fig1.dispose) {
-        fig1.dispose();
-    }
-    fig1 = echarts.init(document.getElementById('fig1'), 'white', {renderer: 'canvas'});
-    if (fig2.dispose) {
-        fig2.dispose();
-    }
-    fig2 = echarts.init(document.getElementById('fig2'), 'white', {renderer: 'canvas'});
-    if (fig3.dispose) {
-        fig3.dispose();
-    }
-    fig3 = echarts.init(document.getElementById('fig3'), 'white', {renderer: 'canvas'});
-    if (fig4.dispose) {
-        fig4.dispose();
-    }
+    $("#fig-t").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $("#fig-f").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $("#fig-e").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    fig_t = echarts.init(document.getElementById('fig-t'), 'white', {renderer: 'canvas'});
+    fig_f = echarts.init(document.getElementById('fig-f'), 'white', {renderer: 'canvas'});
+    fig_e = echarts.init(document.getElementById('fig-e'), 'white', {renderer: 'canvas'});
     let farm_name = $('#farm').find('option:selected').text();
     let wind_turbine_name = $('#wind_turbine').find('option:selected').text();
     let ts_checked = $('#ts').prop('checked');
@@ -326,35 +327,48 @@ function tfe () {
                 }, 0);
             },
             success: function (data) {
+                let data_length = data['time_series'].length;
+                let fs = data['fs'];
+                let step = (data_length / fs) / data_length;
+                let new_data = [];
+                for (let i in data['time_series']) {
+                    new_data.push([step * parseInt(i), data['time_series'][i]])
+                }
+                data['time_series'] = new_data;
+                console.log(data);
                 let option_ts = {};
-                setOption_tfe(fig1, option_ts, '时域图', 'time_series', data, [wind_turbine_name]);
+                setOption_tfe(fig_t, option_ts, '时域图', 'time_series', data, [wind_turbine_name]);
                 // 增加自定义参数而不覆盖原本的默认参数
-                fig1.on('click', (params) => {
-                    addmarkPoint (params, fig1);
+                fig_t.on('click', (params) => {
+                    addmarkPoint (params, fig_t);
                 });
-                fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
+                fig_t.on('contextmenu', (params) => { deletemarkPoint (params, fig_t) });
 
                 let option_freq = {};
-                setOption_tfe(fig2, option_freq, '频域图', 'freq', data, [wind_turbine_name]);
+                setOption_tfe(fig_f, option_freq, '频域图', 'freq', data, [wind_turbine_name]);
                 // 增加自定义参数而不覆盖原本的默认参数
-                fig2.on('click', (params) => {
-                    addmarkPoint (params, fig2);
+                fig_f.on('click', (params) => {
+                    addmarkPoint (params, fig_f);
                 });
-                fig2.on('contextmenu', (params) => { deletemarkPoint (params, fig2) });
+                fig_f.on('contextmenu', (params) => { deletemarkPoint (params, fig_f) });
 
                 let option_envelope = {};
-                setOption_tfe(fig3, option_envelope, '包络图', 'envelope', data, [wind_turbine_name]);
+                setOption_tfe(fig_e, option_envelope, '包络图', 'envelope', data, [wind_turbine_name]);
                 // 增加自定义参数而不覆盖原本的默认参数
-                fig3.on('click', (params) => {
-                    addmarkPoint (params, fig3);
+                fig_e.on('click', (params) => {
+                    addmarkPoint (params, fig_e);
                 });
-                fig3.on('contextmenu', (params) => { deletemarkPoint (params, fig3) });
+                fig_e.on('contextmenu', (params) => { deletemarkPoint (params, fig_e) });
             }
         });
     }
 }
 
 function trend () {
+    $("#fig1").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $("#fig2").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $("#fig3").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $("#fig4").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
     if (fig1.dispose) {
         fig1.dispose();
     }
@@ -606,6 +620,13 @@ function trend () {
 }
 
 window.onresize = function () {
+    $("#fig1").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $("#fig2").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $("#fig3").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $("#fig4").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $("#fig-t").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $("#fig-f").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $("#fig-e").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
     if (fig1.dispose) {
         // ECharts随窗口大小改变而自适应
         fig1.resize();
@@ -621,5 +642,17 @@ window.onresize = function () {
     if (fig4.dispose) {
         // ECharts随窗口大小改变而自适应
         fig4.resize();
+    }
+    if (fig_t.dispose) {
+        // ECharts随窗口大小改变而自适应
+        fig_t.resize();
+    }
+    if (fig_f.dispose) {
+        // ECharts随窗口大小改变而自适应
+        fig_f.resize();
+    }
+    if (fig_e.dispose) {
+        // ECharts随窗口大小改变而自适应
+        fig_e.resize();
     }
 };

@@ -218,7 +218,7 @@ function draw_iframe (content, title, id, flag, data, params) {
                 layer.open({
                     type: 2 //iframe
                     ,title: title
-                    ,area: ['37.5%', '70%']
+                    ,area: ['40%', '80%']
                     ,shade: 0
                     ,maxmin: true
                     ,offset: []
@@ -257,7 +257,7 @@ function draw(farm_name, point_name, criterion, data, params) {
             type: 1
             ,title: '详细分析'
             ,shade: 0
-            ,area: ['16%', '250px']
+            ,area: ['200px', '250px']
             ,id: 'trend_layer'  //设置该值后，不管是什么类型的层，都只允许同时弹出一个。
             ,resize: false
             ,offset: 'r'

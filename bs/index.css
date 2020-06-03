@@ -1,15 +1,14 @@
 .left {
     height: 1600px;
-    width: 20%;
+    width: 250px;
     background: rgb(235,235,235);
     float: left;
 }
 
 .middle {
     height: 1600px;
-    width: 80%;
     background: skyblue;
-    float: left;
+    margin-left: 250px;
 }
 
 .logo {
@@ -22,8 +21,7 @@
 }
 
 .query {
-    height: 560px;
-    width: 100%;
+    height: 440px;
     background: rgb(235,235,235);
 }
 
@@ -51,36 +49,44 @@
 
 .figure {
     height: 1400px;
-    width: 80%;
+    width: calc(100% - 200px);
     background: white;
     float: left;
 }
 
 #fig1 {
     height: 320px;
-    width: 100%;
 }
 
 #fig2 {
     height: 320px;
-    width: 100%;
 }
 
 #fig3 {
     height: 320px;
-    width: 100%;
 }
 
 #fig4 {
     height: 320px;
-    width: 100%;
+}
+
+#fig-t {
+    height: 320px;
+}
+
+#fig-f {
+    height: 320px;
+}
+
+#fig-e {
+    height: 320px;
 }
 
 .figure_side {
     height: 1400px;
-    width: 20%;
+    width: 200px;
     background: #f0f0f0;
-    float: left;
+    float: right;
 }
 
 input[type=submit] {
