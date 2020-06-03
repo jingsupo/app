@@ -25,10 +25,9 @@ layui.use('element', function () {
     });
 });
 
-// 标识哪个按钮被点击了
-let flag = 0;
-
 $(document).ready(function () {
+    // 标识哪个按钮被点击了
+    flag = 0;
     // 初始化隐藏控件
     document.getElementById('criterion_div').style.display='none';
     document.getElementById('farm_div').style.display='none';
@@ -272,17 +271,32 @@ $(document).ready(function () {
 });
 
 function tfe () {
-    $("#fig-t").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
-    $("#fig-f").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
-    $("#fig-e").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    let ts_checked = $('#ts').prop('checked');
+    let freq_checked = $('#freq').prop('checked');
+    let env_checked = $('#env').prop('checked');
+    if (ts_checked && (typeof fig_t) !== "undefined") {
+        if (fig_t.dispose) {
+            fig_t.dispose();
+        }
+    }
+    if (freq_checked && (typeof fig_f) !== "undefined") {
+        if (fig_f.dispose) {
+            fig_f.dispose();
+        }
+    }
+    if (env_checked && (typeof fig_e) !== "undefined") {
+        if (fig_e.dispose) {
+            fig_e.dispose();
+        }
+    }
+    $('#fig-t').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $('#fig-f').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $('#fig-e').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
     fig_t = echarts.init(document.getElementById('fig-t'), 'white', {renderer: 'canvas'});
     fig_f = echarts.init(document.getElementById('fig-f'), 'white', {renderer: 'canvas'});
     fig_e = echarts.init(document.getElementById('fig-e'), 'white', {renderer: 'canvas'});
     let farm_name = $('#farm').find('option:selected').text();
     let wind_turbine_name = $('#wind_turbine').find('option:selected').text();
-    let ts_checked = $('#ts').prop('checked');
-    let freq_checked = $('#freq').prop('checked');
-    let env_checked = $('#env').prop('checked');
     let low_cutoff = $('#low_cutoff').val();
     let high_cutoff = $('#high_cutoff').val();
     let treeObj1 = $.fn.zTree.getZTreeObj("tree1");
@@ -329,13 +343,12 @@ function tfe () {
             success: function (data) {
                 let data_length = data['time_series'].length;
                 let fs = data['fs'];
-                let step = (data_length / fs) / data_length;
+                let step = Math.round((data_length / fs) / data_length * 1000000) / 1000000;
                 let new_data = [];
                 for (let i in data['time_series']) {
                     new_data.push([step * parseInt(i), data['time_series'][i]])
                 }
                 data['time_series'] = new_data;
-                console.log(data);
                 let option_ts = {};
                 setOption_tfe(fig_t, option_ts, '时域图', 'time_series', data, [wind_turbine_name]);
                 // 增加自定义参数而不覆盖原本的默认参数
@@ -365,10 +378,10 @@ function tfe () {
 }
 
 function trend () {
-    $("#fig1").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
-    $("#fig2").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
-    $("#fig3").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
-    $("#fig4").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $('#fig1').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $('#fig2').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $('#fig3').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $('#fig4').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
     if (fig1.dispose) {
         fig1.dispose();
     }
@@ -620,39 +633,42 @@ function trend () {
 }
 
 window.onresize = function () {
-    $("#fig1").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
-    $("#fig2").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
-    $("#fig3").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
-    $("#fig4").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
-    $("#fig-t").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
-    $("#fig-f").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
-    $("#fig-e").css('width', $('.figure').width()); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
-    if (fig1.dispose) {
+    // 绘图div父容器的宽度
+    w = $('.figure').width();
+    $('#fig1').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $('#fig2').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $('#fig3').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $('#fig4').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $('#fig-t').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $('#fig-f').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    $('#fig-e').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
+    if ((typeof fig1) !== "undefined" && fig1.dispose) {
         // ECharts随窗口大小改变而自适应
         fig1.resize();
     }
-    if (fig2.dispose) {
+    if ((typeof fig2) !== "undefined" && fig2.dispose) {
         // ECharts随窗口大小改变而自适应
         fig2.resize();
     }
-    if (fig3.dispose) {
+    if ((typeof fig3) !== "undefined" && fig3.dispose) {
         // ECharts随窗口大小改变而自适应
         fig3.resize();
     }
-    if (fig4.dispose) {
+    if ((typeof fig4) !== "undefined" && fig4.dispose) {
         // ECharts随窗口大小改变而自适应
         fig4.resize();
     }
-    if (fig_t.dispose) {
+    if ((typeof fig_t) !== "undefined" && fig_t.dispose) {
         // ECharts随窗口大小改变而自适应
         fig_t.resize();
     }
-    if (fig_f.dispose) {
+    if ((typeof fig_f) !== "undefined" && fig_f.dispose) {
         // ECharts随窗口大小改变而自适应
         fig_f.resize();
     }
-    if (fig_e.dispose) {
+    if ((typeof fig_e) !== "undefined" && fig_e.dispose) {
         // ECharts随窗口大小改变而自适应
         fig_e.resize();
     }
 };
+
