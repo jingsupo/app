@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>振动分析系统</title>
-    <link rel="stylesheet" type="text/css" href="static/css/m.css">
+    <title>数据可视化处理</title>
+    <link rel="stylesheet" type="text/css" href="static/css/main.css">
     <script src="static/js/jquery-1.4.4.min.js"></script>
     <script src="static/js/echarts.min.js"></script>
     <script>
@@ -72,7 +72,9 @@
                 splitLine: {
                     show: true
                 },
-                scale: true,
+                splitArea: {
+                    show: true
+                }
             },
             yAxis: {
                 type: 'value',
@@ -83,12 +85,8 @@
                 splitLine: {
                     show: true
                 },
-                // scale: true,
             },
             series: [],
-            // dataZoom: [{
-            //     //
-            // }],
             toolbox: { // 工具栏
                 feature: {
                     dataZoom: { // 框选缩放功能
@@ -267,9 +265,6 @@
 </head>
 <body>
     <div class="left">
-        <div class="logo"><img src="http://www.bj-nego.com/res/tpl/default/images/icon/logo.jpg" alt=""></div>
-        <div class="query">
-        </div>
     </div>
     <div class="middle">
         <div class="toolbar">
@@ -290,14 +285,6 @@
             <div id="loading-image" class="loading">加载中...</div>
             <div id="fig1"></div>
         </div>
-        <div class="figure_side">
-            <div id="fig1_side"></div>
-        </div>
-    </div>
-    <div class="right">
-        <div id="farm_info" class="info"></div>
-        <div id="wind_turbine_info" class="info"></div>
-        <div id="fault_history" class="info"></div>
     </div>
 </body>
 </html>
