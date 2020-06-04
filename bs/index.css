@@ -25,12 +25,6 @@
     background: rgb(235,235,235);
 }
 
-#query_info {
-    height: 20px;
-    width: 100%;
-    background: #f885ff;
-}
-
 #tree1 {
     height: 250px;
     overflow: auto;

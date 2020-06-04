@@ -109,11 +109,10 @@ def q():
         rs = rs[(rs.iloc[:, 0] >= from_time) & (rs.iloc[:, 0] <= to_time)]
         rs = rs[(rs.iloc[:, 1] >= from_rotate_speed) & (rs.iloc[:, 1] <= to_rotate_speed)]
 
-    sampling_time = rs.iloc[:, 0].tolist()
+    sampling_time = (rs.iloc[:, 0] + ':转速 ' + rs.iloc[:, 1].astype('str')).tolist()
 
     return jsonify({'sampling_time': sampling_time,
-                    'point_description': point_description,
-                    'rotate_speed': rotate_speed})
+                    'point_description': point_description})
 
 
 @app.route('/tfe', methods=['POST'])

@@ -40,7 +40,6 @@ $(document).ready(function () {
     document.getElementById('fig_type_div').style.display='none';
     document.getElementById('cutoff_div').style.display='none';
     document.getElementById('q').style.display='none';
-    document.getElementById('query_info').style.display='none';
     document.getElementById('tree1').style.display='none';
     document.getElementById('tree2').style.display='none';
     $.ajax({
@@ -82,6 +81,21 @@ $(document).ready(function () {
     }, false);
     // addEventListener() 方法用于向指定元素添加事件句柄
     document.getElementById("fig4").addEventListener('contextmenu', function (e) {
+        // event.preventDefault() 方法阻止元素发生默认的行为
+        e.preventDefault();
+    }, false);
+    // addEventListener() 方法用于向指定元素添加事件句柄
+    document.getElementById("fig-t").addEventListener('contextmenu', function (e) {
+        // event.preventDefault() 方法阻止元素发生默认的行为
+        e.preventDefault();
+    }, false);
+    // addEventListener() 方法用于向指定元素添加事件句柄
+    document.getElementById("fig-f").addEventListener('contextmenu', function (e) {
+        // event.preventDefault() 方法阻止元素发生默认的行为
+        e.preventDefault();
+    }, false);
+    // addEventListener() 方法用于向指定元素添加事件句柄
+    document.getElementById("fig-e").addEventListener('contextmenu', function (e) {
         // event.preventDefault() 方法阻止元素发生默认的行为
         e.preventDefault();
     }, false);
@@ -210,11 +224,6 @@ $(document).ready(function () {
                         zNodes2.push({name:'采样时间', open:true, children:child2});
                         function zTreeOnClick2(event, treeId, treeNode) {
                             tfe();
-                            let treeObj = $.fn.zTree.getZTreeObj("tree2");
-                            // 当前选中节点
-                            let sn = treeObj.getSelectedNodes();
-                            let html = data['rotate_speed'][sn[0].name];
-                            document.getElementById('query_info').innerHTML = '转速：' + html;
                         }
                         zTreeObj2 = $.fn.zTree.init($("#tree2"), setting2, zNodes2);
                         // 显示ztree插件
@@ -242,7 +251,6 @@ $(document).ready(function () {
         document.getElementById('fig_type_div').style.display='';
         document.getElementById('cutoff_div').style.display='';
         document.getElementById('q').style.display='';
-        document.getElementById('query_info').style.display='';
         document.getElementById('tree1').style.display='none';
         document.getElementById('tree2').style.display='none';
     });
@@ -264,7 +272,6 @@ $(document).ready(function () {
         document.getElementById('fig_type_div').style.display='none';
         document.getElementById('cutoff_div').style.display='none';
         document.getElementById('q').style.display='';
-        document.getElementById('query_info').style.display='';
         document.getElementById('tree1').style.display='none';
         document.getElementById('tree2').style.display='none';
     });
@@ -322,7 +329,7 @@ function tfe () {
         let dataset = {'farm_name': farm_name,
             'wind_turbine_name': wind_turbine_name,
             'point': sn1[0]['name'],
-            'sampling_time': sn2[0]['name'],
+            'sampling_time': sn2[0]['name'].split(':')[0],
             'ts_checked': ts_checked,
             'freq_checked': freq_checked,
             'env_checked': env_checked,
