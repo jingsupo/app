@@ -371,6 +371,32 @@ function tfe () {
                 // 增加自定义参数而不覆盖原本的默认参数
                 fig_f.on('click', (params) => {
                     addmarkPoint (params, fig_f);
+                    let markLineData = [];
+                    for (let i = 1; i < 6; i++) {
+                        markLineData.push({
+                            lineStyle: {
+                                color: 'red',
+                                width: 2,
+                                type: 'solid'
+                            },
+                            name: i.toString() + 'X',
+                            xAxis: i * params.value[0]
+                        });
+                    }
+                    if ($('#freq-mul').prop('checked')) {
+                        fig_f.setOption({
+                            series: [{
+                                markLine: {
+                                    silent: true,
+                                    symbol: 'none',
+                                    label: {
+                                        formatter: '{b}'
+                                    },
+                                    data: markLineData
+                                }
+                            }]
+                        });
+                    }
                 });
                 fig_f.on('contextmenu', (params) => { deletemarkPoint (params, fig_f) });
 

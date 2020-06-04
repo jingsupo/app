@@ -60,12 +60,14 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/draw", methods=['GET', 'POST'])
+@app.route("/draw")
 def draw():
-    if request.method == 'POST':
-        result = request.form
-        return render_template("_demo.html", result=result)
     return render_template("draw.html")
+
+
+@app.route("/demo")
+def demo():
+    return render_template("demo.html")
 
 
 @app.route('/get_db_names', methods=['POST'])
