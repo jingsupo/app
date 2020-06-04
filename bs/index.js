@@ -289,6 +289,8 @@ function tfe () {
             fig_e.dispose();
         }
     }
+    // 绘图div父容器的宽度
+    let w = $('.figure').width();
     $('#fig-t').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
     $('#fig-f').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
     $('#fig-e').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
@@ -378,25 +380,27 @@ function tfe () {
 }
 
 function trend () {
+    if (fig1.dispose) {
+        fig1.dispose();
+    }
+    if (fig2.dispose) {
+        fig2.dispose();
+    }
+    if (fig3.dispose) {
+        fig3.dispose();
+    }
+    if (fig4.dispose) {
+        fig4.dispose();
+    }
+    // 绘图div父容器的宽度
+    let w = $('.figure').width();
     $('#fig1').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
     $('#fig2').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
     $('#fig3').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
     $('#fig4').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
-    if (fig1.dispose) {
-        fig1.dispose();
-    }
     fig1 = echarts.init(document.getElementById('fig1'), 'white', {renderer: 'canvas'});
-    if (fig2.dispose) {
-        fig2.dispose();
-    }
     fig2 = echarts.init(document.getElementById('fig2'), 'white', {renderer: 'canvas'});
-    if (fig3.dispose) {
-        fig3.dispose();
-    }
     fig3 = echarts.init(document.getElementById('fig3'), 'white', {renderer: 'canvas'});
-    if (fig4.dispose) {
-        fig4.dispose();
-    }
     fig4 = echarts.init(document.getElementById('fig4'), 'white', {renderer: 'canvas'});
     let criterion = $('#criterion').find('option:selected').val();
     let farm_name = $('#farm').find('option:selected').text();
@@ -634,7 +638,7 @@ function trend () {
 
 window.onresize = function () {
     // 绘图div父容器的宽度
-    w = $('.figure').width();
+    let w = $('.figure').width();
     $('#fig1').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
     $('#fig2').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
     $('#fig3').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果

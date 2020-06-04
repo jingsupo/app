@@ -30,10 +30,10 @@
             if (fig1.dispose) {
                 fig1.dispose();
             }
-            fig1 = echarts.init(document.getElementById('fig1'), 'white', {renderer: 'canvas'});
             if (fig2.dispose) {
                 fig2.dispose();
             }
+            fig1 = echarts.init(document.getElementById('fig1'), 'white', {renderer: 'canvas'});
             fig2 = echarts.init(document.getElementById('fig2'), 'white', {renderer: 'canvas'});
 
             // 要请求的图形类型
@@ -53,9 +53,12 @@
                     }, 0);
                 },
                 success: function (data) {
+                    let data_length = data['time_series'].length;
+                    let fs = data['fs'];
+                    let step = Math.round((data_length / fs) / data_length * 1000000) / 1000000;
                     let new_data = [];
                     for (let i in data['time_series']) {
-                        new_data.push([parseInt(i), data['time_series'][i]])
+                        new_data.push([step * parseInt(i), data['time_series'][i]])
                     }
                     data['time_series'] = new_data;
                     if (flag === 1) {
