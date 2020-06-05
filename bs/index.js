@@ -19,7 +19,9 @@ layui.use(['laydate'], function () {
 //注意：选项卡 依赖 element 模块，否则无法进行功能性操作
 layui.use('element', function () {
     let element = layui.element;
-
+    // 监听折叠
+    element.on('collapse(params)', function(data){
+    });
     // 监听Tab切换
     element.on('tab(spectrum)', function(data){
     });
@@ -239,7 +241,12 @@ $(document).ready(function () {
     $("input[name=tfe]").click(function () {
         // 设置点击标识为1
         flag = 1;
-        document.getElementById('collapse').innerHTML = '时域频域包络图';
+        // 设置折叠面板标题
+        document.getElementById('colla-title').innerHTML = '时域频域包络图';
+        layui.use('element', function () {
+            let element = layui.element;
+            element.render('collapse');
+        });
         document.getElementById('criterion_div').style.display='none';
         document.getElementById('farm_div').style.display='';
         document.getElementById('wind_turbine_div').style.display='';
@@ -260,7 +267,12 @@ $(document).ready(function () {
     $("input[name=trend]").click(function () {
         // 设置点击标识为2
         flag = 2;
-        document.getElementById('collapse').innerHTML = '趋势图';
+        // 设置折叠面板标题
+        document.getElementById('colla-title').innerHTML = '趋势图';
+        layui.use('element', function () {
+            let element = layui.element;
+            element.render('collapse');
+        });
         document.getElementById('criterion_div').style.display='';
         document.getElementById('farm_div').style.display='';
         document.getElementById('wind_turbine_div').style.display='none';
