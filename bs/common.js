@@ -2,6 +2,17 @@
 通用函数
  */
 
+function getdate() {
+    let date = new Date();
+    let Months = date.getMonth() + 1<10 ? '0' + (date.getMonth() + 1):date.getMonth() + 1; //月份从0开始，因此要+1
+    let Dates = date.getDate()<10 ? '0' + date.getDate():date.getDate();
+    let Hours = date.getHours()<10 ? '0' + date.getHours():date.getHours();
+    let Minutes = date.getMinutes()<10 ? '0' + date.getMinutes():date.getMinutes();
+    let Seconds = date.getSeconds()<10 ? '0' + date.getSeconds():date.getSeconds();
+
+    return date.getFullYear() + Months + Dates + Hours + Minutes + Seconds;
+}
+
 function btn_disabled (id) {
     let btn = $("#"+id);
     btn.attr("disabled", true);
@@ -374,6 +385,29 @@ function freqmulti_batch_deletion (fig) {
                     data: []
                 }
             }]
+        });
+    });
+}
+
+function analysis_results_iframe (content, title, data) {
+    layui.use('layer', function () {
+        let layer = layui.layer;
+
+        layer.open({
+            type: 2 //iframe
+            ,title: title
+            ,area: ['40%', '80%']
+            ,id: 'analysis_results_layer'  //设置该值后，不管是什么类型的层，都只允许同时弹出一个。
+            ,shade: 0
+            ,maxmin: true
+            ,offset: []
+            ,content: content
+            ,success: function(layero, index){
+                //拿到iframe元素
+                let iframe = window['layui-layer-iframe' + index];
+                //调用子页面的全局函数
+                iframe.child(data);
+            }
         });
     });
 }

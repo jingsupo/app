@@ -1,5 +1,5 @@
 .left {
-    height: 800px;
+    height: 1024px;
     width: 250px;
     background: rgb(240,240,240);
     float: left;
@@ -7,8 +7,7 @@
 }
 
 .middle {
-    height: 800px;
-    background: skyblue;
+    height: 1024px;
     margin-left: 250px;
 }
 
@@ -85,6 +84,13 @@
     float: right;
 }
 
+.analysis {
+    height: 300px;
+    width: 100%;
+    background: #9ed0ff;
+    overflow: auto;
+}
+
 input[type=submit] {
     background-color: rgb(30,160,255);
     color: white;
@@ -117,5 +123,9 @@ select, .time, .rotate_speed, .cutoff {
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
+}
+
+select[id=failure-level], select[id=analyst] {
+    width: 8%;
 }
 

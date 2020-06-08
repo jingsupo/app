@@ -10,7 +10,7 @@ import pymongo
 from scipy.fftpack import fft, ifft, hilbert
 
 
-# client = pymongo.MongoClient()
+c = pymongo.MongoClient()
 client = pymongo.MongoClient(host='192.168.2.232', port=27017)
 
 # 密码认证
@@ -526,5 +526,54 @@ def trend():
     return jsonify(dataset)
 
 
+@app.route('/analysis_results', methods=['GET', 'POST'])
+def analysis_results():
+    if request.method == 'POST':
+        farm_name = request.form.get('farm_name')
+        wind_turbine_name = request.form.get('wind_turbine_name')
+        point_name = request.form.get('point_name')
+        date = request.form.get('date')
+        analyst = request.form.get('analyst')
+        ts = request.form.get('ts')
+        freq = request.form.get('freq')
+        env = request.form.get('env')
+        trend = request.form.get('trend')
+        level = request.form.get('level')
+
+        collection = c[farm_name]['analysis_results']
+
+        query = {'farm_name': farm_name, 'wind_turbine_name': wind_turbine_name}
+
+        dataset = collection.find_one(query)
+        if not dataset:
+            dataset = {}
+
+        if point_name not in dataset.keys():
+            pn = []
+        else:
+            pn = dataset[point_name]
+
+        data = {
+            'date': date,
+            'analyst': analyst,
+            'ts': ts,
+            'freq': freq,
+            'env': env,
+            'trend': trend,
+            'level': level,
+        }
+
+        pn.append(data)
+
+        dataset.update({point_name: pn})
+
+        collection.update_one(query, {'$set': dataset}, upsert=True)
+
+        return jsonify({'status': 'success'})
+
+    return render_template('analysis-results.html')
+
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)
+

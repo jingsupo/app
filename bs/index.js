@@ -55,13 +55,7 @@ $(document).ready(function () {
             }
         }
     });
-    let date = new Date();
-    let Months = date.getMonth() + 1<10 ? '0' + (date.getMonth() + 1):date.getMonth() + 1; //月份从0开始，因此要+1
-    let Dates = date.getDate()<10 ? '0' + date.getDate():date.getDate();
-    let Hours = date.getHours()<10 ? '0' + date.getHours():date.getHours();
-    let Minutes = date.getMinutes()<10 ? '0' + date.getMinutes():date.getMinutes();
-    let Seconds = date.getSeconds()<10 ? '0' + date.getSeconds():date.getSeconds();
-    let now = date.getFullYear() + Months + Dates + Hours + Minutes + Seconds;
+    let now = getdate();
     let from_time = now - 600000000;
     // 设置默认时间
     $('#from_time').val(from_time);
@@ -676,6 +670,62 @@ function trend () {
         });
     }
 }
+
+$(document).ready(function () {
+    $("input[id=submit]").click(function () {
+        let farm_name = $('#farm').find('option:selected').text();
+        let wind_turbine_name = $('#wind_turbine').find('option:selected').text();
+        let treeObj1 = $.fn.zTree.getZTreeObj("tree1");
+        // 当前选中节点
+        let sn = treeObj1.getSelectedNodes();
+        let point_name = sn[0]['name'];
+        let date = getdate();
+        let analyst = $('#analyst').find('option:selected').text();
+        let ts = $('#ts-analysis').val();
+        let freq = $('#freq-analysis').val();
+        let env = $('#env-analysis').val();
+        let trend = $('#trend-analysis').val();
+        let level = $('#failure-level').find('option:selected').text();
+        let dataset = {
+            'farm_name': farm_name,
+            'wind_turbine_name': wind_turbine_name,
+            'point_name': point_name,
+            'date': date,
+            'analyst': analyst,
+            'ts': ts,
+            'freq': freq,
+            'env': env,
+            'trend': trend,
+            'level': level,
+        };
+        layer.prompt({title: '输入口令，并确认', formType: 1}, function(pass, index){
+            if (pass === '666') {
+                msg('口令正确！');
+                layer.close(index);
+                $.ajax({
+                    url: "/analysis_results",
+                    type: "POST",
+                    data: dataset,
+                    dataType: "json",
+                    beforeSend: function () {
+                        loading();
+                    },
+                    complete: function () {
+                        setTimeout(function () {
+                            layer.closeAll('loading');
+                        }, 0);
+                    },
+                    success: function (data) {
+                        if (data['status'] === 'success') {
+                            msg('提交成功！');
+                        }
+                    }
+                });
+                analysis_results_iframe('/analysis_results', '分析结果', dataset)
+            }
+        });
+    });
+});
 
 window.onresize = function () {
     // 绘图div父容器的宽度

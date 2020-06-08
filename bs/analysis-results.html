@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>分析结果</title>
+    <script src="static/js/jquery-1.4.4.min.js"></script>
+    <script>
+        // 子页面代码,这里注意child一定要是全局函数
+        function child(data) {
+            $('#date').html(data['date']);
+            $('#analyst').html(data['analyst']);
+            $('#ts').html(data['ts']);
+            $('#freq').html(data['freq']);
+            $('#env').html(data['env']);
+            $('#trend').html(data['trend']);
+            $('#level').html(data['level']);
+        }
+    </script>
+</head>
+<body>
+<div class="analysis-results">
+    <b>日期：</b><p id="date"></p>
+    <b>分析师：</b><p id="analyst"></p>
+    <b>时域分析结果：</b><p id="ts"></p>
+    <b>频域分析结果：</b><p id="freq"></p>
+    <b>包络分析结果：</b><p id="env"></p>
+    <b>趋势分析结果：</b><p id="trend"></p>
+    <b>故障级别：</b><p id="level"></p>
+</div>
+</body>
+</html>
