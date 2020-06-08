@@ -372,28 +372,39 @@ function tfe () {
                 data['time_series'] = new_data;
                 let option_ts = {};
                 setOption_tfe(fig_t, option_ts, '时域图', 'time_series', data, [wind_turbine_name]);
+                // 解决echarts中click事件重复执行的问题
+                fig_t.off('click');
                 // 增加自定义参数而不覆盖原本的默认参数
                 fig_t.on('click', (params) => {
                     markpoint(fig_t, params);
                 });
+                markpoint_batch_deletion(fig_t);
                 fig_t.on('contextmenu', (params) => { deletemarkPoint (fig_t, params) });
 
                 let option_freq = {};
                 setOption_tfe(fig_f, option_freq, '频域图', 'freq', data, [wind_turbine_name]);
+                // 解决echarts中click事件重复执行的问题
+                fig_f.off('click');
                 // 增加自定义参数而不覆盖原本的默认参数
                 fig_f.on('click', (params) => {
                     markpoint(fig_f, params);
                     freqmulti(fig_f, params);
                 });
+                markpoint_batch_deletion(fig_f);
+                freqmulti_batch_deletion(fig_f);
                 fig_f.on('contextmenu', (params) => { deletemarkPoint (fig_f, params) });
 
                 let option_envelope = {};
                 setOption_tfe(fig_e, option_envelope, '包络图', 'envelope', data, [wind_turbine_name]);
+                // 解决echarts中click事件重复执行的问题
+                fig_e.off('click');
                 // 增加自定义参数而不覆盖原本的默认参数
                 fig_e.on('click', (params) => {
                     markpoint(fig_e, params);
                     freqmulti(fig_e, params);
                 });
+                markpoint_batch_deletion(fig_e);
+                freqmulti_batch_deletion(fig_e);
                 fig_e.on('contextmenu', (params) => { deletemarkPoint (fig_e, params) });
             }
         });
@@ -552,6 +563,7 @@ function trend () {
                         markpoint(fig1, params);
                         draw(farm_name, point_name, 'vdi', data, params);
                     });
+                    markpoint_batch_deletion(fig1);
                     fig1.on('contextmenu', (params) => { deletemarkPoint (fig1, params) });
 
                     let option_iv = {};
@@ -572,6 +584,7 @@ function trend () {
                         markpoint(fig2, params);
                         draw(farm_name, point_name, 'vdi', data, params);
                     });
+                    markpoint_batch_deletion(fig2);
                     fig2.on('contextmenu', (params) => { deletemarkPoint (fig2, params) });
 
                     let option_ev2 = {};
@@ -594,6 +607,7 @@ function trend () {
                         markpoint(fig3, params);
                         draw(farm_name, point_name, 'vdi', data, params);
                     });
+                    markpoint_batch_deletion(fig3);
                     fig3.on('contextmenu', (params) => { deletemarkPoint (fig3, params) });
                 }
                 if (criterion === '2') {
@@ -608,6 +622,7 @@ function trend () {
                         markpoint(fig1, params);
                         draw(farm_name, point_name, 'dimensionless', data, params);
                     });
+                    markpoint_batch_deletion(fig1);
                     fig1.on('contextmenu', (params) => { deletemarkPoint (fig1, params) });
 
                     let option_p = {};
@@ -616,6 +631,7 @@ function trend () {
                         markpoint(fig2, params);
                         draw(farm_name, point_name, 'dimensionless', data, params);
                     });
+                    markpoint_batch_deletion(fig2);
                     fig2.on('contextmenu', (params) => { deletemarkPoint (fig2, params) });
 
                     let option_k2 = {};
@@ -624,6 +640,7 @@ function trend () {
                         markpoint(fig3, params);
                         draw(farm_name, point_name, 'dimensionless', data, params);
                     });
+                    markpoint_batch_deletion(fig3);
                     fig3.on('contextmenu', (params) => { deletemarkPoint (fig3, params) });
 
                     let option_p2 = {};
@@ -632,6 +649,7 @@ function trend () {
                         markpoint(fig4, params);
                         draw(farm_name, point_name, 'dimensionless', data, params);
                     });
+                    markpoint_batch_deletion(fig4);
                     fig4.on('contextmenu', (params) => { deletemarkPoint (fig4, params) });
                 }
                 if (criterion === '3') {
@@ -642,6 +660,7 @@ function trend () {
                         markpoint(fig1, params);
                         draw(farm_name, point_name, 'narrowband', data, params);
                     });
+                    markpoint_batch_deletion(fig1);
                     fig1.on('contextmenu', (params) => { deletemarkPoint (fig1, params) });
 
                     let option_kurtosis = {};
@@ -650,6 +669,7 @@ function trend () {
                         markpoint(fig2, params);
                         draw(farm_name, point_name, 'narrowband', data, params);
                     });
+                    markpoint_batch_deletion(fig2);
                     fig2.on('contextmenu', (params) => { deletemarkPoint (fig2, params) });
                 }
             }

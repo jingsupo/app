@@ -272,6 +272,10 @@ function markpoint(fig, params) {
     if ($('#mark-point').prop('checked')) {
         addmarkPoint (fig, params);
     }
+}
+
+// 批量删除标注点
+function markpoint_batch_deletion (fig) {
     $('#del-mp').click(function () {
         fig.setOption({
             series: [{
@@ -359,6 +363,10 @@ function freqmulti(fig, params) {
             }]
         });
     }
+}
+
+// 批量删除倍频
+function freqmulti_batch_deletion (fig) {
     $('#del-fm').click(function () {
         fig.setOption({
             series: [{
