@@ -2,7 +2,7 @@
 通用函数
  */
 
-function getdate() {
+function getDate() {
     let date = new Date();
     let Months = date.getMonth() + 1<10 ? '0' + (date.getMonth() + 1):date.getMonth() + 1; //月份从0开始，因此要+1
     let Dates = date.getDate()<10 ? '0' + date.getDate():date.getDate();
@@ -279,14 +279,14 @@ function setOption_trend (fig, option, title_text, xAxis_name, yAxis_name, crite
 }
 
 // 标注点
-function markpoint(fig, params) {
+function markPoint(fig, params) {
     if ($('#mark-point').prop('checked')) {
         addmarkPoint (fig, params);
     }
 }
 
 // 批量删除标注点
-function markpoint_batch_deletion (fig) {
+function markPoint_batch_deletion (fig) {
     $('#del-mp').click(function () {
         fig.setOption({
             series: [{
@@ -347,7 +347,7 @@ function deletemarkPoint (fig, params) {
 }
 
 // 倍频
-function freqmulti(fig, params) {
+function freqMulti(fig, params) {
     let markLineData = [];
     for (let i = 1; i < 6; i++) {
         markLineData.push({
@@ -377,7 +377,7 @@ function freqmulti(fig, params) {
 }
 
 // 批量删除倍频
-function freqmulti_batch_deletion (fig) {
+function freqMulti_batch_deletion (fig) {
     $('#del-fm').click(function () {
         fig.setOption({
             series: [{

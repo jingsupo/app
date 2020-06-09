@@ -55,7 +55,7 @@ $(document).ready(function () {
             }
         }
     });
-    let now = getdate();
+    let now = getDate();
     let from_time = now - 600000000;
     // 设置默认时间
     $('#from_time').val(from_time);
@@ -370,9 +370,9 @@ function tfe () {
                 fig_t.off('click');
                 // 增加自定义参数而不覆盖原本的默认参数
                 fig_t.on('click', (params) => {
-                    markpoint(fig_t, params);
+                    markPoint(fig_t, params);
                 });
-                markpoint_batch_deletion(fig_t);
+                markPoint_batch_deletion(fig_t);
                 fig_t.on('contextmenu', (params) => { deletemarkPoint (fig_t, params) });
 
                 let option_freq = {};
@@ -381,11 +381,11 @@ function tfe () {
                 fig_f.off('click');
                 // 增加自定义参数而不覆盖原本的默认参数
                 fig_f.on('click', (params) => {
-                    markpoint(fig_f, params);
-                    freqmulti(fig_f, params);
+                    markPoint(fig_f, params);
+                    freqMulti(fig_f, params);
                 });
-                markpoint_batch_deletion(fig_f);
-                freqmulti_batch_deletion(fig_f);
+                markPoint_batch_deletion(fig_f);
+                freqMulti_batch_deletion(fig_f);
                 fig_f.on('contextmenu', (params) => { deletemarkPoint (fig_f, params) });
 
                 let option_envelope = {};
@@ -394,11 +394,11 @@ function tfe () {
                 fig_e.off('click');
                 // 增加自定义参数而不覆盖原本的默认参数
                 fig_e.on('click', (params) => {
-                    markpoint(fig_e, params);
-                    freqmulti(fig_e, params);
+                    markPoint(fig_e, params);
+                    freqMulti(fig_e, params);
                 });
-                markpoint_batch_deletion(fig_e);
-                freqmulti_batch_deletion(fig_e);
+                markPoint_batch_deletion(fig_e);
+                freqMulti_batch_deletion(fig_e);
                 fig_e.on('contextmenu', (params) => { deletemarkPoint (fig_e, params) });
             }
         });
@@ -554,10 +554,10 @@ function trend () {
                     });
                     // 增加自定义参数而不覆盖原本的默认参数
                     fig1.on('click', (params) => {
-                        markpoint(fig1, params);
+                        markPoint(fig1, params);
                         draw(farm_name, point_name, 'vdi', data, params);
                     });
-                    markpoint_batch_deletion(fig1);
+                    markPoint_batch_deletion(fig1);
                     fig1.on('contextmenu', (params) => { deletemarkPoint (fig1, params) });
 
                     let option_iv = {};
@@ -575,10 +575,10 @@ function trend () {
                         }]
                     });
                     fig2.on('click', (params) => {
-                        markpoint(fig2, params);
+                        markPoint(fig2, params);
                         draw(farm_name, point_name, 'vdi', data, params);
                     });
-                    markpoint_batch_deletion(fig2);
+                    markPoint_batch_deletion(fig2);
                     fig2.on('contextmenu', (params) => { deletemarkPoint (fig2, params) });
 
                     let option_ev2 = {};
@@ -598,10 +598,10 @@ function trend () {
                         });
                     }
                     fig3.on('click', (params) => {
-                        markpoint(fig3, params);
+                        markPoint(fig3, params);
                         draw(farm_name, point_name, 'vdi', data, params);
                     });
-                    markpoint_batch_deletion(fig3);
+                    markPoint_batch_deletion(fig3);
                     fig3.on('contextmenu', (params) => { deletemarkPoint (fig3, params) });
                 }
                 if (criterion === '2') {
@@ -613,37 +613,37 @@ function trend () {
                     setOption_trend(fig1, option_k, point_name+'峭度'+cutoff, '时间(s)', '峭度', 'dimensionless', 'kurtosisfactor', data, wind_turbine_selected);
                     // 增加自定义参数而不覆盖原本的默认参数
                     fig1.on('click', (params) => {
-                        markpoint(fig1, params);
+                        markPoint(fig1, params);
                         draw(farm_name, point_name, 'dimensionless', data, params);
                     });
-                    markpoint_batch_deletion(fig1);
+                    markPoint_batch_deletion(fig1);
                     fig1.on('contextmenu', (params) => { deletemarkPoint (fig1, params) });
 
                     let option_p = {};
                     setOption_trend(fig2, option_p, point_name+'脉冲因子'+cutoff, '时间(s)', '脉冲因子', 'dimensionless', 'pulsefactor', data, wind_turbine_selected);
                     fig2.on('click', (params) => {
-                        markpoint(fig2, params);
+                        markPoint(fig2, params);
                         draw(farm_name, point_name, 'dimensionless', data, params);
                     });
-                    markpoint_batch_deletion(fig2);
+                    markPoint_batch_deletion(fig2);
                     fig2.on('contextmenu', (params) => { deletemarkPoint (fig2, params) });
 
                     let option_k2 = {};
                     setOption_trend(fig3, option_k2, point_name+'峭度(10-2000Hz)', '时间(s)', '峭度', 'dimensionless', 'kurtosisfactor2', data, wind_turbine_selected);
                     fig3.on('click', (params) => {
-                        markpoint(fig3, params);
+                        markPoint(fig3, params);
                         draw(farm_name, point_name, 'dimensionless', data, params);
                     });
-                    markpoint_batch_deletion(fig3);
+                    markPoint_batch_deletion(fig3);
                     fig3.on('contextmenu', (params) => { deletemarkPoint (fig3, params) });
 
                     let option_p2 = {};
                     setOption_trend(fig4, option_p2, point_name+'脉冲因子(10-2000Hz)', '时间(s)', '脉冲因子', 'dimensionless', 'pulsefactor2', data, wind_turbine_selected);
                     fig4.on('click', (params) => {
-                        markpoint(fig4, params);
+                        markPoint(fig4, params);
                         draw(farm_name, point_name, 'dimensionless', data, params);
                     });
-                    markpoint_batch_deletion(fig4);
+                    markPoint_batch_deletion(fig4);
                     fig4.on('contextmenu', (params) => { deletemarkPoint (fig4, params) });
                 }
                 if (criterion === '3') {
@@ -651,19 +651,19 @@ function trend () {
                     setOption_trend(fig1, option_rms, point_name+'有效值', '时间(s)', '加速度(m/s^2)', 'narrowband', 'value_rms', data, wind_turbine_selected);
                     // 增加自定义参数而不覆盖原本的默认参数
                     fig1.on('click', (params) => {
-                        markpoint(fig1, params);
+                        markPoint(fig1, params);
                         draw(farm_name, point_name, 'narrowband', data, params);
                     });
-                    markpoint_batch_deletion(fig1);
+                    markPoint_batch_deletion(fig1);
                     fig1.on('contextmenu', (params) => { deletemarkPoint (fig1, params) });
 
                     let option_kurtosis = {};
                     setOption_trend(fig2, option_kurtosis, point_name+'峭度', '时间(s)', '峭度', 'narrowband', 'value_kurtosis', data, wind_turbine_selected);
                     fig2.on('click', (params) => {
-                        markpoint(fig2, params);
+                        markPoint(fig2, params);
                         draw(farm_name, point_name, 'narrowband', data, params);
                     });
-                    markpoint_batch_deletion(fig2);
+                    markPoint_batch_deletion(fig2);
                     fig2.on('contextmenu', (params) => { deletemarkPoint (fig2, params) });
                 }
             }
@@ -671,58 +671,77 @@ function trend () {
     }
 }
 
+// 获取分析结果数据集
+function getDataset() {
+    let farm_name = $('#farm').find('option:selected').text();
+    let wind_turbine_name = $('#wind_turbine').find('option:selected').text();
+    let treeObj1 = $.fn.zTree.getZTreeObj("tree1");
+    // 当前选中节点
+    let sn = treeObj1.getSelectedNodes();
+    let point_name = sn[0]['name'];
+    let date = getDate();
+    let analyst = $('#analyst').find('option:selected').text();
+    let ts = $('#ts-analysis').val();
+    let freq = $('#freq-analysis').val();
+    let env = $('#env-analysis').val();
+    let trend = $('#trend-analysis').val();
+    let level = $('#failure-level').find('option:selected').text();
+    let img = fig_t.getDataURL({
+        pixelRatio: 2,
+        backgroundColor: '#fff'
+    });
+
+    return {
+        'farm_name': farm_name,
+        'wind_turbine_name': wind_turbine_name,
+        'point_name': point_name,
+        'date': date,
+        'analyst': analyst,
+        'ts': ts,
+        'freq': freq,
+        'env': env,
+        'trend': trend,
+        'level': level,
+        'img': img,
+    };
+}
+
 $(document).ready(function () {
+    $("input[id=preview]").click(function () {
+        let dataset = getDataset();
+
+        analysis_results_iframe('/analysis_results', '分析结果', dataset);
+    });
+
     $("input[id=submit]").click(function () {
-        let farm_name = $('#farm').find('option:selected').text();
-        let wind_turbine_name = $('#wind_turbine').find('option:selected').text();
-        let treeObj1 = $.fn.zTree.getZTreeObj("tree1");
-        // 当前选中节点
-        let sn = treeObj1.getSelectedNodes();
-        let point_name = sn[0]['name'];
-        let date = getdate();
-        let analyst = $('#analyst').find('option:selected').text();
-        let ts = $('#ts-analysis').val();
-        let freq = $('#freq-analysis').val();
-        let env = $('#env-analysis').val();
-        let trend = $('#trend-analysis').val();
-        let level = $('#failure-level').find('option:selected').text();
-        let dataset = {
-            'farm_name': farm_name,
-            'wind_turbine_name': wind_turbine_name,
-            'point_name': point_name,
-            'date': date,
-            'analyst': analyst,
-            'ts': ts,
-            'freq': freq,
-            'env': env,
-            'trend': trend,
-            'level': level,
-        };
-        layer.prompt({title: '输入口令，并确认', formType: 1}, function(pass, index){
-            if (pass === '666') {
-                msg('口令正确！');
-                layer.close(index);
+        let dataset = getDataset();
+
+        layui.use('layer', function () {
+            let layer = layui.layer;
+
+            layer.prompt({title: '输入口令，并确认', formType: 1}, function(pass, index){
                 $.ajax({
-                    url: "/analysis_results",
+                    url: "/getpass",
                     type: "POST",
-                    data: dataset,
                     dataType: "json",
-                    beforeSend: function () {
-                        loading();
-                    },
-                    complete: function () {
-                        setTimeout(function () {
-                            layer.closeAll('loading');
-                        }, 0);
-                    },
                     success: function (data) {
-                        if (data['status'] === 'success') {
-                            msg('提交成功！');
+                        if (pass === data['pass']) {
+                            layer.close(index);
+                            $.ajax({
+                                url: "/analysis_results",
+                                type: "POST",
+                                data: dataset,
+                                dataType: "json",
+                                success: function (data) {
+                                    if (data['status'] === 'success') {
+                                        msg('提交成功！');
+                                    }
+                                }
+                            });
                         }
                     }
                 });
-                analysis_results_iframe('/analysis_results', '分析结果', dataset)
-            }
+            });
         });
     });
 });

@@ -10,13 +10,30 @@ import pymongo
 from scipy.fftpack import fft, ifft, hilbert
 
 
-c = pymongo.MongoClient()
+local = pymongo.MongoClient()
 client = pymongo.MongoClient(host='192.168.2.232', port=27017)
 
 # 密码认证
 client.admin.authenticate('nego', '123456abcd.')
 
 app = Flask(__name__)
+
+
+@app.route('/test', methods=['GET', 'POST'])
+def test():
+    if request.method == 'POST':
+        url = local['JingNengLiangCheng']['analysis_results'].find_one()['发电机驱动端轴承'][0]['img']
+
+        return jsonify({'url': url})
+
+    return render_template('test.html')
+
+
+@app.route('/getpass', methods=['POST'])
+def getpass():
+    _pass = client['management']['pass'].find_one()['password']
+
+    return jsonify({'pass': _pass})
 
 
 # ******频谱计算函数******
@@ -72,7 +89,8 @@ def demo():
 
 @app.route('/get_db_names', methods=['POST'])
 def get_db_names():
-    db_names = client.list_database_names()[:-3]
+    to_remove = ['admin', 'config', 'local', 'management']
+    db_names = [db for db in client.list_database_names() if db not in to_remove]
 
     return jsonify(db_names)
 
@@ -539,8 +557,9 @@ def analysis_results():
         env = request.form.get('env')
         trend = request.form.get('trend')
         level = request.form.get('level')
+        img = request.form.get('img')
 
-        collection = c[farm_name]['analysis_results']
+        collection = local[farm_name]['analysis_results']
 
         query = {'farm_name': farm_name, 'wind_turbine_name': wind_turbine_name}
 
@@ -561,6 +580,7 @@ def analysis_results():
             'env': env,
             'trend': trend,
             'level': level,
+            'img': img,
         }
 
         pn.append(data)
