@@ -25,6 +25,14 @@ function btn_enabled (id) {
     btn.css({'background-color': 'rgb(30,160,255)'});
 }
 
+function preventDefault(elementID) {
+    // addEventListener() 方法用于向指定元素添加事件句柄
+    document.getElementById(elementID).addEventListener('contextmenu', function (e) {
+        // event.preventDefault() 方法阻止元素发生默认的行为
+        e.preventDefault();
+    }, false);
+}
+
 // 多窗口弹层
 function draw_iframe (content, title, id, flag, data, params) {
     layui.use('layer', function () {
@@ -178,7 +186,15 @@ function loading () {
     });
 }
 
-let option_demo = {
+// 导出ECharts图表图片，返回一个 base64 的 URL
+function getDataURL (fig) {
+    return fig.getDataURL({
+        pixelRatio: 2,
+        backgroundColor: '#fff'
+    });
+}
+
+option_demo = {
     color: ['blue', '#00B83F', 'red', '#FF7F00', '#FF00FF', '#A020F0'],
     title: {
         text: ''

@@ -30,6 +30,7 @@ layui.use('element', function () {
 $(document).ready(function () {
     // 标识哪个按钮被点击了
     flag = 0;
+
     // 初始化隐藏控件
     document.getElementById('criterion_div').style.display='none';
     document.getElementById('farm_div').style.display='none';
@@ -44,6 +45,8 @@ $(document).ready(function () {
     document.getElementById('q').style.display='none';
     document.getElementById('tree1').style.display='none';
     document.getElementById('tree2').style.display='none';
+
+    // 获取风场下拉列表数据
     $.ajax({
         url: "/get_db_names",
         type: "POST",
@@ -55,46 +58,18 @@ $(document).ready(function () {
             }
         }
     });
+
     let now = getDate();
     let from_time = now - 600000000;
     // 设置默认时间
     $('#from_time').val(from_time);
     $('#to_time').val(now);
-    // addEventListener() 方法用于向指定元素添加事件句柄
-    document.getElementById("fig1").addEventListener('contextmenu', function (e) {
-        // event.preventDefault() 方法阻止元素发生默认的行为
-        e.preventDefault();
-    }, false);
-    // addEventListener() 方法用于向指定元素添加事件句柄
-    document.getElementById("fig2").addEventListener('contextmenu', function (e) {
-        // event.preventDefault() 方法阻止元素发生默认的行为
-        e.preventDefault();
-    }, false);
-    // addEventListener() 方法用于向指定元素添加事件句柄
-    document.getElementById("fig3").addEventListener('contextmenu', function (e) {
-        // event.preventDefault() 方法阻止元素发生默认的行为
-        e.preventDefault();
-    }, false);
-    // addEventListener() 方法用于向指定元素添加事件句柄
-    document.getElementById("fig4").addEventListener('contextmenu', function (e) {
-        // event.preventDefault() 方法阻止元素发生默认的行为
-        e.preventDefault();
-    }, false);
-    // addEventListener() 方法用于向指定元素添加事件句柄
-    document.getElementById("fig-t").addEventListener('contextmenu', function (e) {
-        // event.preventDefault() 方法阻止元素发生默认的行为
-        e.preventDefault();
-    }, false);
-    // addEventListener() 方法用于向指定元素添加事件句柄
-    document.getElementById("fig-f").addEventListener('contextmenu', function (e) {
-        // event.preventDefault() 方法阻止元素发生默认的行为
-        e.preventDefault();
-    }, false);
-    // addEventListener() 方法用于向指定元素添加事件句柄
-    document.getElementById("fig-e").addEventListener('contextmenu', function (e) {
-        // event.preventDefault() 方法阻止元素发生默认的行为
-        e.preventDefault();
-    }, false);
+
+    // 阻止右键默认行为
+    let elements = ['fig1', 'fig2', 'fig3', 'fig4', 'fig-t', 'fig-f', 'fig-e'];
+    for (let i in elements) {
+        preventDefault(elements[i]);
+    }
 });
 
 $(document).ready(function () {
@@ -108,7 +83,10 @@ $(document).ready(function () {
         if (treeObj2) {
             treeObj2.destroy()
         }
+
         let farm_name = $('#farm').find('option:selected').text();
+
+        // 获取风机下拉列表数据
         $.ajax({
             url: "/farm",
             type: "POST",
@@ -200,7 +178,7 @@ $(document).ready(function () {
                         }
                     }
                     zTreeObj1 = $.fn.zTree.init($("#tree1"), setting1, zNodes1);
-                    // 显示ztree插件
+                    // 显示zTree插件
                     document.getElementById('tree1').style.display='';
                     if (flag === 1) {
                         let zTreeObj2;
@@ -222,7 +200,7 @@ $(document).ready(function () {
                             tfe();
                         }
                         zTreeObj2 = $.fn.zTree.init($("#tree2"), setting2, zNodes2);
-                        // 显示ztree插件
+                        // 显示zTree插件
                         document.getElementById('tree2').style.display='';
                     }
                 }
@@ -366,7 +344,7 @@ function tfe () {
                 data['time_series'] = new_data;
                 let option_ts = {};
                 setOption_tfe(fig_t, option_ts, '时域图', 'time_series', data, [wind_turbine_name]);
-                // 解决echarts中click事件重复执行的问题
+                // 解决ECharts中click事件重复执行的问题
                 fig_t.off('click');
                 // 增加自定义参数而不覆盖原本的默认参数
                 fig_t.on('click', (params) => {
@@ -377,7 +355,7 @@ function tfe () {
 
                 let option_freq = {};
                 setOption_tfe(fig_f, option_freq, '频域图', 'freq', data, [wind_turbine_name]);
-                // 解决echarts中click事件重复执行的问题
+                // 解决ECharts中click事件重复执行的问题
                 fig_f.off('click');
                 // 增加自定义参数而不覆盖原本的默认参数
                 fig_f.on('click', (params) => {
@@ -390,7 +368,7 @@ function tfe () {
 
                 let option_envelope = {};
                 setOption_tfe(fig_e, option_envelope, '包络图', 'envelope', data, [wind_turbine_name]);
-                // 解决echarts中click事件重复执行的问题
+                // 解决ECharts中click事件重复执行的问题
                 fig_e.off('click');
                 // 增加自定义参数而不覆盖原本的默认参数
                 fig_e.on('click', (params) => {
@@ -688,10 +666,9 @@ function getDataset() {
     let env = $('#env-analysis').val();
     let trend = $('#trend-analysis').val();
     let level = $('#failure-level').find('option:selected').text();
-    let img = fig_t.getDataURL({
-        pixelRatio: 2,
-        backgroundColor: '#fff'
-    });
+    let img_t = getDataURL(fig_t);
+    let img_f = getDataURL(fig_f);
+    let img_e = getDataURL(fig_e);
 
     return {
         'farm_name': farm_name,
@@ -704,15 +681,15 @@ function getDataset() {
         'env': env,
         'trend': trend,
         'level': level,
-        'img': img,
+        'img_t': img_t,
+        'img_f': img_f,
+        'img_e': img_e,
     };
 }
 
 $(document).ready(function () {
-    $("input[id=preview]").click(function () {
-        let dataset = getDataset();
-
-        iframe('/analysis_results', '分析结果', dataset);
+    $("input[id=query]").click(function () {
+        iframe('/query', '查询');
     });
 
     $("input[id=submit]").click(function () {

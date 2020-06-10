@@ -23,9 +23,19 @@ app = Flask(__name__)
 @app.route('/test', methods=['GET', 'POST'])
 def test():
     if request.method == 'POST':
-        url = local['JingNengLiangCheng']['analysis_results'].find_one()['发电机驱动端轴承'][0]['img']
+        data = local['JingNengLiangCheng']['analysis_results'].find_one()['发电机驱动端轴承'][0]
 
-        return jsonify({'url': url})
+        img_t = data['img_t']
+        img_f = data['img_f']
+        img_e = data['img_e']
+
+        dataset = {
+            'img_t': img_t,
+            'img_f': img_f,
+            'img_e': img_e,
+        }
+
+        return jsonify(dataset)
 
     return render_template('test.html')
 
@@ -543,57 +553,84 @@ def trend():
     return jsonify(dataset)
 
 
-@app.route('/analysis_results', methods=['GET', 'POST'])
+@app.route('/analysis_results', methods=['POST'])
 def analysis_results():
-    if request.method == 'POST':
-        farm_name = request.form.get('farm_name')
-        wind_turbine_name = request.form.get('wind_turbine_name')
-        point_name = request.form.get('point_name')
-        date = datetime.datetime.now().strftime('%Y-%m')
-        record_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
-        sampling_time = request.form.get('sampling_time')
-        analyst = request.form.get('analyst')
-        ts = request.form.get('ts')
-        freq = request.form.get('freq')
-        env = request.form.get('env')
-        trend = request.form.get('trend')
-        level = request.form.get('level')
-        img = request.form.get('img')
+    farm_name = request.form.get('farm_name')
+    wind_turbine_name = request.form.get('wind_turbine_name')
+    point_name = request.form.get('point_name')
+    date = datetime.datetime.now().strftime('%Y-%m')
+    record_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+    sampling_time = request.form.get('sampling_time')
+    analyst = request.form.get('analyst')
+    ts = request.form.get('ts')
+    freq = request.form.get('freq')
+    env = request.form.get('env')
+    trend = request.form.get('trend')
+    level = request.form.get('level')
+    img_t = request.form.get('img_t')
+    img_f = request.form.get('img_f')
+    img_e = request.form.get('img_e')
 
-        collection = local[farm_name]['analysis_results']
+    collection = local[farm_name]['analysis_results']
 
-        query = {'farm_name': farm_name, 'wind_turbine_name': wind_turbine_name, 'date': date}
+    query = {'farm_name': farm_name, 'wind_turbine_name': wind_turbine_name, 'date': date}
 
-        dataset = collection.find_one(query)
-        if not dataset:
-            dataset = {}
+    dataset = collection.find_one(query)
+    if not dataset:
+        dataset = {}
 
-        if point_name not in dataset.keys():
-            pn = []
-        else:
-            pn = dataset[point_name]
+    if point_name not in dataset.keys():
+        pn = []
+    else:
+        pn = dataset[point_name]
 
-        data = {
-            'record_time': record_time,
-            'sampling_time': sampling_time,
-            'analyst': analyst,
-            'ts': ts,
-            'freq': freq,
-            'env': env,
-            'trend': trend,
-            'level': level,
-            'img': img,
-        }
+    data = {
+        'record_time': record_time,
+        'sampling_time': sampling_time,
+        'analyst': analyst,
+        'ts': ts,
+        'freq': freq,
+        'env': env,
+        'trend': trend,
+        'level': level,
+        'img_t': img_t,
+        'img_f': img_f,
+        'img_e': img_e,
+    }
 
-        pn.append(data)
+    pn.append(data)
 
-        dataset.update({point_name: pn})
+    dataset.update({point_name: pn})
 
-        collection.update_one(query, {'$set': dataset}, upsert=True)
+    collection.update_one(query, {'$set': dataset}, upsert=True)
 
-        return jsonify({'status': 'success'})
+    return jsonify({'status': 'success'})
 
-    return render_template('analysis-results.html')
+
+@app.route('/query')
+def query():
+    return render_template('query.html')
+
+
+@app.route('/get_results', methods=['POST'])
+def get_results():
+    farm_name = request.form.get('farm_name')
+    wind_turbine_name = request.form.get('wind_turbine_name')
+    date = request.form.get('date')
+
+    collection = local[farm_name]['analysis_results']
+
+    query = {'farm_name': farm_name, 'wind_turbine_name': wind_turbine_name, 'date': date}
+
+    dataset = collection.find_one(query)
+    dataset['_id'] = str(dataset['_id'])
+
+    return jsonify(dataset)
+
+
+@app.route('/preview')
+def preview():
+    return render_template('preview.html')
 
 
 if __name__ == "__main__":

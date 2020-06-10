@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>预览</title>
+    <style>
+        #img {
+            height: 320px;
+        }
+    </style>
+    <script src="static/js/jquery-1.4.4.min.js"></script>
+    <script>
+        // 子页面代码,这里注意child一定要是全局函数
+        function child(data) {
+            $('#farm').html(data['farm_name']);
+            $('#wind_turbine').html(data['wind_turbine_name']);
+            $('#point_name').html(data['point_name']);
+            $('#sampling_time').html(data['sampling_time']);
+            $('#analyst').html(data['analyst']);
+            $('#ts').html(data['ts']);
+            $('#freq').html(data['freq']);
+            $('#env').html(data['env']);
+            $('#trend').html(data['trend']);
+            $('#level').html(data['level']);
+        }
+    </script>
+</head>
+<body>
+<div class="analysis-results">
+    <strong>风场：</strong><p id="farm"></p>
+    <strong>风机：</strong><p id="wind_turbine"></p>
+    <strong>测点名称：</strong><p id="point_name"></p>
+    <strong>采样时间：</strong><p id="sampling_time"></p>
+    <strong>分析师：</strong><p id="analyst"></p>
+    <strong>时域分析结果：</strong><p id="ts"></p>
+    <strong>频域分析结果：</strong><p id="freq"></p>
+    <strong>包络分析结果：</strong><p id="env"></p>
+    <strong>趋势分析结果：</strong><p id="trend"></p>
+    <strong>故障级别：</strong><p id="level"></p>
+</div>
+</body>
+</html>

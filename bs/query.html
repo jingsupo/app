@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>查询</title>
+    <link rel="stylesheet" type="text/css" href="static/css/zTree.css">
+    <link rel="stylesheet" type="text/css" href="static/css/zTreeStyle/zTreeStyle.css">
+    <link rel="stylesheet" href="static/layui/css/layui.css" media="all">
+    <style>
+        input[type=submit] {
+            background-color: rgb(30,160,255);
+            color: white;
+            padding: 10px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 120px;
+            margin-top: 5px;
+            position: relative;
+            left: 5px;
+        }
+
+        input[type=submit]:hover {
+            background-color: #00B83F;
+        }
+
+        select, .time {
+            width: 20%;
+            padding: 12px 20px;
+            margin: 10px 0 0 10px;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        #mp {
+            height: 300px;
+            width: 300px;
+            overflow: auto;
+        }
+    </style>
+    <script src="static/js/jquery-1.4.4.min.js"></script>
+    <script src="static/js/jquery.ztree.core.min.js"></script>
+    <script src="static/js/jquery.ztree.excheck.min.js"></script>
+    <script src="static/layui/layui.js"></script>
+    <script src="static/js/common.js?ver=1.0"></script>
+    <script>
+        // 加载日期与时间组件
+        layui.use(['laydate'], function () {
+            let laydate = layui.laydate;
+
+            laydate.render({
+                elem: '#date'
+                ,type: 'month'
+            });
+        });
+
+        $(document).ready(function () {
+            // 获取风场下拉列表数据
+            $.ajax({
+                url: "/get_db_names",
+                type: "POST",
+                dataType: "json",
+                success: function (data) {
+                    let farm = document.getElementById('farm');
+                    for (let i=0; i < data.length; i++) {
+                        farm.options.add(new Option(data[i], i+1));
+                    }
+                }
+            });
+
+            $('#farm').change(function () {
+                let farm_name = $('#farm').find('option:selected').text();
+
+                // 获取风机下拉列表数据
+                $.ajax({
+                    url: "/farm",
+                    type: "POST",
+                    data: {'farm_name': farm_name},
+                    dataType: "json",
+                    success: function (data) {
+                        let wind_turbine = document.getElementById('wind_turbine');
+                        // 默认清空已经存在的项目
+                        wind_turbine.options.length = 1;
+                        for (let i=0; i < data.length; i++) {
+                            wind_turbine.options.add(new Option(data[i], i+1));
+                        }
+                        // 默认使序号为1的项目选中
+                        wind_turbine.options[1].selected = true;
+                    }
+                });
+            });
+        });
+
+        $(document).ready(function () {
+            $("input[id=get]").click(function () {
+                let farm_name = $('#farm').find('option:selected').text();
+                let wind_turbine_name = $('#wind_turbine').find('option:selected').text();
+                let date = $('#date').val();
+
+                let dataset = {
+                    'farm_name': farm_name,
+                    'wind_turbine_name': wind_turbine_name,
+                    'date': date,
+                };
+
+                $.ajax({
+                    url: "/get_results",
+                    type: "POST",
+                    data: dataset,
+                    dataType: "json",
+                    success: function (data) {
+                        results = data;
+
+                        let mp = [];
+                        for (let key in data) {
+                            mp.push(key);
+                        }
+                        mp = mp.slice(4, mp.length);
+
+                        let zTreeObj;
+                        let setting = {
+                            callback: {
+                                onClick: zTreeOnClick
+                            },
+                            view: {
+                                showLine: false
+                            },
+                            check: {
+                                enable: true
+                            },
+                        };
+                        let zNodes = [];
+                        for (let i in mp) {
+                            let child = [];
+                            let count = data[mp[i]].length;
+                            for (let j = 0; j < count; j++) {
+                                child.push({name:data[mp[i]][j]['record_time']});
+                            }
+                            zNodes.push({name:mp[i], open:true, children:child})
+                        }
+                        function zTreeOnClick(event, treeId, treeNode) {
+                            // console.log(treeNode.name + ", " + treeNode.checked);
+                        }
+                        zTreeObj = $.fn.zTree.init($("#mp"), setting, zNodes);
+                    }
+                });
+            });
+
+            $("input[id=preview]").click(function () {
+                let treeObj = $.fn.zTree.getZTreeObj("mp");
+                // 当前选中节点
+                let sn = treeObj.getSelectedNodes();
+                if (sn.length > 0) {
+                    let pn = sn[0].getParentNode();
+                    let idx = sn[0].getIndex();
+                    let record = results[pn['name']][idx];
+                    let dataset = {
+                        'farm_name': results['farm_name'],
+                        'wind_turbine_name': results['wind_turbine_name'],
+                        'point_name': pn['name'],
+                        'sampling_time': record['sampling_time'],
+                        'analyst': record['analyst'],
+                        'ts': record['ts'],
+                        'freq': record['freq'],
+                        'env': record['env'],
+                        'trend': record['trend'],
+                        'level': record['level'],
+                        'img_t': record['img_t'],
+                        'img_f': record['img_t'],
+                        'img_e': record['img_e'],
+                    };
+                    iframe('/preview', '预览', dataset);
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="analysis-results">
+    <label for="farm"> 风 场 </label>
+    <select id="farm" name="farm">
+        <option value="0">选择风场</option>
+    </select>
+    <br>
+    <label for="wind_turbine"> 风 机 </label>
+    <select id="wind_turbine" name="wind_turbine">
+        <option value="0">选择风机</option>
+    </select>
+    <br>
+    <label for="date"> 日 期 </label>
+    <input type="text" class="time" id="date">
+    <br>
+    <input type="submit" value="获取" id="get">
+    <br>
+    <div id="mp" class="ztree"></div>
+    <input type="submit" value="预览" id="preview">
+</div>
+</body>
+</html>
