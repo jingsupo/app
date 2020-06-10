@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import datetime
 import json
 import struct
 from flask import Flask, render_template, request, jsonify
@@ -535,8 +536,6 @@ def trend():
                 narrowband[c]['value_kurtosis'].append(dic)
 
     dataset = dict()
-    # dataset['point_cnt'] = len(point_description.keys())
-    # dataset['point_num'] = point_num
     dataset['vdi'] = vdi
     dataset['dimensionless'] = dimensionless
     dataset['narrowband'] = narrowband
@@ -550,7 +549,9 @@ def analysis_results():
         farm_name = request.form.get('farm_name')
         wind_turbine_name = request.form.get('wind_turbine_name')
         point_name = request.form.get('point_name')
-        date = request.form.get('date')
+        date = datetime.datetime.now().strftime('%Y-%m')
+        record_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+        sampling_time = request.form.get('sampling_time')
         analyst = request.form.get('analyst')
         ts = request.form.get('ts')
         freq = request.form.get('freq')
@@ -561,7 +562,7 @@ def analysis_results():
 
         collection = local[farm_name]['analysis_results']
 
-        query = {'farm_name': farm_name, 'wind_turbine_name': wind_turbine_name}
+        query = {'farm_name': farm_name, 'wind_turbine_name': wind_turbine_name, 'date': date}
 
         dataset = collection.find_one(query)
         if not dataset:
@@ -573,7 +574,8 @@ def analysis_results():
             pn = dataset[point_name]
 
         data = {
-            'date': date,
+            'record_time': record_time,
+            'sampling_time': sampling_time,
             'analyst': analyst,
             'ts': ts,
             'freq': freq,

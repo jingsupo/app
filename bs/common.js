@@ -25,6 +25,7 @@ function btn_enabled (id) {
     btn.css({'background-color': 'rgb(30,160,255)'});
 }
 
+// 多窗口弹层
 function draw_iframe (content, title, id, flag, data, params) {
     layui.use('layer', function () {
         let $ = layui.jquery, layer = layui.layer;
@@ -136,6 +137,30 @@ function draw(farm_name, point_name, criterion, data, params) {
         draw_iframe('/draw', '时域频域图', id1, 1, dataset, params);
         draw_iframe('/draw', '包络图', id2, 2, dataset, params);
     }
+}
+
+// iframe弹层
+function iframe (content, title, data) {
+    layui.use('layer', function () {
+        let layer = layui.layer;
+
+        layer.open({
+            type: 2 //iframe
+            ,title: title
+            ,area: ['40%', '80%']
+            ,id: 'iframe_layer'  //设置该值后，不管是什么类型的层，都只允许同时弹出一个。
+            ,shade: 0
+            ,maxmin: true
+            ,offset: []
+            ,content: content
+            ,success: function(layero, index){
+                //拿到iframe元素
+                let iframe = window['layui-layer-iframe' + index];
+                //调用子页面的全局函数
+                iframe.child(data);
+            }
+        });
+    });
 }
 
 function msg (text) {
@@ -385,29 +410,6 @@ function freqMulti_batch_deletion (fig) {
                     data: []
                 }
             }]
-        });
-    });
-}
-
-function analysis_results_iframe (content, title, data) {
-    layui.use('layer', function () {
-        let layer = layui.layer;
-
-        layer.open({
-            type: 2 //iframe
-            ,title: title
-            ,area: ['40%', '80%']
-            ,id: 'analysis_results_layer'  //设置该值后，不管是什么类型的层，都只允许同时弹出一个。
-            ,shade: 0
-            ,maxmin: true
-            ,offset: []
-            ,content: content
-            ,success: function(layero, index){
-                //拿到iframe元素
-                let iframe = window['layui-layer-iframe' + index];
-                //调用子页面的全局函数
-                iframe.child(data);
-            }
         });
     });
 }

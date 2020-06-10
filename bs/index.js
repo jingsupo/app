@@ -676,10 +676,12 @@ function getDataset() {
     let farm_name = $('#farm').find('option:selected').text();
     let wind_turbine_name = $('#wind_turbine').find('option:selected').text();
     let treeObj1 = $.fn.zTree.getZTreeObj("tree1");
+    let treeObj2 = $.fn.zTree.getZTreeObj("tree2");
     // 当前选中节点
-    let sn = treeObj1.getSelectedNodes();
-    let point_name = sn[0]['name'];
-    let date = getDate();
+    let sn1 = treeObj1.getSelectedNodes();
+    let sn2 = treeObj2.getSelectedNodes();
+    let point_name = sn1[0]['name'];
+    let sampling_time = sn2[0]['name'].split(':')[0];
     let analyst = $('#analyst').find('option:selected').text();
     let ts = $('#ts-analysis').val();
     let freq = $('#freq-analysis').val();
@@ -695,7 +697,7 @@ function getDataset() {
         'farm_name': farm_name,
         'wind_turbine_name': wind_turbine_name,
         'point_name': point_name,
-        'date': date,
+        'sampling_time': sampling_time,
         'analyst': analyst,
         'ts': ts,
         'freq': freq,
@@ -710,7 +712,7 @@ $(document).ready(function () {
     $("input[id=preview]").click(function () {
         let dataset = getDataset();
 
-        analysis_results_iframe('/analysis_results', '分析结果', dataset);
+        iframe('/analysis_results', '分析结果', dataset);
     });
 
     $("input[id=submit]").click(function () {
