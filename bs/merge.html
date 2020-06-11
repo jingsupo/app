@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>合并</title>
+    <style>
+        .img {
+            height: 320px;
+        }
+    </style>
+    <script src="static/js/jquery-1.4.4.min.js"></script>
+    <script>
+        function createElement () {
+            let div = document.getElementById('records');
+            let innerHTML = [];
+            for (let i = 0; i < data['records'].length; i++) {
+                let html = '<hr>'+
+                        '<strong>测点名称：</strong><p id="point_name'+'_'+i+'"></p>'+
+                        '<strong>采样时间：</strong><p id="sampling_time'+'_'+i+'"></p>'+
+                        '<strong>分析师：</strong><p id="analyst'+'_'+i+'"></p>'+
+                        '<p><img alt="" class="img" id="img_t'+'_'+i+'" src="" /></p>'+
+                        '<strong>时域分析结果：</strong><p id="ts'+'_'+i+'"></p>'+
+                        '<p><img alt="" class="img" id="img_f'+'_'+i+'" src="" /></p>'+
+                        '<strong>频域分析结果：</strong><p id="freq'+'_'+i+'"></p>'+
+                        '<p><img alt="" class="img" id="img_e'+'_'+i+'" src="" /></p>'+
+                        '<strong>包络分析结果：</strong><p id="env'+'_'+i+'"></p>'+
+                        '<strong>趋势分析结果：</strong><p id="trend'+'_'+i+'"></p>'+
+                        '<strong>故障级别：</strong><p id="level'+'_'+i+'"></p>';
+                innerHTML.push(html);
+            }
+            div.innerHTML = innerHTML.join('');
+        }
+
+        function setValue (data) {
+            for (let i = 0; i < data['records'].length; i++) {
+                let point_name = data['records'][i][0];
+                let record = data['records'][i][1];
+                // 设置页面内容
+                $('#point_name'+'_'+i).html(point_name);
+                $('#sampling_time'+'_'+i).html(record['sampling_time']);
+                $('#analyst'+'_'+i).html(record['analyst']);
+                $('#ts'+'_'+i).html(record['ts']);
+                $('#freq'+'_'+i).html(record['freq']);
+                $('#env'+'_'+i).html(record['env']);
+                $('#trend'+'_'+i).html(record['trend']);
+                $('#level'+'_'+i).html(record['level']);
+                $('#img_t'+'_'+i).attr('src', record['img_t']);
+                $('#img_f'+'_'+i).attr('src', record['img_f']);
+                $('#img_e'+'_'+i).attr('src', record['img_e']);
+            }
+        }
+
+        // 调用父页面的函数
+        let data = window.opener.getMergeData();
+
+        $(document).ready(function () {
+            $('#farm').html(data['farm_name']);
+            $('#wind_turbine').html(data['wind_turbine_name']);
+            createElement();
+            setValue(data);
+        });
+    </script>
+</head>
+<body>
+    <div>
+        <strong>风场：</strong><p id="farm"></p>
+        <strong>风机：</strong><p id="wind_turbine"></p>
+    </div>
+    <div id="records"></div>
+</body>
+</html>

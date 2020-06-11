@@ -35,7 +35,7 @@
         }
 
         #mp {
-            height: 300px;
+            height: 500px;
             width: 300px;
             overflow: auto;
         }
@@ -168,34 +168,81 @@
                         'trend': record['trend'],
                         'level': record['level'],
                         'img_t': record['img_t'],
-                        'img_f': record['img_t'],
+                        'img_f': record['img_f'],
                         'img_e': record['img_e'],
                     };
-                    iframe('/preview', '预览', dataset);
+
+                    window.open('/preview');
+                    // 子页面调用的函数
+                    window.getPreviewData = function () {
+                        return dataset;
+                    }
+                }
+            });
+
+            $("input[id=merge]").click(function () {
+                let treeObj = $.fn.zTree.getZTreeObj("mp");
+                let nodes = treeObj.getCheckedNodes(true);
+
+                let mp = [];
+                let temp = [];
+                let count = 0;
+                for (let i = 0; i < nodes.length; i++) {
+                    count++;
+                    if (count > 2) {
+                        mp.push(temp);
+                        count = 0;
+                        count++;
+                        temp = [];
+                    }
+                    temp.push(nodes[i]);
+                    if (i === nodes.length - 1) {
+                        mp.push(temp);
+                    }
+                }
+                mp = mp.map((x) => [x[0]['name'], x[1].getIndex()]);
+
+                let records = [];
+                for (let i in mp) {
+                    let record = results[mp[i][0]][mp[i][1]];
+                    records.push([mp[i][0], record]);
+                }
+
+                let dataset = {
+                    'farm_name': results['farm_name'],
+                    'wind_turbine_name': results['wind_turbine_name'],
+                    'records': records,
+                };
+
+                window.open('/merge');
+                // 子页面调用的函数
+                window.getMergeData = function () {
+                    return dataset;
                 }
             });
         });
     </script>
 </head>
 <body>
-<div class="analysis-results">
-    <label for="farm"> 风 场 </label>
-    <select id="farm" name="farm">
-        <option value="0">选择风场</option>
-    </select>
-    <br>
-    <label for="wind_turbine"> 风 机 </label>
-    <select id="wind_turbine" name="wind_turbine">
-        <option value="0">选择风机</option>
-    </select>
-    <br>
-    <label for="date"> 日 期 </label>
-    <input type="text" class="time" id="date">
-    <br>
-    <input type="submit" value="获取" id="get">
-    <br>
-    <div id="mp" class="ztree"></div>
-    <input type="submit" value="预览" id="preview">
-</div>
+    <div>
+        <label for="farm"> 风 场 </label>
+        <select id="farm" name="farm">
+            <option value="0">选择风场</option>
+        </select>
+        <br>
+        <label for="wind_turbine"> 风 机 </label>
+        <select id="wind_turbine" name="wind_turbine">
+            <option value="0">选择风机</option>
+        </select>
+        <br>
+        <label for="date"> 日 期 </label>
+        <input type="text" class="time" id="date">
+        <br>
+        <input type="submit" value="获取" id="get">
+        <input type="submit" value="预览" id="preview">
+        <input type="submit" value="合并" id="merge">
+        <br>
+        <div id="mp" class="ztree"></div>
+    </div>
 </body>
 </html>

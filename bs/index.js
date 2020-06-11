@@ -689,7 +689,8 @@ function getDataset() {
 
 $(document).ready(function () {
     $("input[id=query]").click(function () {
-        iframe('/query', '查询');
+        // iframe('/query', '查询');
+        window.open('/query');
     });
 
     $("input[id=submit]").click(function () {
