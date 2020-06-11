@@ -166,6 +166,7 @@ $(document).ready(function () {
                     let zNodes1 = [];
                     let child1 = [];
                     for (let key in data['point_description']) {
+                        if (!data['point_description'].hasOwnProperty(key)) continue;
                         child1.push({name:data['point_description'][key]});
                     }
                     zNodes1.push({name:'测点', open:true, children:child1});
@@ -339,6 +340,7 @@ function tfe () {
                 let step = Math.round((data_length / fs) / data_length * 1000000) / 1000000;
                 let new_data = [];
                 for (let i in data['time_series']) {
+                    if (!data['time_series'].hasOwnProperty(i)) continue;
                     new_data.push([step * parseInt(i), data['time_series'][i]])
                 }
                 data['time_series'] = new_data;

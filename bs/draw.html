@@ -58,6 +58,7 @@
                     let step = Math.round((data_length / fs) / data_length * 1000000) / 1000000;
                     let new_data = [];
                     for (let i in data['time_series']) {
+                        if (!data['time_series'].hasOwnProperty(i)) continue;
                         new_data.push([step * parseInt(i), data['time_series'][i]])
                     }
                     data['time_series'] = new_data;

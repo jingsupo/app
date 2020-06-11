@@ -115,6 +115,7 @@
 
                         let mp = [];
                         for (let key in data) {
+                            if (!data.hasOwnProperty(key)) continue;
                             mp.push(key);
                         }
                         mp = mp.slice(4, mp.length);

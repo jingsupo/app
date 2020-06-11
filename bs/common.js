@@ -265,6 +265,7 @@ function setOption_tfe (fig, option, title_text, value, data, wind_turbine_selec
     option.title.text = title_text;
     option.xAxis.type = 'value';
     for (let c in wind_turbine_selected) {
+        if (!wind_turbine_selected.hasOwnProperty(c)) continue;
         option.legend.data.push(wind_turbine_selected[c]);
         let ser = {
             name: wind_turbine_selected[c],
@@ -293,6 +294,7 @@ function setOption_trend (fig, option, title_text, xAxis_name, yAxis_name, crite
     option.xAxis.name = xAxis_name;
     option.yAxis.name = yAxis_name;
     for (let c in wind_turbine_selected) {
+        if (!wind_turbine_selected.hasOwnProperty(c)) continue;
         option.legend.data.push(wind_turbine_selected[c]);
         let ser = {
             name: wind_turbine_selected[c],
