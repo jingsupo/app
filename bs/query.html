@@ -161,6 +161,7 @@
                         'farm_name': results['farm_name'],
                         'wind_turbine_name': results['wind_turbine_name'],
                         'point_name': pn['name'],
+                        'record_time': sn[0]['name'],
                         'sampling_time': record['sampling_time'],
                         'analyst': record['analyst'],
                         'ts': record['ts'],
@@ -212,6 +213,7 @@
                 let dataset = {
                     'farm_name': results['farm_name'],
                     'wind_turbine_name': results['wind_turbine_name'],
+                    'date': results['date'],
                     'records': records,
                 };
 
