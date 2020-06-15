@@ -142,7 +142,6 @@
                             zNodes.push({name:mp[i], open:true, children:child})
                         }
                         function zTreeOnClick(event, treeId, treeNode) {
-                            // console.log(treeNode.name + ", " + treeNode.checked);
                         }
                         zTreeObj = $.fn.zTree.init($("#mp"), setting, zNodes);
                     }
@@ -158,6 +157,7 @@
                     let idx = sn[0].getIndex();
                     let record = results[pn['name']][idx];
                     let dataset = {
+                        'flag': 'preview',
                         'farm_name': results['farm_name'],
                         'wind_turbine_name': results['wind_turbine_name'],
                         'point_name': pn['name'],
@@ -178,7 +178,22 @@
                     // 子页面调用的函数
                     window.getPreviewData = function () {
                         return dataset;
-                    }
+                    };
+
+                    // 当把图片保存到磁盘，并用图片的磁盘路径作为img的src属性时，启用以下代码
+                    // $.ajax({
+                    //     url: "/get_picture_files",
+                    //     type: "POST",
+                    //     data: dataset,
+                    //     dataType: "json",
+                    //     success: function (data) {
+                    //         window.open('/preview');
+                    //         // 子页面调用的函数
+                    //         window.getPreviewData = function () {
+                    //             return dataset;
+                    //         }
+                    //     }
+                    // });
                 }
             });
 
@@ -211,17 +226,36 @@
                 }
 
                 let dataset = {
+                    'flag': 'merge',
                     'farm_name': results['farm_name'],
                     'wind_turbine_name': results['wind_turbine_name'],
                     'date': results['date'],
                     'records': records,
+                    // 当把图片保存到磁盘，并用图片的磁盘路径作为img的src属性时，启用以下代码
+                    // 'records': JSON.stringify(records),
                 };
 
                 window.open('/merge');
                 // 子页面调用的函数
                 window.getMergeData = function () {
                     return dataset;
-                }
+                };
+
+                // 当把图片保存到磁盘，并用图片的磁盘路径作为img的src属性时，启用以下代码
+                // $.ajax({
+                //     url: "/get_picture_files",
+                //     type: "POST",
+                //     data: dataset,
+                //     dataType: "json",
+                //     success: function (data) {
+                //         window.open('/merge');
+                //         // 子页面调用的函数
+                //         window.getMergeData = function () {
+                //             return dataset;
+                //         };
+                //     }
+                // });
+
             });
         });
     </script>

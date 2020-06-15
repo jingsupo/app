@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import base64
 import datetime
 import json
+import os
 import struct
 from flask import Flask, render_template, request, jsonify
 import loguru as log
@@ -17,27 +19,7 @@ client = pymongo.MongoClient(host='192.168.2.232', port=27017)
 # 密码认证
 client.admin.authenticate('nego', '123456abcd.')
 
-app = Flask(__name__)
-
-
-@app.route('/test', methods=['GET', 'POST'])
-def test():
-    if request.method == 'POST':
-        data = local['JingNengLiangCheng']['analysis_results'].find_one()['发电机驱动端轴承'][0]
-
-        img_t = data['img_t']
-        img_f = data['img_f']
-        img_e = data['img_e']
-
-        dataset = {
-            'img_t': img_t,
-            'img_f': img_f,
-            'img_e': img_e,
-        }
-
-        return jsonify(dataset)
-
-    return render_template('test.html')
+app = Flask(__name__, static_folder='', static_url_path='')
 
 
 @app.route('/getpass', methods=['POST'])
@@ -636,6 +618,61 @@ def preview():
 @app.route('/merge')
 def merge():
     return render_template('merge.html')
+
+
+# 当把图片保存到磁盘，并用图片的磁盘路径作为img的src属性时，启用以下代码
+@app.route('/get_picture_files', methods=['POST'])
+def get_picture_files():
+    flag = request.form.get('flag')
+    if flag == 'preview':
+        img_t = request.form.get('img_t')
+        img_f = request.form.get('img_f')
+        img_e = request.form.get('img_e')
+
+        img_t = img_t.split(',')[-1]
+        img_f = img_f.split(',')[-1]
+        img_e = img_e.split(',')[-1]
+
+        img_t_data = base64.b64decode(img_t)
+        img_f_data = base64.b64decode(img_f)
+        img_e_data = base64.b64decode(img_e)
+
+        preview_path = r'temp/preview'
+        with open(os.path.join(preview_path, 'img_t.png'), 'wb') as f:
+            f.write(img_t_data)
+
+        with open(os.path.join(preview_path, 'img_f.png'), 'wb') as f:
+            f.write(img_f_data)
+
+        with open(os.path.join(preview_path, 'img_e.png'), 'wb') as f:
+            f.write(img_e_data)
+    if flag == 'merge':
+        records = request.form.get('records')
+        records = json.loads(records)
+        for i, record in enumerate(records):
+            img_t = record[1]['img_t']
+            img_f = record[1]['img_f']
+            img_e = record[1]['img_e']
+
+            img_t = img_t.split(',')[-1]
+            img_f = img_f.split(',')[-1]
+            img_e = img_e.split(',')[-1]
+
+            img_t_data = base64.b64decode(img_t)
+            img_f_data = base64.b64decode(img_f)
+            img_e_data = base64.b64decode(img_e)
+
+            merge_path = r'temp/merge'
+            with open(os.path.join(merge_path, 'img_t_'+str(i)+'.png'), 'wb') as f:
+                f.write(img_t_data)
+
+            with open(os.path.join(merge_path, 'img_f_'+str(i)+'.png'), 'wb') as f:
+                f.write(img_f_data)
+
+            with open(os.path.join(merge_path, 'img_e_'+str(i)+'.png'), 'wb') as f:
+                f.write(img_e_data)
+
+    return jsonify({'status': 'ok'})
 
 
 if __name__ == "__main__":
