@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+</head>
+<body>
+    {% if current_user.is_authenticated %}
+        <p>欢迎光临！{{ current_user.get_id() }}</p>
+    {% endif %}
+    <form action="{{ url_for('logout') }}">
+        <input type="submit" value="退出" id="logout">
+    </form>
+</body>
+</html>

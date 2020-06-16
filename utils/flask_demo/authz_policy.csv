@@ -1,0 +1,5 @@
+p, *, /login, *
+p, *, /logout, *
+p, anonymous, /, GET
+p, tom, *, *
+p, jerry, /, GET
