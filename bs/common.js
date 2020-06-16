@@ -259,11 +259,13 @@ option_demo = {
     }
 };
 
-function setOption_tfe (fig, option, title_text, value, data, wind_turbine_selected) {
+function setOption_tfe (fig, option, title_text, xAxis_name, yAxis_name, value, data, wind_turbine_selected) {
     // JSON对象复制-深拷贝
     option = JSON.parse(JSON.stringify(option_demo));
     option.title.text = title_text;
     option.xAxis.type = 'value';
+    option.xAxis.name = xAxis_name;
+    option.yAxis.name = yAxis_name;
     for (let c in wind_turbine_selected) {
         if (!wind_turbine_selected.hasOwnProperty(c)) continue;
         option.legend.data.push(wind_turbine_selected[c]);

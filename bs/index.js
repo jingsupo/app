@@ -311,10 +311,12 @@ function tfe () {
         msg('请选择子节点！');
     }
     else {
+        let point_name = sn1[0]['name'];
+        let sampling_time = sn2[0]['name'].split(':')[0];
         let dataset = {'farm_name': farm_name,
             'wind_turbine_name': wind_turbine_name,
-            'point': sn1[0]['name'],
-            'sampling_time': sn2[0]['name'].split(':')[0],
+            'point': point_name,
+            'sampling_time': sampling_time,
             'ts_checked': ts_checked,
             'freq_checked': freq_checked,
             'env_checked': env_checked,
@@ -345,7 +347,7 @@ function tfe () {
                 }
                 data['time_series'] = new_data;
                 let option_ts = {};
-                setOption_tfe(fig_t, option_ts, '时域图', 'time_series', data, [wind_turbine_name]);
+                setOption_tfe(fig_t, option_ts, point_name+'时域图', '时间(s)', '加速度(m/s^2)', 'time_series', data, [wind_turbine_name]);
                 // 解决ECharts中click事件重复执行的问题
                 fig_t.off('click');
                 // 增加自定义参数而不覆盖原本的默认参数
@@ -356,7 +358,7 @@ function tfe () {
                 fig_t.on('contextmenu', (params) => { deletemarkPoint (fig_t, params) });
 
                 let option_freq = {};
-                setOption_tfe(fig_f, option_freq, '频域图', 'freq', data, [wind_turbine_name]);
+                setOption_tfe(fig_f, option_freq, point_name+'FFT频域图', '频率(Hz)', '加速度(m/s^2)', 'freq', data, [wind_turbine_name]);
                 // 解决ECharts中click事件重复执行的问题
                 fig_f.off('click');
                 // 增加自定义参数而不覆盖原本的默认参数
@@ -369,7 +371,7 @@ function tfe () {
                 fig_f.on('contextmenu', (params) => { deletemarkPoint (fig_f, params) });
 
                 let option_envelope = {};
-                setOption_tfe(fig_e, option_envelope, '包络图', 'envelope', data, [wind_turbine_name]);
+                setOption_tfe(fig_e, option_envelope, point_name+'包络谱图', '频率(Hz)', '加速度(m/s^2)', 'envelope', data, [wind_turbine_name]);
                 // 解决ECharts中click事件重复执行的问题
                 fig_e.off('click');
                 // 增加自定义参数而不覆盖原本的默认参数
@@ -526,6 +528,7 @@ function trend () {
                                 silent: true,
                                 symbol: 'none',
                                 label: {
+                                    position: 'insideEndTop',
                                     formatter: '{b}: {c}'
                                 },
                                 data: [warning_acc, alarm_acc]
@@ -548,6 +551,7 @@ function trend () {
                                 silent: true,
                                 symbol: 'none',
                                 label: {
+                                    position: 'insideEndTop',
                                     formatter: '{b}: {c}'
                                 },
                                 data: [warning_vel, alarm_vel]
@@ -570,6 +574,7 @@ function trend () {
                                     silent: true,
                                     symbol: 'none',
                                     label: {
+                                        position: 'insideEndTop',
                                         formatter: '{b}: {c}'
                                     },
                                     data: [warning2_acc, alarm2_acc]

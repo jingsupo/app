@@ -15,12 +15,12 @@
             document.title = data['point_name'];
 
             // 设置页面内容
-            $('#farm').html(data['farm_name']);
-            $('#wind_turbine').html(data['wind_turbine_name']);
-            $('#point_name').html(data['point_name']);
-            $('#record_time').html(data['record_time']);
-            $('#sampling_time').html(data['sampling_time']);
-            $('#analyst').html(data['analyst']);
+            $('#farm').val(data['farm_name']);
+            $('#wind_turbine').val(data['wind_turbine_name']);
+            $('#point_name').val(data['point_name']);
+            $('#record_time').val(data['record_time']);
+            $('#sampling_time').val(data['sampling_time']);
+            $('#analyst').val(data['analyst']);
             $('#ts').html(data['ts']);
             $('#freq').html(data['freq']);
             $('#env').html(data['env']);
@@ -50,24 +50,39 @@
 </head>
 <body>
     <div>
-        <strong>风场：</strong><p id="farm"></p>
-        <strong>风机：</strong><p id="wind_turbine"></p>
-        <strong>测点名称：</strong><p id="point_name"></p>
-        <strong>记录时间：</strong><p id="record_time"></p>
-        <strong>采样时间：</strong><p id="sampling_time"></p>
-        <strong>分析师：</strong><p id="analyst"></p>
+        <p>
+            <label for="farm"><strong>风场：</strong></label>
+            <input type="text" readonly="readonly" id="farm">
+            <label for="wind_turbine"><strong>风机：</strong></label>
+            <input type="text" readonly="readonly" id="wind_turbine">
+            <label for="point_name"><strong>测点名称：</strong></label>
+            <input type="text" readonly="readonly" id="point_name">
+        </p>
+        <p>
+            <label for="record_time"><strong>记录时间：</strong></label>
+            <input type="text" readonly="readonly" id="record_time">
+            <label for="sampling_time"><strong>采样时间：</strong></label>
+            <input type="text" readonly="readonly" id="sampling_time">
+            <label for="analyst"><strong>分析师：</strong></label>
+            <input type="text" readonly="readonly" id="analyst">
+        </p>
         <p><img alt="" class="img" id="img_t" src="" /></p>
-        <strong>时域分析结果：</strong><p id="ts"></p>
+        <strong>时域分析结果：</strong>
+        <p id="ts"></p>
         <p><img alt="" class="img" id="img_f" src="" /></p>
-        <strong>频域分析结果：</strong><p id="freq"></p>
+        <strong>频域分析结果：</strong>
+        <p id="freq"></p>
         <p><img alt="" class="img" id="img_e" src="" /></p>
-        <strong>包络分析结果：</strong><p id="env"></p>
+        <strong>包络分析结果：</strong>
+        <p id="env"></p>
         <p><img alt="" class="img" id="img_1" src="" /></p>
         <p><img alt="" class="img" id="img_2" src="" /></p>
         <p><img alt="" class="img" id="img_3" src="" /></p>
         <p><img alt="" class="img" id="img_4" src="" /></p>
-        <strong>趋势分析结果：</strong><p id="trend"></p>
-        <strong>故障级别：</strong><p id="level"></p>
+        <strong>趋势分析结果：</strong>
+        <p id="trend"></p>
+        <strong>故障级别：</strong>
+        <p id="level"></p>
     </div>
 </body>
 </html>

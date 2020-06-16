@@ -15,21 +15,31 @@
             let innerHTML = [];
             for (let i = 0; i < data['records'].length; i++) {
                 let html = '<hr>'+
-                        '<strong>测点名称：</strong><p id="point_name'+'_'+i+'"></p>'+
-                        '<strong>采样时间：</strong><p id="sampling_time'+'_'+i+'"></p>'+
-                        '<strong>分析师：</strong><p id="analyst'+'_'+i+'"></p>'+
+                        '<p>'+
+                            '<label for="record_time"><strong>测点名称：</strong></label>'+
+                            '<input type="text" readonly="readonly" id="point_name'+'_'+i+'">'+
+                            '<label for="sampling_time"><strong>采样时间：</strong></label>'+
+                            '<input type="text" readonly="readonly" id="sampling_time'+'_'+i+'">'+
+                            '<label for="analyst"><strong>分析师：</strong></label>'+
+                            '<input type="text" readonly="readonly" id="analyst'+'_'+i+'">'+
+                        '</p>'+
                         '<p><img alt="" class="img" id="img_t'+'_'+i+'" src="" /></p>'+
-                        '<strong>时域分析结果：</strong><p id="ts'+'_'+i+'"></p>'+
+                        '<strong>时域分析结果：</strong>' +
+                        '<p id="ts'+'_'+i+'"></p>'+
                         '<p><img alt="" class="img" id="img_f'+'_'+i+'" src="" /></p>'+
-                        '<strong>频域分析结果：</strong><p id="freq'+'_'+i+'"></p>'+
+                        '<strong>频域分析结果：</strong>' +
+                        '<p id="freq'+'_'+i+'"></p>'+
                         '<p><img alt="" class="img" id="img_e'+'_'+i+'" src="" /></p>'+
-                        '<strong>包络分析结果：</strong><p id="env'+'_'+i+'"></p>'+
+                        '<strong>包络分析结果：</strong>' +
+                        '<p id="env'+'_'+i+'"></p>'+
                         '<p><img alt="" class="img" id="img_1'+'_'+i+'" src="" /></p>'+
                         '<p><img alt="" class="img" id="img_2'+'_'+i+'" src="" /></p>'+
                         '<p><img alt="" class="img" id="img_3'+'_'+i+'" src="" /></p>'+
                         '<p><img alt="" class="img" id="img_4'+'_'+i+'" src="" /></p>'+
-                        '<strong>趋势分析结果：</strong><p id="trend'+'_'+i+'"></p>'+
-                        '<strong>故障级别：</strong><p id="level'+'_'+i+'"></p>';
+                        '<strong>趋势分析结果：</strong>' +
+                        '<p id="trend'+'_'+i+'"></p>'+
+                        '<strong>故障级别：</strong>' +
+                        '<p id="level'+'_'+i+'"></p>';
                 innerHTML.push(html);
             }
             div.innerHTML = innerHTML.join('');
@@ -40,9 +50,9 @@
                 let point_name = data['records'][i][0];
                 let record = data['records'][i][1];
                 // 设置页面内容
-                $('#point_name'+'_'+i).html(point_name);
-                $('#sampling_time'+'_'+i).html(record['sampling_time']);
-                $('#analyst'+'_'+i).html(record['analyst']);
+                $('#point_name'+'_'+i).val(point_name);
+                $('#sampling_time'+'_'+i).val(record['sampling_time']);
+                $('#analyst'+'_'+i).val(record['analyst']);
                 $('#ts'+'_'+i).html(record['ts']);
                 $('#freq'+'_'+i).html(record['freq']);
                 $('#env'+'_'+i).html(record['env']);
@@ -69,9 +79,9 @@
         // data['records'] = JSON.parse(data['records']);
 
         $(document).ready(function () {
-            $('#farm').html(data['farm_name']);
-            $('#wind_turbine').html(data['wind_turbine_name']);
-            $('#date').html(data['date']);
+            $('#farm').val(data['farm_name']);
+            $('#wind_turbine').val(data['wind_turbine_name']);
+            $('#date').val(data['date']);
             createElement(data);
             setValue(data);
         });
@@ -79,9 +89,14 @@
 </head>
 <body>
     <div>
-        <strong>风场：</strong><p id="farm"></p>
-        <strong>风机：</strong><p id="wind_turbine"></p>
-        <strong>日期：</strong><p id="date"></p>
+        <p>
+            <label for="farm"><strong>风场：</strong></label>
+            <input type="text" readonly="readonly" id="farm">
+            <label for="wind_turbine"><strong>风机：</strong></label>
+            <input type="text" readonly="readonly" id="wind_turbine">
+            <label for="date"><strong>日期：</strong></label>
+            <input type="text" readonly="readonly" id="date">
+        </p>
     </div>
     <div id="records"></div>
 </body>
