@@ -671,6 +671,16 @@ function getDataset() {
     let img_t = getDataURL(fig_t);
     let img_f = getDataURL(fig_f);
     let img_e = getDataURL(fig_e);
+    let img_1 = getDataURL(fig1);
+    let img_2 = getDataURL(fig2);
+    let img_3;
+    let img_4;
+    if ((typeof fig3.getOption()) !== "undefined") {
+        img_3 = getDataURL(fig3);
+    }
+    if ((typeof fig4.getOption()) !== "undefined") {
+        img_4 = getDataURL(fig4);
+    }
 
     return {
         'farm_name': farm_name,
@@ -686,6 +696,10 @@ function getDataset() {
         'img_t': img_t,
         'img_f': img_f,
         'img_e': img_e,
+        'img_1': img_1,
+        'img_2': img_2,
+        'img_3': img_3,
+        'img_4': img_4,
     };
 }
 

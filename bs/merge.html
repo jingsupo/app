@@ -24,6 +24,10 @@
                         '<strong>频域分析结果：</strong><p id="freq'+'_'+i+'"></p>'+
                         '<p><img alt="" class="img" id="img_e'+'_'+i+'" src="" /></p>'+
                         '<strong>包络分析结果：</strong><p id="env'+'_'+i+'"></p>'+
+                        '<p><img alt="" class="img" id="img_1'+'_'+i+'" src="" /></p>'+
+                        '<p><img alt="" class="img" id="img_2'+'_'+i+'" src="" /></p>'+
+                        '<p><img alt="" class="img" id="img_3'+'_'+i+'" src="" /></p>'+
+                        '<p><img alt="" class="img" id="img_4'+'_'+i+'" src="" /></p>'+
                         '<strong>趋势分析结果：</strong><p id="trend'+'_'+i+'"></p>'+
                         '<strong>故障级别：</strong><p id="level'+'_'+i+'"></p>';
                 innerHTML.push(html);
@@ -47,6 +51,10 @@
                 $('#img_t'+'_'+i).attr('src', record['img_t']);
                 $('#img_f'+'_'+i).attr('src', record['img_f']);
                 $('#img_e'+'_'+i).attr('src', record['img_e']);
+                $('#img_1'+'_'+i).attr('src', record['img_1']);
+                $('#img_2'+'_'+i).attr('src', record['img_2']);
+                $('#img_3'+'_'+i).attr('src', record['img_3']);
+                $('#img_4'+'_'+i).attr('src', record['img_4']);
                 // 当把图片保存到磁盘，并用图片的磁盘路径作为img的src属性时，启用以下代码
                 // let merge_path = "{{ url_for('static', filename='temp/merge/') }}";
                 // $('#img_t'+'_'+i).attr('src', merge_path+'img_t_'+i+'.png');

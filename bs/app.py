@@ -552,6 +552,10 @@ def analysis_results():
     img_t = request.form.get('img_t')
     img_f = request.form.get('img_f')
     img_e = request.form.get('img_e')
+    img_1 = request.form.get('img_1')
+    img_2 = request.form.get('img_2')
+    img_3 = request.form.get('img_3')
+    img_4 = request.form.get('img_4')
 
     collection = local[farm_name]['analysis_results']
 
@@ -578,6 +582,10 @@ def analysis_results():
         'img_t': img_t,
         'img_f': img_f,
         'img_e': img_e,
+        'img_1': img_1,
+        'img_2': img_2,
+        'img_3': img_3,
+        'img_4': img_4,
     }
 
     pn.append(data)
