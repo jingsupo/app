@@ -672,17 +672,32 @@ $(document).ready(function () {
         let sn2 = treeObj2.getSelectedNodes();
         let point_name = sn1[0]['name'];
         let sampling_time = sn2[0]['name'].split(':')[0];
-        let img_t = getDataURL(fig_t);
-        let img_f = getDataURL(fig_f);
-        let img_e = getDataURL(fig_e);
-        let img_1 = getDataURL(fig1);
-        let img_2 = getDataURL(fig2);
+        let img_t;
+        let img_f;
+        let img_e;
+        let img_1;
+        let img_2;
         let img_3;
         let img_4;
-        if ((typeof fig3.getOption()) !== "undefined") {
+        if ((typeof fig_t.getOption()) !== "undefined") {
+            img_t = getDataURL(fig_t);
+        }
+        if ((typeof fig_f.getOption()) !== "undefined") {
+            img_f = getDataURL(fig_f);
+        }
+        if ((typeof fig_e.getOption()) !== "undefined") {
+            img_e = getDataURL(fig_e);
+        }
+        if ((typeof fig1.getOption) !== 'undefined' && (typeof fig1.getOption()) !== "undefined") {
+            img_1 = getDataURL(fig1);
+        }
+        if ((typeof fig2.getOption) !== 'undefined' && (typeof fig2.getOption()) !== "undefined") {
+            img_2 = getDataURL(fig2);
+        }
+        if ((typeof fig3.getOption) !== 'undefined' && (typeof fig3.getOption()) !== "undefined") {
             img_3 = getDataURL(fig3);
         }
-        if ((typeof fig4.getOption()) !== "undefined") {
+        if ((typeof fig4.getOption) !== 'undefined' && (typeof fig4.getOption()) !== "undefined") {
             img_4 = getDataURL(fig4);
         }
 
