@@ -535,8 +535,10 @@ def trend():
     return jsonify(dataset)
 
 
-@app.route('/analysis_results', methods=['POST'])
+@app.route('/analysis_results', methods=['GET', 'POST'])
 def analysis_results():
+    if request.method == 'GET':
+        return render_template('submit.html')
     farm_name = request.form.get('farm_name')
     wind_turbine_name = request.form.get('wind_turbine_name')
     point_name = request.form.get('point_name')

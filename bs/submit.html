@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>提交</title>
+    <style>
+        .analysis {
+            height: 300px;
+            width: 100%;
+            background: #9ed0ff;
+            overflow: auto;
+        }
+
+        input[type=submit] {
+            background-color: rgb(30,160,255);
+            color: white;
+            padding: 10px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 120px;
+            margin-top: 5px;
+            position: relative;
+            left: 5px;
+        }
+
+        input[type=submit]:hover {
+            background-color: #00B83F;
+        }
+
+        select {
+            width: 105px;
+            padding: 12px 20px;
+            margin: 10px 0 0 10px;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+    </style>
+    <script src="static/js/jquery-1.4.4.min.js"></script>
+    <script src="static/layui/layui.js"></script>
+    <script src="static/js/common.js?ver=1.0"></script>
+    <script>
+        // 调用父页面的函数
+        let data = window.opener.getAnalysisResults();
+
+        $(document).ready(function () {
+            $("input[id=submit]").click(function () {
+                let dataset = data;
+                let analyst = $('#analyst').find('option:selected').text();
+                let ts = $('#ts-analysis').val();
+                let freq = $('#freq-analysis').val();
+                let env = $('#env-analysis').val();
+                let trend = $('#trend-analysis').val();
+                let level = $('#failure-level').find('option:selected').text();
+
+                dataset['analyst'] = analyst;
+                dataset['ts'] = ts;
+                dataset['freq'] = freq;
+                dataset['env'] = env;
+                dataset['trend'] = trend;
+                dataset['level'] = level;
+
+                layui.use('layer', function () {
+                    let layer = layui.layer;
+
+                    layer.prompt({title: '输入口令，并确认', formType: 1}, function(pass, index){
+                        $.ajax({
+                            url: "/getpass",
+                            type: "POST",
+                            dataType: "json",
+                            success: function (data) {
+                                if (pass === data['pass']) {
+                                    layer.close(index);
+                                    $.ajax({
+                                        url: "/analysis_results",
+                                        type: "POST",
+                                        data: dataset,
+                                        dataType: "json",
+                                        success: function (data) {
+                                            if (data['status'] === 'success') {
+                                                msg('提交成功！');
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    });
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="analysis">
+        <label for="ts-analysis">时域分析</label>
+        <textarea rows="5" cols="30" id="ts-analysis"></textarea>
+        <label for="freq-analysis">频域分析</label>
+        <textarea rows="5" cols="30" id="freq-analysis"></textarea><br />
+        <label for="env-analysis">包络分析</label>
+        <textarea rows="5" cols="30" id="env-analysis"></textarea>
+        <label for="trend-analysis">趋势分析</label>
+        <textarea rows="5" cols="30" id="trend-analysis"></textarea><br />
+        <label for="failure-level">故障级别</label>
+        <select id="failure-level">
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+            <option>D</option>
+        </select>
+        <label for="analyst">分析师</label>
+        <select id="analyst">
+            <option>王文亮</option>
+            <option>邓鸣壮</option>
+            <option>潘薪宇</option>
+        </select>
+        <input type="submit" value="提交" id="submit">
+    </div>
+</body>
+</html>

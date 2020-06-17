@@ -656,94 +656,55 @@ function trend () {
     }
 }
 
-// 获取分析结果数据集
-function getDataset() {
-    let farm_name = $('#farm').find('option:selected').text();
-    let wind_turbine_name = $('#wind_turbine').find('option:selected').text();
-    let treeObj1 = $.fn.zTree.getZTreeObj("tree1");
-    let treeObj2 = $.fn.zTree.getZTreeObj("tree2");
-    // 当前选中节点
-    let sn1 = treeObj1.getSelectedNodes();
-    let sn2 = treeObj2.getSelectedNodes();
-    let point_name = sn1[0]['name'];
-    let sampling_time = sn2[0]['name'].split(':')[0];
-    let analyst = $('#analyst').find('option:selected').text();
-    let ts = $('#ts-analysis').val();
-    let freq = $('#freq-analysis').val();
-    let env = $('#env-analysis').val();
-    let trend = $('#trend-analysis').val();
-    let level = $('#failure-level').find('option:selected').text();
-    let img_t = getDataURL(fig_t);
-    let img_f = getDataURL(fig_f);
-    let img_e = getDataURL(fig_e);
-    let img_1 = getDataURL(fig1);
-    let img_2 = getDataURL(fig2);
-    let img_3;
-    let img_4;
-    if ((typeof fig3.getOption()) !== "undefined") {
-        img_3 = getDataURL(fig3);
-    }
-    if ((typeof fig4.getOption()) !== "undefined") {
-        img_4 = getDataURL(fig4);
-    }
-
-    return {
-        'farm_name': farm_name,
-        'wind_turbine_name': wind_turbine_name,
-        'point_name': point_name,
-        'sampling_time': sampling_time,
-        'analyst': analyst,
-        'ts': ts,
-        'freq': freq,
-        'env': env,
-        'trend': trend,
-        'level': level,
-        'img_t': img_t,
-        'img_f': img_f,
-        'img_e': img_e,
-        'img_1': img_1,
-        'img_2': img_2,
-        'img_3': img_3,
-        'img_4': img_4,
-    };
-}
-
 $(document).ready(function () {
     $("input[id=query]").click(function () {
         // iframe('/query', '查询');
         window.open('/query');
     });
 
-    $("input[id=submit]").click(function () {
-        let dataset = getDataset();
+    $("input[id=analysis_results]").click(function () {
+        let farm_name = $('#farm').find('option:selected').text();
+        let wind_turbine_name = $('#wind_turbine').find('option:selected').text();
+        let treeObj1 = $.fn.zTree.getZTreeObj("tree1");
+        let treeObj2 = $.fn.zTree.getZTreeObj("tree2");
+        // 当前选中节点
+        let sn1 = treeObj1.getSelectedNodes();
+        let sn2 = treeObj2.getSelectedNodes();
+        let point_name = sn1[0]['name'];
+        let sampling_time = sn2[0]['name'].split(':')[0];
+        let img_t = getDataURL(fig_t);
+        let img_f = getDataURL(fig_f);
+        let img_e = getDataURL(fig_e);
+        let img_1 = getDataURL(fig1);
+        let img_2 = getDataURL(fig2);
+        let img_3;
+        let img_4;
+        if ((typeof fig3.getOption()) !== "undefined") {
+            img_3 = getDataURL(fig3);
+        }
+        if ((typeof fig4.getOption()) !== "undefined") {
+            img_4 = getDataURL(fig4);
+        }
 
-        layui.use('layer', function () {
-            let layer = layui.layer;
+        let dataset = {
+            'farm_name': farm_name,
+            'wind_turbine_name': wind_turbine_name,
+            'point_name': point_name,
+            'sampling_time': sampling_time,
+            'img_t': img_t,
+            'img_f': img_f,
+            'img_e': img_e,
+            'img_1': img_1,
+            'img_2': img_2,
+            'img_3': img_3,
+            'img_4': img_4,
+        };
 
-            layer.prompt({title: '输入口令，并确认', formType: 1}, function(pass, index){
-                $.ajax({
-                    url: "/getpass",
-                    type: "POST",
-                    dataType: "json",
-                    success: function (data) {
-                        if (pass === data['pass']) {
-                            layer.close(index);
-                            $.ajax({
-                                url: "/analysis_results",
-                                type: "POST",
-                                data: dataset,
-                                dataType: "json",
-                                success: function (data) {
-                                    if (data['status'] === 'success') {
-                                        msg('提交成功！');
-                                    }
-                                }
-                            });
-                        }
-                    }
-                });
-            });
-        });
+        window.open('/analysis_results');
+        // 子页面调用的函数
+        window.getAnalysisResults = function () {
+            return dataset;
+        };
     });
 });
 
