@@ -19,7 +19,9 @@ client = pymongo.MongoClient(host='192.168.2.232', port=27017)
 # 密码认证
 client.admin.authenticate('nego', '123456abcd.')
 
-app = Flask(__name__, static_folder='', static_url_path='')
+app = Flask(__name__, static_url_path='', static_folder='')
+# # 默认缓存控制的最大期限，以秒计
+# app.config['SEND_FILE_MAX_AGE_DEFAULT'] = datetime.timedelta(seconds=1)
 
 
 @app.route('/getpass', methods=['POST'])
@@ -633,6 +635,7 @@ def merge():
 # 当把图片保存到磁盘，并用图片的磁盘路径作为img的src属性时，启用以下代码
 @app.route('/get_picture_files', methods=['POST'])
 def get_picture_files():
+    now = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     flag = request.form.get('flag')
     if flag == 'preview':
         img_t = request.form.get('img_t')
@@ -647,16 +650,29 @@ def get_picture_files():
         img_f_data = base64.b64decode(img_f)
         img_e_data = base64.b64decode(img_e)
 
+        img_t_name = 'img_t_'+now+'.png'
+        img_f_name = 'img_f_'+now+'.png'
+        img_e_name = 'img_e_'+now+'.png'
+
         preview_path = r'temp/preview'
-        with open(os.path.join(preview_path, 'img_t.png'), 'wb') as f:
+        with open(os.path.join(preview_path, img_t_name), 'wb') as f:
             f.write(img_t_data)
 
-        with open(os.path.join(preview_path, 'img_f.png'), 'wb') as f:
+        with open(os.path.join(preview_path, img_f_name), 'wb') as f:
             f.write(img_f_data)
 
-        with open(os.path.join(preview_path, 'img_e.png'), 'wb') as f:
+        with open(os.path.join(preview_path, img_e_name), 'wb') as f:
             f.write(img_e_data)
+
+        dataset = {
+            'img_t_name': img_t_name,
+            'img_f_name': img_f_name,
+            'img_e_name': img_e_name,
+        }
+
+        return jsonify(dataset)
     if flag == 'merge':
+        img_names = []
         records = request.form.get('records')
         records = json.loads(records)
         for i, record in enumerate(records):
@@ -672,17 +688,28 @@ def get_picture_files():
             img_f_data = base64.b64decode(img_f)
             img_e_data = base64.b64decode(img_e)
 
+            temp = []
+            img_t_name = 'img_t_'+str(i)+'_'+now+'.png'
+            img_f_name = 'img_f_'+str(i)+'_'+now+'.png'
+            img_e_name = 'img_e_'+str(i)+'_'+now+'.png'
+            temp.append(img_t_name)
+            temp.append(img_f_name)
+            temp.append(img_e_name)
+            img_names.append(temp)
+
             merge_path = r'temp/merge'
-            with open(os.path.join(merge_path, 'img_t_'+str(i)+'.png'), 'wb') as f:
+            with open(os.path.join(merge_path, img_t_name), 'wb') as f:
                 f.write(img_t_data)
 
-            with open(os.path.join(merge_path, 'img_f_'+str(i)+'.png'), 'wb') as f:
+            with open(os.path.join(merge_path, img_f_name), 'wb') as f:
                 f.write(img_f_data)
 
-            with open(os.path.join(merge_path, 'img_e_'+str(i)+'.png'), 'wb') as f:
+            with open(os.path.join(merge_path, img_e_name), 'wb') as f:
                 f.write(img_e_data)
 
-    return jsonify({'status': 'ok'})
+        return jsonify({'img_names': img_names})
+
+    return jsonify({'status': 'done'})
 
 
 if __name__ == "__main__":
