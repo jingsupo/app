@@ -2,6 +2,7 @@
 
 import base64
 import datetime
+import hashlib
 import json
 import os
 import struct
@@ -29,6 +30,19 @@ def getpass():
     _pass = client['management']['pass'].find_one()['password']
 
     return jsonify({'pass': _pass})
+
+
+# 获取目录下所有图片的md5值
+def get_picture_md5(path):
+    filename = os.listdir(path)
+    filepath = [os.path.join(path, fn) for fn in filename if fn.lower().endswith(('jpg', 'jpeg', 'png'))]
+
+    md5 = {}
+    for i, fp in enumerate(filepath):
+        with open(fp, 'rb') as f:
+            md5.update({hashlib.md5(f.read()).hexdigest(): filename[i]})
+
+    return md5
 
 
 # ******频谱计算函数******
@@ -570,9 +584,9 @@ def analysis_results():
         dataset = {}
 
     if point_name not in dataset.keys():
-        pn = []
+        mp_data = []
     else:
-        pn = dataset[point_name]
+        mp_data = dataset[point_name]
 
     data = {
         'record_time': record_time,
@@ -592,9 +606,9 @@ def analysis_results():
         'img_4': img_4,
     }
 
-    pn.append(data)
+    mp_data.append(data)
 
-    dataset.update({point_name: pn})
+    dataset.update({point_name: mp_data})
 
     collection.update_one(query, {'$set': dataset}, upsert=True)
 
@@ -638,6 +652,10 @@ def get_picture_files():
     now = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     flag = request.form.get('flag')
     if flag == 'preview':
+        path = r'temp/preview'
+        # 获取图片的md5值
+        md5 = get_picture_md5(path)
+
         img_t = request.form.get('img_t')
         img_f = request.form.get('img_f')
         img_e = request.form.get('img_e')
@@ -650,19 +668,32 @@ def get_picture_files():
         img_f_data = base64.b64decode(img_f)
         img_e_data = base64.b64decode(img_e)
 
-        img_t_name = 'img_t_'+now+'.png'
-        img_f_name = 'img_f_'+now+'.png'
-        img_e_name = 'img_e_'+now+'.png'
+        img_t_md5 = hashlib.md5(img_t_data).hexdigest()
+        img_f_md5 = hashlib.md5(img_f_data).hexdigest()
+        img_e_md5 = hashlib.md5(img_e_data).hexdigest()
 
-        preview_path = r'temp/preview'
-        with open(os.path.join(preview_path, img_t_name), 'wb') as f:
-            f.write(img_t_data)
+        # 通过比较图片hash值判断图片是否已经保存过
+        if img_t_md5 in md5:
+            img_t_name = md5[img_t_md5]
+        else:
+            img_t_name = 'img_t_'+now+'.png'
 
-        with open(os.path.join(preview_path, img_f_name), 'wb') as f:
-            f.write(img_f_data)
+            with open(os.path.join(path, img_t_name), 'wb') as f:
+                f.write(img_t_data)
+        if img_f_md5 in md5:
+            img_f_name = md5[img_f_md5]
+        else:
+            img_f_name = 'img_f_'+now+'.png'
 
-        with open(os.path.join(preview_path, img_e_name), 'wb') as f:
-            f.write(img_e_data)
+            with open(os.path.join(path, img_f_name), 'wb') as f:
+                f.write(img_f_data)
+        if img_e_md5 in md5:
+            img_e_name = md5[img_e_md5]
+        else:
+            img_e_name = 'img_e_'+now+'.png'
+
+            with open(os.path.join(path, img_e_name), 'wb') as f:
+                f.write(img_e_data)
 
         dataset = {
             'img_t_name': img_t_name,
@@ -672,6 +703,10 @@ def get_picture_files():
 
         return jsonify(dataset)
     if flag == 'merge':
+        path = r'temp/merge'
+        # 获取图片的md5值
+        md5 = get_picture_md5(path)
+
         img_names = []
         records = request.form.get('records')
         records = json.loads(records)
@@ -688,28 +723,43 @@ def get_picture_files():
             img_f_data = base64.b64decode(img_f)
             img_e_data = base64.b64decode(img_e)
 
+            img_t_md5 = hashlib.md5(img_t_data).hexdigest()
+            img_f_md5 = hashlib.md5(img_f_data).hexdigest()
+            img_e_md5 = hashlib.md5(img_e_data).hexdigest()
+
             temp = []
-            img_t_name = 'img_t_'+str(i)+'_'+now+'.png'
-            img_f_name = 'img_f_'+str(i)+'_'+now+'.png'
-            img_e_name = 'img_e_'+str(i)+'_'+now+'.png'
+
+            # 通过比较图片hash值判断图片是否已经保存过
+            if img_t_md5 in md5:
+                img_t_name = md5[img_t_md5]
+            else:
+                img_t_name = 'img_t_'+str(i)+'_'+now+'.png'
+
+                with open(os.path.join(path, img_t_name), 'wb') as f:
+                    f.write(img_t_data)
+            if img_f_md5 in md5:
+                img_f_name = md5[img_f_md5]
+            else:
+                img_f_name = 'img_f_' + str(i) + '_' + now + '.png'
+
+                with open(os.path.join(path, img_f_name), 'wb') as f:
+                    f.write(img_f_data)
+            if img_e_md5 in md5:
+                img_e_name = md5[img_e_md5]
+            else:
+                img_e_name = 'img_e_'+str(i)+'_'+now+'.png'
+
+                with open(os.path.join(path, img_e_name), 'wb') as f:
+                    f.write(img_e_data)
+
             temp.append(img_t_name)
             temp.append(img_f_name)
             temp.append(img_e_name)
             img_names.append(temp)
 
-            merge_path = r'temp/merge'
-            with open(os.path.join(merge_path, img_t_name), 'wb') as f:
-                f.write(img_t_data)
-
-            with open(os.path.join(merge_path, img_f_name), 'wb') as f:
-                f.write(img_f_data)
-
-            with open(os.path.join(merge_path, img_e_name), 'wb') as f:
-                f.write(img_e_data)
-
         return jsonify({'img_names': img_names})
 
-    return jsonify({'status': 'done'})
+    return jsonify({'status': 'success'})
 
 
 if __name__ == "__main__":
