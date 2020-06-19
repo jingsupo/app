@@ -126,6 +126,9 @@ def q():
 
     # 测点信息
     point_description = db['information'].find_one({'desc': '机组信息'})['point_description']
+    # 对字典根据键值分组进行排序
+    point_description = sorted(point_description.items(), key=lambda x: (x[0].split('_')[0], int(x[0].split('_')[1])))
+    point_description = [x[1] for x in point_description]
 
     # 转速
     rotate_speed = db['information'].find_one({'desc': '机组信息'})['rotate_speed'][collection]
