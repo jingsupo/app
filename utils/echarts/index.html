@@ -8,38 +8,91 @@
     <script src="static/js/echarts.min.js"></script>
     <script>
         function csvToObject(csvString){
-            var csvarry = csvString.split("\r\n");
-            var datas = [];
-            var headers = csvarry[0].split(",");
-            for(var i = 1;i<csvarry.length;i++){
-                var data = {};
-                var temp = csvarry[i].split(",");
-                for(var j = 0;j<temp.length;j++){
+            let csvArray = csvString.split("\r\n");
+            let dataset = [];
+            let headers = csvArray[0].split(",");
+            for (let i = 1; i < csvArray.length; i++) {
+                let data = {};
+                let temp = csvArray[i].split(",");
+                for (let j = 0; j < temp.length; j++) {
                     data[headers[j]] = temp[j];
                 }
-                datas.push(data);
+                dataset.push(data);
             }
-            return datas;
+            return dataset;
         }
 
-        function FuncCSVImport() {
+        function readCSVFile(obj) {
+            let reader = new FileReader();
+            reader.readAsText(obj.files[0]);
+            reader.onload = function () {
+                data = csvToObject(this.result);
+                // console.log(data);  // data为csv转换后的对象
+            }
+        }
+
+        function csvImport() {
             $("#csvFileInput").val("");
             $("#csvFileInput").click();
         }
 
-        function readCSVFile(obj) {
-            var reader = new FileReader();
-            reader.readAsText(obj.files[0]);
-            reader.onload = function () {
-            data = csvToObject(this.result);
-            // console.log(data);//data为csv转换后的对象
-            }
+        // 添加标注点
+        function addmarkPoint (params, fig) {
+            if (params.componentType !== 'series') return;
+            let [x, y] = params.value;
+            let op = fig.getOption();
+            let markPointData = op.series[params.seriesIndex].markPoint.data;
+            markPointData.push({
+                name: `x:${x}\ny:${y}`,
+                coord: params.value,
+                label: {
+                    show: true,
+                    formatter: `x:${x}\ny:${y}`,
+                    position: 'top'
+                },
+                symbolSize: 4,
+                symbol: 'rect',
+                itemStyle: {
+                    color: '#000'
+                }
+            });
+            let series = op.series;
+            series[params.seriesIndex] = {
+                markPoint: {
+                    data: markPointData
+                }
+            };
+            fig.setOption({
+                series: series
+            });
         }
+
+        // 删除标注点
+        function deletemarkPoint (params, fig) {
+            if (params.componentType !== 'markPoint') return;
+            let op = fig.getOption();
+            let markPointData = op.series[params.seriesIndex].markPoint.data;
+            let newMarkPointData = markPointData.filter(({ name }) => name !== params.name);
+            let series = op.series;
+            series[params.seriesIndex] = {
+                markPoint: {
+                    data: newMarkPointData
+                }
+            };
+            fig.setOption({
+                series: series
+            });
+        }
+
+        window.onresize = function () {
+            if (fig1.dispose) {
+                // ECharts随窗口大小改变而自适应
+                fig1.resize();
+            }
+        };
     </script>
     <script>
         $(document).ready(function () {
-            // 初始化隐藏loading容器
-            document.getElementById('loading-image').style.display='none';
             // addEventListener() 方法用于向指定元素添加事件句柄
             document.getElementById("fig1").addEventListener('contextmenu', function (e) {
                 // event.preventDefault() 方法阻止元素发生默认的行为
@@ -133,22 +186,17 @@
             }
         }
 
-        let bc = [];
-        let click_flag = 0;
-        let new_d1 = [];
-
         $(document).ready(function () {
-            $("input[name=draw]").click(function () {
+            $("input[id=draw]").click(function () {
                 if (fig1.dispose) {
                     fig1.dispose();
                 }
                 fig1 = echarts.init(document.getElementById('fig1'), 'white', {renderer: 'canvas'});
-                // console.log(data);
-                let colnames = [];
+                let columns = [];
                 dataset = {};
                 for (let key in data[0]) {
                     if (key !== 'index') {
-                        colnames.push(key);
+                        columns.push(key);
                         dataset[key] = data.map((x) => [x['index'], x[key]]);
                     }
                 }
@@ -157,132 +205,73 @@
                 let x_name = $('#x_name').val();
                 let y_name = $('#y_name').val();
                 let option_draw = {};
-                setOption_draw(fig1, option_draw, '', x_type, x_name, y_name, dataset, colnames);
+                setOption_draw(fig1, option_draw, '', x_type, x_name, y_name, dataset, columns);
                 // 增加自定义参数而不覆盖原本的默认参数
                 fig1.on('click', (params) => {
                     addmarkPoint (params, fig1);
-                    document.getElementById('fig1_side').innerHTML = params.value[0]+'<br>'+params.value[1]+'<br>';
                 });
                 fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
+                // 标记删除数据点的次数
+                deletions = 0;
+                // 选中的数据点
+                brushSelected = [];
+                // 删除数据点后的新数据
+                newData = [];
                 fig1.on('brushSelected', function (params) {
-                    var brushComponent = params.batch[0];
-                    bc.push(brushComponent.selected);
+                    // console.log(params);
+                    let brushComponent = params.batch[0];
+                    brushSelected.push(brushComponent.selected);
                 });
             });
-        });
 
-        $(document).ready(function () {
-            $("input[name=del_point]").click(function () {
-                let selected = bc[bc.length-1];
-                console.log(selected);
+            $("input[id=delete-point]").click(function () {
+                let selected = brushSelected[brushSelected.length-1];
+                // console.log(selected);
                 if (selected !== undefined) {
-                    if (selected[0].dataIndex.length !== 0) {
-                        if (click_flag === 0) {
-                            d1 = dataset[selected[0].seriesName];
-                            // console.log(d1);
+                    let op = fig1.getOption();
+                    let series = op.series;
+                    for (let i = 0; i < selected.length; i++) {
+                        if (selected[i].dataIndex.length !== 0) {
+                            let ptr = selected[i].dataIndex;
+                            if (deletions === 0) {
+                                temp = dataset[selected[i].seriesName];
+                                newData.push(temp.filter((items) => !ptr.some((item) => temp.indexOf(items) === item)));
+                            }
+                            else {
+                                temp = newData[i];
+                                newData[i] = temp.filter((items) => !ptr.some((item) => temp.indexOf(items) === item));
+                            }
+                            series[i] = {
+                                data: newData[i]
+                            };
                         }
-                        else {
-                            d1 = new_d1;
-                            // console.log(d1);
-                        }
-                        click_flag += 1;
-                        let ptr = selected[0].dataIndex;
-                        // console.log(ptr);
-                        new_d1 = d1.filter((items) => !ptr.some((item) => d1.indexOf(items) === item));
-                        // console.log(new_d1);
-                        let op = fig1.getOption();
-                        let series = op.series;
-                        series[0] = {
-                            data: new_d1
-                        };
-                        fig1.setOption({
-                            series: series
-                        });
                     }
+                    fig1.setOption({
+                        series: series
+                    });
+                    deletions += 1;
                 }
             });
         });
-
-        // 添加标注点
-        function addmarkPoint (params, fig) {
-            // console.log(params);
-            if (params.componentType !== 'series') return;
-            let [x, y] = params.value;
-            let op = fig.getOption();
-            // console.log(op);
-            let markPointData = op.series[params.seriesIndex].markPoint.data;
-            markPointData.push({
-                name: `x:${x}\ny:${y}`,
-                coord: params.value,
-                label: {
-                    show: true,
-                    formatter: `x:${x}\ny:${y}`,
-                    position: 'top'
-                },
-                symbolSize: 4,
-                symbol: 'rect',
-                itemStyle: {
-                    color: '#000'
-                }
-            });
-            let series = op.series;
-            series[params.seriesIndex] = {
-                markPoint: {
-                    data: markPointData
-                }
-            };
-            fig.setOption({
-                series: series
-            });
-        }
-
-        // 删除标注点
-        function deletemarkPoint (params, fig) {
-            // console.log(params);
-            if (params.componentType !== 'markPoint') return;
-            let op = fig.getOption();
-            // console.log(op);
-            let markPointData = op.series[params.seriesIndex].markPoint.data;
-            let newMarkPointData = markPointData.filter(({ name }) => name !== params.name);
-            let series = op.series;
-            series[params.seriesIndex] = {
-                markPoint: {
-                    data: newMarkPointData
-                }
-            };
-            fig.setOption({
-                series: series
-            });
-        }
-
-        window.onresize = function () {
-            if (fig1.dispose) {
-                // ECharts随窗口大小改变而自适应
-                fig1.resize();
-            }
-        };
     </script>
 </head>
 <body>
-    <div class="left">
-    </div>
     <div class="middle">
         <div class="toolbar">
             <!-- 创建隐藏file input -->
-            <button type="button" name="seach" onclick="FuncCSVImport()">CSV Import</button>
+            <button type="button" onclick="csvImport()">CSV Import</button>
             <input type="file" id="csvFileInput" onchange="readCSVFile(this)" />&nbsp;&nbsp;
             <label for="x_type">X轴类型：</label>
-            <select id="x_type" name="x_type">
+            <select id="x_type">
                 <option value="1">time</option>
                 <option value="2">value</option>
             </select>
             <input type="text" id="x_name" placeholder="请输入X轴标题">
             <input type="text" id="y_name" placeholder="请输入Y轴标题">
-            <input type="submit" value="绘图" name="draw">
-            <input type="submit" value="删除数据点" name="del_point">
+            <input type="submit" value="绘图" id="draw">
+            <input type="submit" value="删除数据点" id="delete-point">
         </div>
         <div class="figure">
-            <div id="loading-image" class="loading">加载中...</div>
             <div id="fig1"></div>
         </div>
     </div>
