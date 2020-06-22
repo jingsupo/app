@@ -3,10 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>查询</title>
+    <link rel="stylesheet" type="text/css" href="static/css/common.css">
     <link rel="stylesheet" type="text/css" href="static/css/zTree.css">
     <link rel="stylesheet" type="text/css" href="static/css/zTreeStyle/zTreeStyle.css">
     <link rel="stylesheet" href="static/layui/css/layui.css" media="all">
     <style>
+        body {
+            background-color: rgb(240, 240, 240);
+        }
+
+        .card {
+            width: 600px;
+        }
+
         input[type=submit] {
             background-color: rgb(30,160,255);
             color: white;
@@ -271,7 +280,7 @@
     </script>
 </head>
 <body>
-    <div>
+    <div class="card">
         <label for="farm"> 风 场 </label>
         <select id="farm" name="farm">
             <option value="0">选择风场</option>
