@@ -6,8 +6,9 @@
     <link rel="stylesheet" type="text/css" href="static/css/main.css">
     <script src="static/js/jquery-1.4.4.min.js"></script>
     <script src="static/js/echarts.min.js"></script>
+    <script src="static/js/FileSaver.js"></script>
     <script>
-        function csvToObject(csvString){
+        function csvToObject (csvString) {
             let csvArray = csvString.split("\r\n");
             let dataset = [];
             let headers = csvArray[0].split(",");
@@ -19,10 +20,11 @@
                 }
                 dataset.push(data);
             }
+
             return dataset;
         }
 
-        function readCSVFile(obj) {
+        function readCSVFile (obj) {
             let reader = new FileReader();
             reader.readAsText(obj.files[0]);
             reader.onload = function () {
@@ -32,8 +34,45 @@
         }
 
         function csvImport() {
-            $("#csvFileInput").val("");
-            $("#csvFileInput").click();
+            let csvFileInput = $("#csvFileInput");
+            csvFileInput.val("");
+            csvFileInput.click();
+        }
+
+        function exportCsv (filename='demo.csv') {
+            let exportData = [];
+            for (let i in newData) {
+                let temp = {};
+                for (let j = 0; j < newData[i].length; j++) {
+                    temp[newData[i][j][0]] = newData[i][j][1];
+                }
+                exportData.push(temp);
+            }
+            let index = [];
+            for (let i in exportData) {
+                index = index.concat(Object.keys(exportData[i]));
+            }
+            index = Array.from(new Set(index));
+
+            csvString = '';
+            for (let i = 0; i < index.length; i++) {
+                // 索引列
+                csvString += index[i];
+                for (let j in exportData) {
+                    csvString += ',';
+                    // 数据列
+                    if (exportData[j].hasOwnProperty(index[i])) {
+                        csvString += exportData[j][index[i]];
+                    }
+                    else {
+                        csvString += '';
+                    }
+                }
+                csvString += '\r\n';
+            }
+
+            let blob = new Blob([csvString], {type: "text/plain;charset=utf-8"});
+            saveAs(blob, filename);
         }
 
         // 添加标注点
@@ -252,13 +291,16 @@
                     deletions += 1;
                 }
             });
+
+            $('#export-csv').click(function () {
+                exportCsv();
+            })
         });
     </script>
 </head>
 <body>
     <div class="middle">
         <div class="toolbar">
-            <!-- 创建隐藏file input -->
             <button type="button" onclick="csvImport()">CSV Import</button>
             <input type="file" id="csvFileInput" onchange="readCSVFile(this)" />&nbsp;&nbsp;
             <label for="x_type">X轴类型：</label>
@@ -270,6 +312,7 @@
             <input type="text" id="y_name" placeholder="请输入Y轴标题">
             <input type="submit" value="绘图" id="draw">
             <input type="submit" value="删除数据点" id="delete-point">
+            <input type="submit" value="导出为CSV" id="export-csv">
         </div>
         <div class="figure">
             <div id="fig1"></div>
