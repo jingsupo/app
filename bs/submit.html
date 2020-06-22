@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>提交</title>
+    <link rel="stylesheet" href="static/layui/css/layui.css" media="all">
     <style>
         .analysis {
-            height: 300px;
-            width: 100%;
             background: #9ed0ff;
             overflow: auto;
         }
@@ -36,6 +35,14 @@
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
+        }
+
+        .layui-textarea {
+            width: 400px;
+        }
+
+        #footer {
+            padding-left: 40px;
         }
     </style>
     <script src="static/js/jquery-1.4.4.min.js"></script>
@@ -95,28 +102,46 @@
 </head>
 <body>
     <div class="analysis">
-        <label for="ts-analysis">时域分析</label>
-        <textarea rows="5" cols="30" id="ts-analysis"></textarea>
-        <label for="freq-analysis">频域分析</label>
-        <textarea rows="5" cols="30" id="freq-analysis"></textarea><br />
-        <label for="env-analysis">包络分析</label>
-        <textarea rows="5" cols="30" id="env-analysis"></textarea>
-        <label for="trend-analysis">趋势分析</label>
-        <textarea rows="5" cols="30" id="trend-analysis"></textarea><br />
-        <label for="failure-level">故障级别</label>
-        <select id="failure-level">
-            <option>A</option>
-            <option>B</option>
-            <option>C</option>
-            <option>D</option>
-        </select>
-        <label for="analyst">分析师</label>
-        <select id="analyst">
-            <option>王文亮</option>
-            <option>邓鸣壮</option>
-            <option>潘薪宇</option>
-        </select>
-        <input type="submit" value="提交" id="submit">
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">时域分析</label>
+            <div class="layui-input-inline">
+                <textarea placeholder="请输入内容" class="layui-textarea" id="ts-analysis"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">频域分析</label>
+            <div class="layui-input-inline">
+                <textarea placeholder="请输入内容" class="layui-textarea" id="freq-analysis"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">包络分析</label>
+            <div class="layui-input-inline">
+                <textarea placeholder="请输入内容" class="layui-textarea" id="env-analysis"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">趋势分析</label>
+            <div class="layui-input-inline">
+                <textarea placeholder="请输入内容" class="layui-textarea" id="trend-analysis"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item" id="footer">
+            <label for="failure-level">故障级别</label>
+            <select id="failure-level">
+                <option>A</option>
+                <option>B</option>
+                <option>C</option>
+                <option>D</option>
+            </select>
+            <label for="analyst">分析师</label>
+            <select id="analyst">
+                <option>王文亮</option>
+                <option>邓鸣壮</option>
+                <option>潘薪宇</option>
+            </select>
+            <input type="submit" value="提交" id="submit">
+        </div>
     </div>
 </body>
 </html>
