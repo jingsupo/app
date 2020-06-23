@@ -142,6 +142,7 @@ def q():
         rs = rs[(rs.iloc[:, 1] >= from_rotate_speed) & (rs.iloc[:, 1] <= to_rotate_speed)]
 
     sampling_time = (rs.iloc[:, 0] + ':转速 ' + rs.iloc[:, 1].astype('str')).tolist()
+    sampling_time = sorted(sampling_time, key=lambda x: x.split(':')[0], reverse=True)
 
     return jsonify({'sampling_time': sampling_time,
                     'point_description': point_description})
