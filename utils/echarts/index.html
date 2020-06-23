@@ -53,6 +53,10 @@
                 index = index.concat(Object.keys(exportData[i]));
             }
             index = Array.from(new Set(index));
+            // 过滤掉空字符串
+            index = index.filter((x) => x !== '');
+            // 对日期进行升序排序
+            index.sort(function (a, b) {return Date.parse(a) - Date.parse(b);});
 
             csvString = '';
             for (let i = 0; i < index.length; i++) {
