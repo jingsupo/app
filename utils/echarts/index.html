@@ -278,11 +278,11 @@
                             let ptr = selected[i].dataIndex;
                             if (deletions === 0) {
                                 temp = dataset[selected[i].seriesName];
-                                newData.push(temp.filter((items) => !ptr.some((item) => temp.indexOf(items) === item)));
+                                newData.push(temp.filter((x) => !ptr.some((item) => temp.indexOf(x) === item)));
                             }
                             else {
                                 temp = newData[i];
-                                newData[i] = temp.filter((items) => !ptr.some((item) => temp.indexOf(items) === item));
+                                newData[i] = temp.filter((x) => !ptr.some((item) => temp.indexOf(x) === item));
                             }
                             series[i] = {
                                 data: newData[i]
