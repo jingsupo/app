@@ -1,5 +1,7 @@
-// 加载日期与时间组件
-layui.use(['laydate'], function () {
+// 日期与时间组件
+// 注意：折叠面板 依赖 element 模块，否则无法进行功能性操作
+// 注意：选项卡 依赖 element 模块，否则无法进行功能性操作
+layui.use(['laydate', 'element', 'form'], function () {
     let laydate = layui.laydate;
 
     laydate.render({
@@ -13,15 +15,13 @@ layui.use(['laydate'], function () {
         type: 'datetime',
         format: 'yyyyMMddHHmmss'
     });
-});
 
-//注意：折叠面板 依赖 element 模块，否则无法进行功能性操作
-//注意：选项卡 依赖 element 模块，否则无法进行功能性操作
-layui.use('element', function () {
     let element = layui.element;
+
     // 监听折叠
     element.on('collapse(params)', function(data){
     });
+
     // 监听Tab切换
     element.on('tab(spectrum)', function(data){
     });
@@ -40,7 +40,7 @@ $(document).ready(function () {
     document.getElementById('to_time_div').style.display='none';
     document.getElementById('from_rotate_speed_div').style.display='none';
     document.getElementById('to_rotate_speed_div').style.display='none';
-    document.getElementById('fig_type_div').style.display='none';
+    document.getElementById('fig-type').style.display='none';
     document.getElementById('cutoff_div').style.display='none';
     document.getElementById('q').style.display='none';
     document.getElementById('tree1').style.display='none';
@@ -228,7 +228,7 @@ $(document).ready(function () {
         document.getElementById('to_time_div').style.display='';
         document.getElementById('from_rotate_speed_div').style.display='';
         document.getElementById('to_rotate_speed_div').style.display='';
-        document.getElementById('fig_type_div').style.display='';
+        document.getElementById('fig-type').style.display='';
         document.getElementById('cutoff_div').style.display='';
         document.getElementById('q').style.display='';
         document.getElementById('tree1').style.display='none';
@@ -254,7 +254,7 @@ $(document).ready(function () {
         document.getElementById('to_time_div').style.display='';
         document.getElementById('from_rotate_speed_div').style.display='';
         document.getElementById('to_rotate_speed_div').style.display='';
-        document.getElementById('fig_type_div').style.display='none';
+        document.getElementById('fig-type').style.display='none';
         document.getElementById('cutoff_div').style.display='none';
         document.getElementById('q').style.display='';
         document.getElementById('tree1').style.display='none';

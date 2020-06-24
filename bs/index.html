@@ -75,11 +75,15 @@
           </div>
         </div>
         <input type="submit" value="查询" id="q" name="q">
-        <div id="fig_type_div" style="text-align:center">
-            <label><input type="checkbox" name="spectrum" id="ts" checked="checked">时域</label>
-            <label><input type="checkbox" name="spectrum" id="freq">频域</label>
-            <label><input type="checkbox" name="spectrum" id="env">包络</label>
-        </div>
+        <form class="layui-form" action="" id="fig-type">
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <input type="checkbox" name="like[ts]" title="时域" checked="" id="ts">
+                    <input type="checkbox" name="like[freq]" title="频域" id="freq">
+                    <input type="checkbox" name="like[env]" title="包络" id="env">
+                </div>
+            </div>
+        </form>
         <div id="tree">
             <div id="tree1" class="ztree">加载中...</div>
             <div id="tree2" class="ztree">加载中...</div>
@@ -109,7 +113,13 @@
                         <div id="fig-e"></div>
                     </div>
                     <div class="layui-tab-item">
-                        <label><input type="checkbox" id="point-detail">详细分析</label>
+                        <form class="layui-form" action="">
+                            <div class="layui-form-item">
+                                <div class="layui-input-inline">
+                                    <input type="checkbox" name="like[point-detail]" title="详细分析" id="point-detail">
+                                </div>
+                            </div>
+                        </form>
                         <div id="fig1"></div>
                         <div id="fig2"></div>
                         <div id="fig3"></div>
@@ -119,10 +129,16 @@
             </div>
         </div>
         <div class="figure_side">
-            <label><input type="checkbox" id="mark-point">标注点</label>&nbsp;&nbsp;
-            <a id="del-mp" href="javascript:void(0)" style="text-decoration:underline;">删除</a><br />
-            <label><input type="checkbox" id="freq-multi">倍频</label>&nbsp;&nbsp;
-            <a id="del-fm" href="javascript:void(0)" style="text-decoration:underline;">删除</a>
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-input-inline">
+                        <input type="checkbox" name="like[mark-point]" title="标注点" id="mark-point">
+                        <a id="del-mp" href="javascript:void(0)" style="text-decoration:underline;">删除</a>
+                        <input type="checkbox" name="like[freq-multi]" title="倍频" id="freq-multi">
+                        <a id="del-fm" href="javascript:void(0)" style="text-decoration:underline;">删除</a>
+                    </div>
+                </div>
+            </form>
         </div>
         <input type="submit" value="提交分析结果" id="analysis_results">
         <input type="submit" value="查询分析结果" id="query">
