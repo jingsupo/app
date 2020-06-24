@@ -64,14 +64,14 @@
                     data['time_series'] = new_data;
                     if (flag === 1) {
                         let option_ts = {};
-                        setOption_tfe(fig1, option_ts, '时域图', 'time_series', data, [params.seriesName]);
+                        setOption_tfe(fig1, option_ts, '时域图', '时间(s)', '加速度(m/s^2)', 'time_series', data, [params.seriesName]);
                         // 增加自定义参数而不覆盖原本的默认参数
                         fig1.on('click', (params) => {
                             addmarkPoint (params, fig1);
                         });
                         fig1.on('contextmenu', (params) => { deletemarkPoint (params, fig1) });
                         let option_freq = {};
-                        setOption_tfe(fig2, option_freq, '频域图', 'freq', data, [params.seriesName]);
+                        setOption_tfe(fig2, option_freq, 'FFT频域图', '频率(Hz)', '加速度(m/s^2)', 'freq', data, [params.seriesName]);
                         // 增加自定义参数而不覆盖原本的默认参数
                         fig2.on('click', (params) => {
                             addmarkPoint (params, fig2);
@@ -80,7 +80,7 @@
                     }
                     if (flag === 2) {
                         let option_envelope = {};
-                        setOption_tfe(fig1, option_envelope, '包络图', 'envelope', data, [params.seriesName]);
+                        setOption_tfe(fig1, option_envelope, '包络谱图', '频率(Hz)', '加速度(m/s^2)', 'envelope', data, [params.seriesName]);
                         // 增加自定义参数而不覆盖原本的默认参数
                         fig1.on('click', (params) => {
                             addmarkPoint(params, fig1);
