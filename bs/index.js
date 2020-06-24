@@ -266,17 +266,17 @@ function tfe () {
     let ts_checked = $('#ts').prop('checked');
     let freq_checked = $('#freq').prop('checked');
     let env_checked = $('#env').prop('checked');
-    if (ts_checked && (typeof fig_t) !== "undefined") {
+    if (ts_checked && typeof fig_t !== "undefined") {
         if (fig_t.dispose) {
             fig_t.dispose();
         }
     }
-    if (freq_checked && (typeof fig_f) !== "undefined") {
+    if (freq_checked && typeof fig_f !== "undefined") {
         if (fig_f.dispose) {
             fig_f.dispose();
         }
     }
-    if (env_checked && (typeof fig_e) !== "undefined") {
+    if (env_checked && typeof fig_e !== "undefined") {
         if (fig_e.dispose) {
             fig_e.dispose();
         }
@@ -679,25 +679,25 @@ $(document).ready(function () {
         let img_2;
         let img_3;
         let img_4;
-        if ((typeof fig_t.getOption()) !== "undefined") {
+        if (typeof fig_t.getOption() !== "undefined") {
             img_t = getDataURL(fig_t);
         }
-        if ((typeof fig_f.getOption()) !== "undefined") {
+        if (typeof fig_f.getOption() !== "undefined") {
             img_f = getDataURL(fig_f);
         }
-        if ((typeof fig_e.getOption()) !== "undefined") {
+        if (typeof fig_e.getOption() !== "undefined") {
             img_e = getDataURL(fig_e);
         }
-        if ((typeof fig1.getOption) !== 'undefined' && (typeof fig1.getOption()) !== "undefined") {
+        if (typeof fig1.getOption !== 'undefined' && typeof fig1.getOption() !== "undefined") {
             img_1 = getDataURL(fig1);
         }
-        if ((typeof fig2.getOption) !== 'undefined' && (typeof fig2.getOption()) !== "undefined") {
+        if (typeof fig2.getOption !== 'undefined' && typeof fig2.getOption() !== "undefined") {
             img_2 = getDataURL(fig2);
         }
-        if ((typeof fig3.getOption) !== 'undefined' && (typeof fig3.getOption()) !== "undefined") {
+        if (typeof fig3.getOption !== 'undefined' && typeof fig3.getOption() !== "undefined") {
             img_3 = getDataURL(fig3);
         }
-        if ((typeof fig4.getOption) !== 'undefined' && (typeof fig4.getOption()) !== "undefined") {
+        if (typeof fig4.getOption !== 'undefined' && typeof fig4.getOption() !== "undefined") {
             img_4 = getDataURL(fig4);
         }
 
@@ -733,31 +733,31 @@ window.onresize = function () {
     $('#fig-t').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
     $('#fig-f').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
     $('#fig-e').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
-    if ((typeof fig1) !== "undefined" && fig1.dispose) {
+    if (typeof fig1 !== "undefined" && fig1.dispose) {
         // ECharts随窗口大小改变而自适应
         fig1.resize();
     }
-    if ((typeof fig2) !== "undefined" && fig2.dispose) {
+    if (typeof fig2 !== "undefined" && fig2.dispose) {
         // ECharts随窗口大小改变而自适应
         fig2.resize();
     }
-    if ((typeof fig3) !== "undefined" && fig3.dispose) {
+    if (typeof fig3 !== "undefined" && fig3.dispose) {
         // ECharts随窗口大小改变而自适应
         fig3.resize();
     }
-    if ((typeof fig4) !== "undefined" && fig4.dispose) {
+    if (typeof fig4 !== "undefined" && fig4.dispose) {
         // ECharts随窗口大小改变而自适应
         fig4.resize();
     }
-    if ((typeof fig_t) !== "undefined" && fig_t.dispose) {
+    if (typeof fig_t !== "undefined" && fig_t.dispose) {
         // ECharts随窗口大小改变而自适应
         fig_t.resize();
     }
-    if ((typeof fig_f) !== "undefined" && fig_f.dispose) {
+    if (typeof fig_f !== "undefined" && fig_f.dispose) {
         // ECharts随窗口大小改变而自适应
         fig_f.resize();
     }
-    if ((typeof fig_e) !== "undefined" && fig_e.dispose) {
+    if (typeof fig_e !== "undefined" && fig_e.dispose) {
         // ECharts随窗口大小改变而自适应
         fig_e.resize();
     }
