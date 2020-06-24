@@ -282,7 +282,7 @@ function tfe () {
         }
     }
     // 绘图div父容器的宽度
-    let w = $('.figure').width();
+    let w = $('.layui-tab-content').width();
     $('#fig-t').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
     $('#fig-f').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
     $('#fig-e').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
@@ -401,7 +401,7 @@ function trend () {
         fig4.dispose();
     }
     // 绘图div父容器的宽度
-    let w = $('.figure').width();
+    let w = $('.layui-tab-content').width();
     $('#fig1').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
     $('#fig2').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
     $('#fig3').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
@@ -725,7 +725,7 @@ $(document).ready(function () {
 
 window.onresize = function () {
     // 绘图div父容器的宽度
-    let w = $('.figure').width();
+    let w = $('.layui-tab-content').width();
     $('#fig1').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
     $('#fig2').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果
     $('#fig3').css('width', w); // 获取父容器的宽度直接赋值给图表以达到宽度100%的效果

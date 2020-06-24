@@ -49,6 +49,10 @@
     overflow: auto;
 }
 
+.layui-tab {
+     margin: 0 0;
+}
+
 #fig1 {
     height: 320px;
 }
