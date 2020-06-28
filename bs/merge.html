@@ -11,6 +11,13 @@
         input {
             width: 135px;
         }
+
+        pre {
+            width: 600px;
+            background-color: rgb(246,248,250);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
     </style>
     <script src="static/js/jquery-1.4.4.min.js"></script>
     <script>
@@ -29,19 +36,19 @@
                         '</p>'+
                         '<p id="p_img_t_'+i+'"><img alt="" class="img" id="img_t_'+i+'" src="" /></p>'+
                         '<strong>时域分析结果：</strong>' +
-                        '<p id="ts_'+i+'"></p>'+
+                        '<pre id="ts_'+i+'"></pre>'+
                         '<p id="p_img_f_'+i+'"><img alt="" class="img" id="img_f_'+i+'" src="" /></p>'+
                         '<strong>频域分析结果：</strong>' +
-                        '<p id="freq_'+i+'"></p>'+
+                        '<pre id="freq_'+i+'"></pre>'+
                         '<p id="p_img_e_'+i+'"><img alt="" class="img" id="img_e_'+i+'" src="" /></p>'+
                         '<strong>包络分析结果：</strong>' +
-                        '<p id="env_'+i+'"></p>'+
+                        '<pre id="env_'+i+'"></pre>'+
                         '<p id="p_img_1_'+i+'"><img alt="" class="img" id="img_1_'+i+'" src="" /></p>'+
                         '<p id="p_img_2_'+i+'"><img alt="" class="img" id="img_2_'+i+'" src="" /></p>'+
                         '<p id="p_img_3_'+i+'"><img alt="" class="img" id="img_3_'+i+'" src="" /></p>'+
                         '<p id="p_img_4_'+i+'"><img alt="" class="img" id="img_4_'+i+'" src="" /></p>'+
                         '<strong>趋势分析结果：</strong>' +
-                        '<p id="trend_'+i+'"></p>'+
+                        '<pre id="trend_'+i+'"></pre>'+
                         '<strong>故障级别：</strong>' +
                         '<p id="level_'+i+'"></p>';
                 innerHTML.push(html);
