@@ -26,9 +26,9 @@ input[type=submit]:hover {
 }
 
 input[type=text], select {
-    width: 30%;
+    width: 50%;
     margin: 10px 0 0 10px;
-    padding: 12px 20px;
+    padding: 10px 10px;
     display: inline-block;
     border: 1px solid #ccc;
     border-radius: 4px;
