@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\untitled.ui'
+# Form implementation generated from reading ui file '.\mdi.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.0
 #
@@ -39,6 +39,9 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.tab, "")
         self.tab_2 = QtWidgets.QWidget()
         self.tab_2.setObjectName("tab_2")
+        self.pushButton = QtWidgets.QPushButton(self.tab_2)
+        self.pushButton.setGeometry(QtCore.QRect(20, 20, 93, 28))
+        self.pushButton.setObjectName("pushButton")
         self.tabWidget.addTab(self.tab_2, "")
         self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.tabWidget)
         self.mdiArea = QtWidgets.QMdiArea(self.centralwidget)
@@ -84,9 +87,10 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.action_6)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         self.menubar.triggered['QAction*'].connect(MainWindow.menubar_action)
         self.toolBar.actionTriggered['QAction*'].connect(MainWindow.toolbar_action)
+        self.pushButton.clicked.connect(MainWindow.add_subwindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -103,6 +107,7 @@ class Ui_MainWindow(object):
         self.treeWidget.topLevelItem(2).child(0).setText(0, _translate("MainWindow", "New Subitem"))
         self.treeWidget.setSortingEnabled(__sortingEnabled)
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Tab 1"))
+        self.pushButton.setText(_translate("MainWindow", "PushButton"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Tab 2"))
         self.menu.setTitle(_translate("MainWindow", "文件"))
         self.menu_2.setTitle(_translate("MainWindow", "窗口"))
