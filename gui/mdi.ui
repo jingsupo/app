@@ -34,7 +34,7 @@
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
-        <string>Tab 1</string>
+        <string>路径查看器</string>
        </attribute>
        <layout class="QFormLayout" name="formLayout_2">
         <item row="0" column="0" colspan="2">
@@ -80,20 +80,122 @@
       </widget>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
-        <string>Tab 2</string>
+        <string>单文件查看</string>
        </attribute>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="pushButton_2">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>70</x>
+          <y>230</y>
+          <width>75</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>绘图</string>
+        </property>
+       </widget>
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>20</x>
           <y>20</y>
-          <width>93</width>
-          <height>28</height>
+          <width>172</width>
+          <height>181</height>
          </rect>
         </property>
-        <property name="text">
-         <string>PushButton</string>
-        </property>
+        <layout class="QFormLayout" name="formLayout_3">
+         <item row="0" column="0" colspan="2">
+          <widget class="QPushButton" name="pushButton">
+           <property name="text">
+            <string>选择文件</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>风场</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="lineEdit">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>风机</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLineEdit" name="lineEdit_2">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>转速</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLineEdit" name="lineEdit_3">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>时间</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QLineEdit" name="lineEdit_4">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>采样率</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QLineEdit" name="lineEdit_5">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>测点</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QComboBox" name="comboBox"/>
+         </item>
+        </layout>
        </widget>
       </widget>
      </widget>
@@ -109,7 +211,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -148,6 +250,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="action_6"/>
+   <addaction name="action_7"/>
   </widget>
   <action name="action">
    <property name="text">
@@ -197,6 +300,14 @@
     <string>新建窗口</string>
    </property>
   </action>
+  <action name="action_7">
+   <property name="text">
+    <string>新建九宫格</string>
+   </property>
+   <property name="toolTip">
+    <string>新建九宫格</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
@@ -236,15 +347,31 @@
    <sender>pushButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>add_subwindow()</slot>
+   <slot>choose_file()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>86</x>
-     <y>120</y>
+     <x>153</x>
+     <y>104</y>
     </hint>
     <hint type="destinationlabel">
-     <x>253</x>
-     <y>566</y>
+     <x>200</x>
+     <y>48</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>plot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>139</x>
+     <y>314</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>252</x>
+     <y>575</y>
     </hint>
    </hints>
   </connection>
@@ -252,6 +379,7 @@
  <slots>
   <slot>menubar_action()</slot>
   <slot>toolbar_action()</slot>
-  <slot>add_subwindow()</slot>
+  <slot>choose_file()</slot>
+  <slot>plot()</slot>
  </slots>
 </ui>
