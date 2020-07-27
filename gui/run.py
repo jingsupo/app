@@ -9,6 +9,9 @@ from mdi import Ui_MainWindow
 from constant import point_description
 from spectrum import *
 
+plt.rcParams['font.sans-serif']=['SimHei']
+plt.rcParams['axes.unicode_minus'] = False
+
 
 class MyWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
@@ -45,7 +48,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.mdiArea.addSubWindow(sub)
             sub.show()
         elif type == "新建九宫格":
-            pictures = ['./pictures/0' + str(i) + '.png' for i in range(1, 10)]
+            pictures = ['C:\\Users\\Admin\\Pictures\\pictures\\0' + str(i) + '.png' for i in range(1, 10)]
             for p in pictures:
                 sub = QMdiSubWindow()
                 # 创建一个QLabel，用来显示图片
@@ -87,14 +90,20 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         # 采样率
         self.sampling_fre = fnsplit[-2]
         # 测点
-        mp = point_description[farm]
+        try:
+            self.mp = point_description[farm]
+        except KeyError as e:
+            self.mp = []
+            print('键 %s 不存在' % e)
 
         self.lineEdit.setText(farm)
         self.lineEdit_2.setText(wind_turbine)
         self.lineEdit_3.setText(rotating_speed)
         self.lineEdit_4.setText(sampling_time)
         self.lineEdit_5.setText(self.sampling_fre)
-        self.comboBox.addItems(mp)
+        # 先清空，再添加
+        self.comboBox.clear()
+        self.comboBox.addItems(self.mp)
 
         # 读取CSV文件数据
         self.data = read_csv(fileName_choose, header=None)
@@ -106,23 +115,37 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def plot(self):
         # 数据列
         columns = self.data.columns
-        for col in columns:
+        data_length = self.data.shape[0]
+        for i, col in enumerate(columns):
+            # 时域数据x轴间隔
+            step = round((data_length / int(self.sampling_fre)) / data_length * 1000000) / 1000000
             # 频谱数据
             fre, am = fourier_transform(self.data[col], int(self.sampling_fre))
             am = Series(am)
             am = am.round(decimals=6)
             sub = QMdiSubWindow()
             fig = plt.figure()
+            if self.mp:
+                title = '频谱/时域信号 - ' + self.mp[i]
+            else:
+                title = '频谱/时域信号 - '
+            fig.suptitle(title)
             axes1 = fig.add_subplot(211)
             axes2 = fig.add_subplot(212)
-            axes1.plot(self.data[col], color='blue', linewidth=0.5)
-            axes2.plot(fre, am, color='blue', linewidth=0.5)
+            axes1.grid(True, color="grey", linestyle='--')
+            axes2.grid(True, color="grey", linestyle='--')
+            axes1.plot(fre, am, color='blue', linewidth=0.5)
+            axes2.plot([step*n for n in range(data_length)], self.data[col], color='blue', linewidth=0.5)
+            axes1.set_xlabel('频率(Hz)')
+            axes1.set_ylabel('加速度(m/s^2)')
+            axes2.set_xlabel('时间(s)')
+            axes2.set_ylabel('加速度(m/s^2)')
             canvas = FigureCanvas(fig)
             # 向sub内部添加控件
             sub.setWidget(canvas)
             # 子窗口增加一个
             self.count += 1
-            sub.setWindowTitle("subWindow %d" % self.count)
+            sub.setWindowTitle(title)
             self.mdiArea.addSubWindow(sub)
             sub.show()
         self.mdiArea.tileSubWindows()
