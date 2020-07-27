@@ -51,7 +51,7 @@ class MyFrame(wx.Frame):
         self.frame_toolbar.AddTool(1005, "Zoom", wx.Bitmap("C:\\Users\\Admin\\Desktop\\home.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, "Zoom", "")
         # Tool Bar end
         self.window_1 = wx.SplitterWindow(self, wx.ID_ANY)
-        self.window_1_pane_1 = wx.Panel(self.window_1, wx.ID_ANY)
+        self.window_1_pane_1 = wx.ScrolledWindow(self.window_1, wx.ID_ANY, style=wx.TAB_TRAVERSAL)
         self.tree_ctrl_1 = wx.TreeCtrl(self.window_1_pane_1, wx.ID_ANY)
         self.CreateTreeCtrl(tree=self.tree_ctrl_1)
         self.window_1_pane_2 = wx.Panel(self.window_1, wx.ID_ANY)
@@ -61,7 +61,7 @@ class MyFrame(wx.Frame):
         self.window_2 = matplotlib_canvas.MatplotlibCanvas(self.notebook_1_pane_2, wx.ID_ANY)
         self.notebook_1_pane_3 = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.window_3 = wx.SplitterWindow(self.notebook_1_pane_3, wx.ID_ANY)
-        self.window_3_pane_1 = wx.Panel(self.window_3, wx.ID_ANY)
+        self.window_3_pane_1 = wx.ScrolledWindow(self.window_3, wx.ID_ANY, style=wx.TAB_TRAVERSAL)
         self.choice_1 = wx.Choice(self.window_3_pane_1, wx.ID_ANY, choices=[])
         self.client = pymongo.MongoClient(host='192.168.2.232', port=27017)
         # 密码认证
@@ -108,7 +108,9 @@ class MyFrame(wx.Frame):
         for i in range(len(frame_statusbar_fields)):
             self.frame_statusbar.SetStatusText(frame_statusbar_fields[i], i)
         self.frame_toolbar.Realize()
+        self.window_1_pane_1.SetScrollRate(10, 10)
         self.radio_box_1.SetSelection(0)
+        self.window_3_pane_1.SetScrollRate(10, 10)
         self.window_3.SetMinimumPaneSize(100)
         self.window_1.SetMinimumPaneSize(100)
         # end wxGlade
@@ -504,7 +506,7 @@ class MyFrame(wx.Frame):
         fig = parent.figure
         ax1 = canvas
         
-        ax1.plot(x, y, color='blue')
+        ax1.plot(x, y, color='blue', linewidth=0.5)
         ax1.set_xlim(xmax=max(x))
         line_x = ax1.plot(x, _y, color='skyblue')[0]
         line_y = ax1.axvline(x=len_y-1, color='skyblue')
